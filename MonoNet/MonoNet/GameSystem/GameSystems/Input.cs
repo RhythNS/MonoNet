@@ -1,7 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using System;
+using System.Diagnostics;
 
-namespace MonoNet.GameSystem
+namespace MonoNet.GameSystems
 {
     /// <summary>
     /// Wrapper for Keyboard state for ease of use.
@@ -31,12 +33,12 @@ namespace MonoNet.GameSystem
         /// <summary>
         /// Returns true if key was pressed this frame.
         /// </summary>
-        public static bool IsKeyDownThisFrame(Keys key) => instance.current.IsKeyDown(key) && instance.prev.IsKeyUp(key);
+        public static bool IsKeyDownThisFrame(Keys key) => instance.current.IsKeyDown(key) == true && instance.prev.IsKeyDown(key) == false;
 
         /// <summary>
         /// Returns true if key was just unpressed this frame.
         /// </summary>
-        public static bool IsKeyUpThisFrame(Keys key) => instance.current.IsKeyUp(key) && instance.prev.IsKeyDown(key);
+        public static bool IsKeyUpThisFrame(Keys key) => !instance.current.IsKeyDown(key) && instance.prev.IsKeyDown(key);
 
         /// <summary>
         /// Returns true if the key is currently pressed.
@@ -47,6 +49,6 @@ namespace MonoNet.GameSystem
         /// Returns true if the is currently not pressed.
         /// </summary>
         public static bool KeyUp(Keys key) => instance.current.IsKeyUp(key);
-        
+
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 
-namespace MonoNet.GameSystem
+namespace MonoNet.GameSystems
 {
     /// <summary>
     /// Class for getting information about the current time.

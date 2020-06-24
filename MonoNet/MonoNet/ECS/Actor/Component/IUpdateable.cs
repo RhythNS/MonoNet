@@ -1,4 +1,4 @@
-﻿namespace MonoNet.Stage.Actor
+﻿namespace MonoNet.ECS
 {
     public interface IUpdateable
     {

@@ -1,11 +1,18 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoNet.Util.Pools;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 
-namespace MonoNet.Stage.Actor
+namespace MonoNet.ECS
 {
-    public class Actor : IDisposable, IUpdateable, IDrawable
+    public sealed class Actor : IDisposable, IUpdateable, IDrawable, IPoolable
     {
+        public Stage Stage { get; private set; }
+        public int Layer { get; private set; }
+
+        private List<Coroutine> coroutines;
+
         private readonly List<Component> components;
 
         private readonly List<IUpdateable> updateables;
@@ -19,13 +26,24 @@ namespace MonoNet.Stage.Actor
             updateables = new List<IUpdateable>();
             drawables = new List<IDrawable>();
             disposables = new List<IDisposable>();
+            coroutines = new List<Coroutine>();
+        }
+
+        /// <summary>
+        /// Initializes the Actor.
+        /// </summary>
+        /// <param name="layer">Which layer the actor is on.</param>
+        public void Initialize(Stage stage, int layer)
+        {
+            Stage = stage;
+            Layer = layer;
         }
 
         /// <summary>
         /// Adds a component to the actor.
         /// </summary>
         /// <typeparam name="T">The type of the added component</typeparam>
-        public void AddComponent<T>() where T : Component, new()
+        public Component AddComponent<T>() where T : Component, new()
         {
             T component = new T();
             component.Initialize(this);
@@ -39,6 +57,8 @@ namespace MonoNet.Stage.Actor
                 disposables.Add(disposable);
 
             components.Add(component);
+            Stage.OnComponentAdded(component);
+            return component;
         }
 
         /// <summary>
@@ -139,6 +159,19 @@ namespace MonoNet.Stage.Actor
         }
 
         /// <summary>
+        /// Starts a Coroutine with the given IEnumerator.
+        /// </summary>
+        /// <param name="enumerator">What the Coroutine is supposed to be doing.</param>
+        /// <param name="onFinshed">Called when the Coroutine finishes.</param>
+        /// <returns>A reference to the started Coroutine.</returns>
+        public Coroutine StartCoroutine(IEnumerator enumerator, Action onFinshed = null)
+        {
+            Coroutine coroutine = new Coroutine(enumerator, onFinshed);
+            coroutines.Add(coroutine);
+            return coroutine;
+        }
+
+        /// <summary>
         /// Calls Draw on each component which implements IDrawable.
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)
@@ -154,6 +187,13 @@ namespace MonoNet.Stage.Actor
         {
             for (int i = 0; i < updateables.Count; i++)
                 updateables[i].Update();
+
+            // Update coroutines and remove if one finishes.
+            for (int i = coroutines.Count - 1; i > -1; i--)
+            {
+                if (coroutines[i].Update() == true)
+                    coroutines.RemoveAt(i);
+            }
         }
 
         /// <summary>
@@ -163,11 +203,27 @@ namespace MonoNet.Stage.Actor
         {
             for (int i = 0; i < disposables.Count; i++)
                 disposables[i].Dispose();
+        }
 
+        /// <summary>
+        /// Resets the actor to be freed into a pool again.
+        /// </summary>
+        public void Reset()
+        {
             components.Clear();
+            components.TrimExcess();
+
             updateables.Clear();
+            updateables.TrimExcess();
+
             drawables.Clear();
+            drawables.TrimExcess();
+
             disposables.Clear();
+            disposables.TrimExcess();
+
+            coroutines.Clear();
+            coroutines.TrimExcess();
         }
     }
 }

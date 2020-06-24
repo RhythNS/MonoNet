@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\$(MonoGamePlatform)\$(Platform)\$(Configuration)\</OutputPath>
+    <OutputPath>bin\Windows\x86\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINDOWS</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,6 +44,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
+    <Compile Include="GameSystem\GameSystemManager.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
@@ -53,12 +55,17 @@
     <Compile Include="Screen\IScreen.cs" />
     <Compile Include="Screen\ScreenAdapter.cs" />
     <Compile Include="Screen\ScreenManager.cs" />
-    <Compile Include="Stage\Actor\Actor.cs" />
-    <Compile Include="Stage\Actor\Component\Component.cs" />
-    <Compile Include="Stage\Actor\Component\Coroutine\Coroutine.cs" />
-    <Compile Include="Stage\Actor\Component\IDrawable.cs" />
-    <Compile Include="Stage\Actor\Component\IUpdateable.cs" />
-    <Compile Include="Stage\Stage.cs" />
+    <Compile Include="ECS\Actor\Actor.cs" />
+    <Compile Include="ECS\Actor\Component\Component.cs" />
+    <Compile Include="ECS\Actor\Coroutine.cs" />
+    <Compile Include="ECS\Actor\Component\IDrawable.cs" />
+    <Compile Include="ECS\Actor\Component\IUpdateable.cs" />
+    <Compile Include="ECS\Stage.cs" />
+    <Compile Include="Testing\Infrastructure\InfraTestGame.cs" />
+    <Compile Include="Testing\Infrastructure\InputTesterComponent.cs" />
+    <Compile Include="Util\Log.cs" />
+    <Compile Include="Util\Pools\IPoolable.cs" />
+    <Compile Include="Util\Pools\Pool.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

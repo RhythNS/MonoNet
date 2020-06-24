@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 
-namespace MonoNet.GameSystem
+namespace MonoNet.GameSystems
 {
     public abstract class GameSystem
     {

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
 
-namespace MonoNet.Stage.Actor
+namespace MonoNet.ECS
 {
     public interface IDrawable
     {
