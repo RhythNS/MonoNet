@@ -45,7 +45,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
+    <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
+    <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
     <Compile Include="GameSystem\GameSystemManager.cs" />
+    <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
@@ -57,10 +60,11 @@
     <Compile Include="Screen\ScreenManager.cs" />
     <Compile Include="ECS\Actor\Actor.cs" />
     <Compile Include="ECS\Actor\Component\Component.cs" />
-    <Compile Include="ECS\Actor\Coroutine.cs" />
+    <Compile Include="ECS\Actor\Coroutine\Coroutine.cs" />
     <Compile Include="ECS\Actor\Component\IDrawable.cs" />
     <Compile Include="ECS\Actor\Component\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />
+    <Compile Include="Testing\Infrastructure\CoroutineTest.cs" />
     <Compile Include="Testing\Infrastructure\InfraTestGame.cs" />
     <Compile Include="Testing\Infrastructure\InputTesterComponent.cs" />
     <Compile Include="Util\Log.cs" />
@@ -82,6 +86,7 @@
     <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

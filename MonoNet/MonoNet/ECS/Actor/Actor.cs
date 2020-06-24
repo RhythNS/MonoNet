@@ -172,6 +172,15 @@ namespace MonoNet.ECS
         }
 
         /// <summary>
+        /// Stops all coroutines.
+        /// </summary>
+        public void StopAllCoroutines()
+        {
+            for (int i = 0; i < coroutines.Count; i++)
+                coroutines[i].RequestExit();
+        }
+
+        /// <summary>
         /// Calls Draw on each component which implements IDrawable.
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)

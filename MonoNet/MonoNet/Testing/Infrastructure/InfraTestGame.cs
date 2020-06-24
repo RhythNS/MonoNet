@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.GameSystems;
+using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
 
@@ -25,14 +26,15 @@ namespace MonoNet.Testing.ECS
         protected override void Initialize()
         {
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
-            
+
             manager = new GameSystemManager();
             manager.Add(new Time(), new Input());
 
             stage = new Stage(5, new Pool<Actor>(50, 10));
 
-            // Input tester
+            // various testing components
             stage.CreateActor(0).AddComponent<InputTesterComponent>();
+            stage.CreateActor(0).AddComponent<CoroutineTest>();
 
             base.Initialize();
         }
@@ -42,7 +44,7 @@ namespace MonoNet.Testing.ECS
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
         }
-        
+
         protected override void Update(GameTime gameTime)
         {
             base.Update(gameTime);

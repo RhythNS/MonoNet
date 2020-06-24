@@ -7,7 +7,7 @@ namespace MonoNet.ECS
     {
         public Actor Actor { get; private set; }
 
-        public virtual void Initialize(Actor actor)
+        public void Initialize(Actor actor)
         {
             Actor = actor;
             OnInitialize();
