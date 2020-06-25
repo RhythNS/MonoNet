@@ -48,6 +48,7 @@
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
     <Compile Include="GameSystem\GameSystemManager.cs" />
+    <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
@@ -61,12 +62,16 @@
     <Compile Include="ECS\Actor\Actor.cs" />
     <Compile Include="ECS\Actor\Component\Component.cs" />
     <Compile Include="ECS\Actor\Coroutine\Coroutine.cs" />
-    <Compile Include="ECS\Actor\Component\IDrawable.cs" />
-    <Compile Include="ECS\Actor\Component\IUpdateable.cs" />
+    <Compile Include="Testing\Infrastructure\AnimatedTextureRegionComponent.cs" />
+    <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
+    <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
+    <Compile Include="Util\Interfaces\IDrawable.cs" />
+    <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />
     <Compile Include="Testing\Infrastructure\CoroutineTest.cs" />
     <Compile Include="Testing\Infrastructure\InfraTestGame.cs" />
     <Compile Include="Testing\Infrastructure\InputTesterComponent.cs" />
+    <Compile Include="Util\Datatypes\Fast2DArray.cs" />
     <Compile Include="Util\Log.cs" />
     <Compile Include="Util\Pools\IPoolable.cs" />
     <Compile Include="Util\Pools\Pool.cs" />
@@ -79,6 +84,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Test\spritesheet.png" />
+    <Content Include="Content\Test\testingLayers.png" />
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>

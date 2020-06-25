@@ -2,6 +2,9 @@
 
 namespace MonoNet.ECS
 {
+    /// <summary>
+    /// Yields the coroutine for a specified amount of seconds.
+    /// </summary>
     public class WaitForSeconds : YieldInstruction
     {
         private readonly float seconds;

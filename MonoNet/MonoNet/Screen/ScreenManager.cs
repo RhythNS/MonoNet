@@ -2,10 +2,17 @@
 
 namespace MonoNet.Screen
 {
+    /// <summary>
+    /// Manages gamestates via IScreens.
+    /// </summary>
     public class ScreenManager
     {
         private IScreen currentScreen;
 
+        /// <summary>
+        /// Creates a new ScreenManager with an currently selected screen.
+        /// </summary>
+        /// <param name="currentScreen"></param>
         public ScreenManager(IScreen currentScreen)
         {
             this.currentScreen = currentScreen;

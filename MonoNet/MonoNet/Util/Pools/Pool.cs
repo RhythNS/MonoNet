@@ -2,6 +2,11 @@
 
 namespace MonoNet.Util.Pools
 {
+    /// <summary>
+    /// A pool holds references to created objects that can be reused. When an object needs is no
+    /// longer needed than the element needs to be freed onto this list via the Free() method.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class Pool<T> where T : IPoolable, new()
     {
         private LinkedList<T> availableElements;
@@ -20,6 +25,7 @@ namespace MonoNet.Util.Pools
             availableElements = new LinkedList<T>();
             this.maxCapacity = maxCapacity;
 
+            // Add the starting amount to the available elements
             for (int i = 0; i < startingAmount; i++)
                 availableElements.AddFirst(new T());
         }

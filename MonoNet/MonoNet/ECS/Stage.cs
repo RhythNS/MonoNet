@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoNet.Interfaces;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
 using System;
@@ -8,9 +9,13 @@ namespace MonoNet.ECS
 {
     public delegate void ComponentAdded(Component addedComponent);
 
+    /// <summary>
+    /// A stage holds and manages actors. The world in an entity component system.
+    /// </summary>
     public class Stage : IUpdateable, IDrawable, IDisposable
     {
         public event ComponentAdded ComponentAdded;
+        public int Layers { get; private set; }
 
         private LinkedList<Actor> actors;
         private LinkedListNode<Actor>[] layerNodes;
@@ -27,6 +32,8 @@ namespace MonoNet.ECS
         /// <param name="actorPool">The pool of actors the stage draws from when creating actors.</param>
         public Stage(int layers, Pool<Actor> actorPool)
         {
+            Layers = layers;
+
             actors = new LinkedList<Actor>();
             toAddActors = new List<Actor>();
             toDeleteActors = new List<Actor>();
@@ -50,6 +57,14 @@ namespace MonoNet.ECS
         /// <returns>The created actor.</returns>
         public Actor CreateActor(int layer)
         {
+            // Check if the layer is correct
+            if (layer < 0 || layer >= Layers)
+            {
+                Log.Warn("Actor has wrong layer assigned. Setting it to 0! (" + layer + "/" + layer + ")");
+                layer = 0;
+            }
+
+            // Get the Actor from the Pool, initialize and add him to the toAdd list
             Actor actor = actorPool.Get();
             actor.Initialize(this, layer);
             toAddActors.Add(actor);
@@ -112,6 +127,7 @@ namespace MonoNet.ECS
                     {
                         Log.Warn("Could not find actor to delete!");
                     }
+
                 } // end iteration through to delete actors.
 
                 // Lastly clear the list

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.GameSystems;
+using MonoNet.Interfaces;
 using MonoNet.Util;
 
 namespace MonoNet.Testing

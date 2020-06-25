@@ -2,6 +2,9 @@
 
 namespace MonoNet.Screen
 {
+    /// <summary>
+    /// Represents a gamestate. Used for the ScreenManager.
+    /// </summary>
     public interface IScreen
     {
         void Initialize();

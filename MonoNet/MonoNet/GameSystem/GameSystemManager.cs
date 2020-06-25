@@ -3,6 +3,9 @@ using System.Collections.Generic;
 
 namespace MonoNet.GameSystems
 {
+    /// <summary>
+    /// Manages and updates GameSystems.
+    /// </summary>
     public class GameSystemManager
     {
         private static GameSystemManager instance;

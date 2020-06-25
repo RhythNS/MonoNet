@@ -13,7 +13,7 @@ namespace MonoNet.Util
         }
 
         private Level infoLevel, warnLevel, errorLevel;
-        
+
         public Log(Level infoLevel, Level warnLevel, Level errorLevel)
         {
             instance = this;
@@ -29,10 +29,22 @@ namespace MonoNet.Util
 
         public static void SetWarnLevel(Level level) => instance.warnLevel = level;
 
+        /// <summary>
+        /// Used for non error messages.
+        /// </summary>
+        /// <param name="s">The string that should be printed.</param>
         public static void Info(string s) => Print(s, instance.infoLevel, ConsoleColor.Black);
 
+        /// <summary>
+        /// Used for critical errors.
+        /// </summary>
+        /// <param name="s">The string that should be printed.</param>
         public static void Error(string s) => Print(s, instance.errorLevel, ConsoleColor.Red);
 
+        /// <summary>
+        /// Used for recoverable errors.
+        /// </summary>
+        /// <param name="s">The string that should be printed.</param>
         public static void Warn(string s) => Print(s, instance.warnLevel, ConsoleColor.Cyan);
 
         private static void Print(string s, Level level, ConsoleColor foregroundColor)

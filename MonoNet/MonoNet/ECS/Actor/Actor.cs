@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Graphics;
+using MonoNet.Interfaces;
 using MonoNet.Util.Pools;
 using System;
 using System.Collections;
@@ -6,8 +7,14 @@ using System.Collections.Generic;
 
 namespace MonoNet.ECS
 {
+    /// <summary>
+    /// An actor is an entity in an entity component system.
+    /// </summary>
     public sealed class Actor : IDisposable, IUpdateable, IDrawable, IPoolable
     {
+        /// <summary>
+        /// Reference to the Stage where the actor is currently in
+        /// </summary>
         public Stage Stage { get; private set; }
         public int Layer { get; private set; }
 
@@ -43,7 +50,7 @@ namespace MonoNet.ECS
         /// Adds a component to the actor.
         /// </summary>
         /// <typeparam name="T">The type of the added component</typeparam>
-        public Component AddComponent<T>() where T : Component, new()
+        public T AddComponent<T>() where T : Component, new()
         {
             T component = new T();
             component.Initialize(this);
