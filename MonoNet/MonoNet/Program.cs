@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoNet.Testing.ECS;
+using System;
 
 namespace MonoNet
 {
@@ -14,7 +15,7 @@ namespace MonoNet
         [STAThread]
         static void Main()
         {
-            using (var game = new Game1())
+            using (var game = new InfraTestGame())
                 game.Run();
         }
     }
