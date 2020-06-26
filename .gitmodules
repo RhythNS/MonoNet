@@ -1,0 +1,3 @@
+[submodule "MonoNet/Libs/TiledSharp"]
+	path = MonoNet/Libs/TiledSharp
+	url = https://github.com/marshallward/TiledSharp
