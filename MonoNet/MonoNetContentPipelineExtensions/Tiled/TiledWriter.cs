@@ -5,11 +5,11 @@ using TiledSharp;
 namespace MonoNetContentPipelineExtensions.Tiled
 {
     [ContentTypeWriter]
-    public class TiledWriter : ContentTypeWriter<TmxMap>
+    public class TiledWriter : ContentTypeWriter<byte[]>
     {
         public override string GetRuntimeReader(TargetPlatform targetPlatform)
         {
-            return "MonoNetContentPipelineExtensions.Tiled.TiledReader";
+            return typeof(TiledReader).AssemblyQualifiedName;
         }
 
         public override string GetRuntimeType(TargetPlatform targetPlatform)
@@ -17,9 +17,10 @@ namespace MonoNetContentPipelineExtensions.Tiled
             return typeof(TmxMap).AssemblyQualifiedName;
         }
 
-        protected override void Write(ContentWriter output, TmxMap value)
+        protected override void Write(ContentWriter output, byte[] value)
         {
-            output.WriteObject(value);
+            output.Write(value.Length);
+            output.Write(value);
         }
     }
 }

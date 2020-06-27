@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Content;
+using System.Text;
+using System.Xml.Linq;
 using TiledSharp;
 
 namespace MonoNetContentPipelineExtensions.Tiled
@@ -7,7 +9,10 @@ namespace MonoNetContentPipelineExtensions.Tiled
     {
         protected override TmxMap Read(ContentReader input, TmxMap existingInstance)
         {
-            return input.ReadObject<TmxMap>();
+            int length = input.ReadInt32();
+            byte[] data = input.ReadBytes(length);
+            XDocument document = XDocument.Parse(Encoding.ASCII.GetString(data));
+            return new TmxMap(document);
         }
     }
 }

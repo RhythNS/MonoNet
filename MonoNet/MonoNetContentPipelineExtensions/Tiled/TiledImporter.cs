@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
 using System;
+using System.IO;
 using TiledSharp;
 
 namespace MonoNetContentPipelineExtensions
@@ -13,16 +14,18 @@ namespace MonoNetContentPipelineExtensions
     /// TODO: change the ContentImporter attribute to specify the correct file
     /// extension, display name, and default processor for this importer.
     /// </summary>
-    [ContentImporter(".tmx", DisplayName = "Tmx Importer", DefaultProcessor = "Tmx Processor")]
-    public class TiledImporter : ContentImporter<TmxMap>
+    [ContentImporter(".tmx", DisplayName = "TiledImporter", DefaultProcessor = "TiledProcessor")]
+    public class TiledImporter : ContentImporter<TiledMapData>
     {
-        public override TmxMap Import(string filename, ContentImporterContext context)
+        public override TiledMapData Import(string filename, ContentImporterContext context)
         {
             try
             {
                 context.Logger.LogMessage("Importing TMX file: {0}", filename);
 
-                return new TmxMap(filename);
+                string read = File.ReadAllText(filename);
+
+                return new TiledMapData(read);
             }
             catch (Exception ex)
             {
@@ -34,4 +37,3 @@ namespace MonoNetContentPipelineExtensions
     }
 
 }
-    

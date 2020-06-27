@@ -27,8 +27,11 @@ namespace MonoNet.Testing.Tiled
         {
             base.LoadContent();
 
+
             map = Content.Load<TmxMap>("Test/DatMapWithObjectLayer");
-            tileset = Content.Load<Texture2D>(map.Tilesets[0].Name);
+            string tileLocation = map.Tilesets[0].Image.Source;
+            tileLocation = tileLocation.Substring(0, tileLocation.Length - 4);
+            tileset = Content.Load<Texture2D>("Test/" + tileLocation);
 
             tileWidth = map.Tilesets[0].TileWidth;
             tileHeight = map.Tilesets[0].TileHeight;

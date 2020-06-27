@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework.Content.Pipeline;
-using TInput = TiledSharp.TmxMap;
-using TOutput = TiledSharp.TmxMap;
+using System.Text;
 
 namespace MonoNetContentPipelineExtensions
 {
@@ -15,12 +14,12 @@ namespace MonoNetContentPipelineExtensions
     /// TODO: change the ContentProcessor attribute to specify the correct
     /// display name for this processor.
     /// </summary>
-    [ContentProcessor(DisplayName = "Tmx Processor")]
-    public class TiledProcessor : ContentProcessor<TInput, TOutput>
+    [ContentProcessor(DisplayName = "TiledProcessor")]
+    public class TiledProcessor : ContentProcessor<TiledMapData, byte[]>
     {
-        public override TOutput Process(TInput input, ContentProcessorContext context)
+        public override byte[] Process(TiledMapData input, ContentProcessorContext context)
         {
-            return input;
+            return Encoding.ASCII.GetBytes(input.Data.Trim());
         }
     }
 }

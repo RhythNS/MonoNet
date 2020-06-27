@@ -43,7 +43,7 @@
 /processorParam:TextureFormat=Color
 /build:Test/testingLayers.png
 
-#begin Test/Tiles.axd.png
+#begin Test/Tiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -53,5 +53,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Test/Tiles.axd.png
+/build:Test/Tiles.png
 
