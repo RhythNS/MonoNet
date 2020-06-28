@@ -2,20 +2,20 @@
 using System;
 using System.IO;
 
-namespace MonoNetContentPipelineExtensions
+namespace MonoNetContentPipelineExtensions.Tiled
 {
-    [ContentImporter(".tmx", DisplayName = "TiledImporter", DefaultProcessor = "TiledProcessor")]
-    public class TiledImporter : ContentImporter<TiledMapData>
+    [ContentImporter(".tsx", DisplayName = "TsxImporter", DefaultProcessor = "TsxProcessor")]
+    public class TileSetImporter : ContentImporter<TiledMapData>
     {
         public override TiledMapData Import(string filename, ContentImporterContext context)
         {
             try
             {
-                context.Logger.LogMessage("Importing TMX file: {0}", filename);
+                context.Logger.LogMessage("Importing TSX file: {0}", filename);
 
                 string read = File.ReadAllText(filename);
 
-                return new TiledMapData(read, filename);
+                return new TiledMapData(read);
             }
             catch (Exception ex)
             {
@@ -23,7 +23,5 @@ namespace MonoNetContentPipelineExtensions
                 throw;
             }
         }
-
     }
-
 }

@@ -67,6 +67,8 @@
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
     <Compile Include="Testing\TestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestGame.cs" />
+    <Compile Include="Tiled\TiledBase.cs" />
+    <Compile Include="Tiled\TiledMapComponent.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />

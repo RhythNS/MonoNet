@@ -2,15 +2,15 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
-using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
-using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
 
 namespace MonoNet.Testing
 {
+    /// <summary>
+    /// Class used for extending a test so one does not have to deal with basic Game setup.
+    /// </summary>
     public abstract class TestGame : Game
     {
         protected GraphicsDeviceManager graphics;
@@ -57,8 +57,14 @@ namespace MonoNet.Testing
             AfterUpdate(gameTime);
         }
 
+        /// <summary>
+        /// Called before every system and stage is updated.
+        /// </summary>
         protected virtual void PreUdate(GameTime time) { }
 
+        /// <summary>
+        /// Called after every system and stage is updated.
+        /// </summary>
         protected virtual void AfterUpdate(GameTime time) { }
 
         protected override void Draw(GameTime gameTime)

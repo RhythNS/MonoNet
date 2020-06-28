@@ -55,3 +55,6 @@
 /processorParam:TextureFormat=Color
 /build:Test/Tiles.png
 
+#begin Test/tileset.tsx
+/copy:Test/tileset.tsx
+
