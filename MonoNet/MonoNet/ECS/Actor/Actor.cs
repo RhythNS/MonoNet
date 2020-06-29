@@ -162,7 +162,10 @@ namespace MonoNet.ECS
             if (component is IDrawable drawable)
                 drawables.Remove(drawable);
             if (component is IDisposable disposable)
+            {
+                disposable.Dispose();
                 disposables.Remove(disposable);
+            }
         }
 
         /// <summary>
