@@ -74,12 +74,9 @@ namespace MonoNet.ECS
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <param name="component">The returning component.</param>
         /// <returns>Wheter it successded.</returns>
-        public bool GetComponent<T>(out T component) where T : Component
-        {
-            for (int i = 0; i < components.Count; i++)
-            {
-                if (components[i].GetType() == typeof(T))
-                {
+        public bool TryGetComponent<T>(out T component) where T : Component {
+            for (int i = 0; i < components.Count; i++) {
+                if (components[i].GetType() == typeof(T)) {
                     component = (T)components[i];
                     return true;
                 }
@@ -90,12 +87,27 @@ namespace MonoNet.ECS
         }
 
         /// <summary>
+        /// Returns the first component of given Type
+        /// </summary>
+        /// <typeparam name="T">The type of component to look for.</typeparam>
+        /// <returns>The first component found. Null if none was found.</returns>
+        public T GetComponent<T>() where T : Component {
+            for (int i = 0; i < components.Count; i++) {
+                if (components[i].GetType() == typeof(T)) {
+                    return (T)components[i];
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Gets all components of the given type.
         /// </summary>
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <param name="allComponents">The returning components.</param>
         /// <returns>Wheter one component was found.</returns>
-        public bool GetAllComponents<T>(T[] allComponents) where T : Component
+        public bool GetAllComponents<T>(out T[] allComponents) where T : Component
         {
             List<T> returnList = new List<T>();
             for (int i = 0; i < components.Count; i++)
@@ -162,7 +174,10 @@ namespace MonoNet.ECS
             if (component is IDrawable drawable)
                 drawables.Remove(drawable);
             if (component is IDisposable disposable)
+            {
+                disposable.Dispose();
                 disposables.Remove(disposable);
+            }
         }
 
         /// <summary>

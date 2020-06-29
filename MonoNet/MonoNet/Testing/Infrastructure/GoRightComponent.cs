@@ -1,18 +1,18 @@
-﻿using MonoNet.ECS;
+﻿using Microsoft.Xna.Framework;
+using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
-using MonoNet.Interfaces;
 
 namespace MonoNet.Testing.Infrastructure
 {
-    class GoRightComponent : Component, IUpdateable
+    class GoRightComponent : Component, Interfaces.IUpdateable
     {
         private float speed, resetAt;
         private Transform2 transform;
 
         protected override void OnInitialize()
         {
-            Actor.GetComponent(out transform);
+            Actor.TryGetComponent(out transform);
         }
 
         public void Set(float speed, float clampAt)
@@ -23,9 +23,11 @@ namespace MonoNet.Testing.Infrastructure
 
         public void Update()
         {
-            transform.position.X = transform.position.X + (speed * Time.Delta);
-            if (transform.position.X > resetAt)
-                transform.position.X = 0;
+            Vector2 pos = transform.WorldPosition;
+            pos.X = transform.WorldPosition.X + (speed * Time.Delta);
+            if (pos.X > resetAt)
+                pos.X = 0;
+            transform.WorldPosition = pos;
         }
     }
 }
