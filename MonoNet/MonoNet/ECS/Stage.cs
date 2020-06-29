@@ -103,32 +103,11 @@ namespace MonoNet.ECS
                 // Go through all the actors that are supposed to be deleted.
                 for (int i = 0; i < toDeleteActors.Count; i++)
                 {
-                    // Get the layer and the current and next layerNode
-                    int layer = toDeleteActors[i].Layer;
-                    LinkedListNode<Actor> layerNode = layerNodes[layer];
-                    LinkedListNode<Actor> nextLayerNode = layerNodes[layer + 1 == layerNodes.Length ? 0 : layer + 1];
+                    RemoveActorFromList(toDeleteActors[i]);
 
-                    // Go through the actors after the layer node.
-                    LinkedListNode<Actor> currentNode = layerNode.Next;
-                    bool found = false;
-                    while (currentNode != nextLayerNode) // if the next layer node was reached break the loop
-                    {
-                        // If it was found then simply remove the actor.
-                        if (currentNode.Value == toDeleteActors[i])
-                        {
-                            found = true;
-                            actors.Remove(currentNode);
-                            break;
-                        }
-                    }
-
-                    // if it was not found print an error.
-                    if (found == false)
-                    {
-                        Log.Warn("Could not find actor to delete!");
-                    }
-
-                } // end iteration through to delete actors.
+                    toDeleteActors[i].Dispose();
+                    actorPool.Free(toDeleteActors[i]);
+                }
 
                 // Lastly clear the list
                 toDeleteActors.Clear();
@@ -142,6 +121,29 @@ namespace MonoNet.ECS
 
                 toAddActors.Clear();
             }
+        }
+
+        private void RemoveActorFromList(Actor toRemove)
+        {
+            // Get the layer and the current and next layerNode.
+            int layer = toRemove.Layer;
+            LinkedListNode<Actor> layerNode = layerNodes[layer];
+            LinkedListNode<Actor> nextLayerNode = layerNodes[layer + 1 == layerNodes.Length ? 0 : layer + 1];
+
+            // Go through the actors after the layer node.
+            LinkedListNode<Actor> currentNode = layerNode.Next;
+            while (currentNode != nextLayerNode) // if the next layer node was reached break the loop.
+            {
+                // If it was found then simply remove the actor.
+                if (currentNode.Value == toRemove)
+                {
+                    actors.Remove(currentNode);
+                    return;
+                }
+            }
+
+            // Actor was not found.
+            Log.Warn("Could not find actor to delete!");
         }
 
         /// <summary>

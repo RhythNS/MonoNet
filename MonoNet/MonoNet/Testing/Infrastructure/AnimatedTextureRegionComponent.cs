@@ -25,7 +25,7 @@ namespace MonoNet.Testing.Infrastructure
         {
             TextureRegion region = animation.GetKeyframe(animationDuration);
             Microsoft.Xna.Framework.Rectangle rec = new Microsoft.Xna.Framework.Rectangle
-                ((int)transform.position.X, (int)transform.position.Y, (int)(region.sourceRectangle.Width * transform.scale.X), (int)(region.sourceRectangle.Height * transform.scale.Y));
+                ((int)transform.WorldPosition.X, (int)transform.WorldPosition.Y, (int)(region.sourceRectangle.Width * transform.WorldScale.X), (int)(region.sourceRectangle.Height * transform.WorldScale.Y));
             region.Draw(spriteBatch, rec, color, 0, new Microsoft.Xna.Framework.Vector2(0, 0), SpriteEffects.None, 0);
         }
 
