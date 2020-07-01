@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
+using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
@@ -30,7 +31,7 @@ namespace MonoNet.Testing.ECS
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();
-            manager.Add(new Time(), new Input());
+            manager.Add(new Time(), new Input(), new Physic());
 
             stage = new Stage(5, new Pool<Actor>(50, 10));
 
@@ -72,7 +73,7 @@ namespace MonoNet.Testing.ECS
             Texture2D testingLayers = Content.Load<Texture2D>("Test/testingLayers");
             TextureRegion[] layerRegions = TextureRegion.CreateAllFromSheet(testingLayers, 20, 20);
 
-            for (int i = 0; i < layerRegions.Length; i++)
+            /*for (int i = 0; i < layerRegions.Length-4; i++)
             {
                 Actor layerActor = stage.CreateActor(i);
                 Transform2 layerTrans = layerActor.AddComponent<Transform2>();
@@ -80,6 +81,7 @@ namespace MonoNet.Testing.ECS
                 layerTrans.LocalScale = new Vector2(2f, 2f);
                 layerActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
                 layerActor.AddComponent<GoRightComponent>().Set(20 + i * 60, width);
+                layerActor.AddComponent<Rigidbody>();
 
                 Actor childActor = stage.CreateActor(i);
                 Transform2 childTrans = childActor.AddComponent<Transform2>();
@@ -87,6 +89,20 @@ namespace MonoNet.Testing.ECS
                 childTrans.Parent = layerTrans;
                 childTrans.LocalScale = new Vector2(0.5f, 0.5f);
                 childActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
+                childActor.AddComponent<Rigidbody>();
+            }*/
+
+       
+            for (int i = 0; i < 5; i++)
+            {
+                Actor physActor = stage.CreateActor(0);
+                Transform2 physTrans = physActor.AddComponent<Transform2>();
+                physTrans.WorldPosition = new Vector2(300, height * 0.2f * i);
+                physTrans.LocalScale = new Vector2(1f, 1f);
+                physActor.AddComponent<Rigidbody>().velocity = new Vector2(10 * i, 0);
+                physActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
+                physActor.GetComponent<Rigidbody>().height = layerRegions[0].sourceRectangle.Height;
+                physActor.GetComponent<Rigidbody>().width = layerRegions[0].sourceRectangle.Width;
             }
         }
 

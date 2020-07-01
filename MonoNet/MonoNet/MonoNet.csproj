@@ -48,6 +48,8 @@
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
     <Compile Include="GameSystem\GameSystemManager.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\Physic.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\Rigidbody.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="MonoNet.cs" />
