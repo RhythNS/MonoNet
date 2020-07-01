@@ -13,7 +13,7 @@ namespace MonoNet.Testing.Infrastructure
 
         protected override void OnInitialize()
         {
-            Actor.GetComponent(out transform);
+            Actor.TryGetComponent(out transform);
         }
 
         public void Draw(SpriteBatch spriteBatch)
