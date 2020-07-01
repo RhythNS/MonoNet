@@ -26,27 +26,23 @@ namespace MonoNet.Testing
 
         protected override void Initialize()
         {
-            base.Initialize();
-
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();
             manager.Add(new Time(), new Input());
 
             stage = new Stage(5, new Pool<Actor>(50, 10));
+
+            base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            base.LoadContent();
-
             spriteBatch = new SpriteBatch(GraphicsDevice);
         }
 
         protected override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
-
             PreUdate(gameTime);
 
             manager.Update(gameTime);
@@ -55,6 +51,8 @@ namespace MonoNet.Testing
             stage.Update();
 
             AfterUpdate(gameTime);
+
+            base.Update(gameTime);
         }
 
         /// <summary>
@@ -76,7 +74,7 @@ namespace MonoNet.Testing
             InSpriteBatchDraw(spriteBatch);
             spriteBatch.End();
 
-            base.Draw(gameTime);
+            //base.Draw(gameTime);
         }
 
         protected virtual void InSpriteBatchDraw(SpriteBatch batch) { }
