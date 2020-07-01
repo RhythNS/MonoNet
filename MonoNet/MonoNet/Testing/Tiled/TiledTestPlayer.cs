@@ -14,7 +14,7 @@ namespace MonoNet.Testing.Tiled
     public class TiledTestPlayerLoader
     {
         private Stage stage;
-        private TextureRegion textureRegion;
+        private readonly TextureRegion textureRegion;
 
         public TiledTestPlayerLoader(Stage stage, TextureRegion textureRegion)
         {
@@ -40,7 +40,7 @@ namespace MonoNet.Testing.Tiled
 
         protected override void OnInitialize()
         {
-            Actor.GetComponent(out transform);
+            transform = Actor.GetComponent<Transform2>();
         }
 
         public void Update()

@@ -12,7 +12,7 @@ namespace MonoNet.Testing.Tiled
 
         protected override void OnInitialize()
         {
-            Actor.GetComponent(out transform);
+            transform = Actor.GetComponent<Transform2>();
         }
 
         public void Update()

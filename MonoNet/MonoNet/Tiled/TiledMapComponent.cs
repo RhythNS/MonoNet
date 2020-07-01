@@ -42,7 +42,7 @@ namespace MonoNet.Tiled
             Map = map;
 
             // If the actor does not have a transform then print an error.
-            if (Actor.GetComponent(out transform) == false)
+            if (Actor.TryGetComponent(out transform) == false)
                 Log.Error("There is no transform on TiledMap!");
 
             TileWidth = map.TileWidth;
