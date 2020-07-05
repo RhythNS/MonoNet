@@ -18,6 +18,8 @@ namespace MonoNet.Testing
         protected GameSystemManager manager;
         protected Stage stage;
 
+        protected virtual int LayersForStage => 5;
+
         public TestGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -31,7 +33,7 @@ namespace MonoNet.Testing
             manager = new GameSystemManager();
             manager.Add(new Time(), new Input());
 
-            stage = new Stage(5, new Pool<Actor>(50, 10));
+            stage = new Stage(LayersForStage, new Pool<Actor>(50, 10));
 
             base.Initialize();
         }

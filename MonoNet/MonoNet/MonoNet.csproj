@@ -69,11 +69,14 @@
     <Compile Include="Testing\Tiled\TiledTestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
     <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
+    <Compile Include="Testing\World\WorldTest.cs" />
     <Compile Include="Tiled\StaticTile.cs" />
     <Compile Include="Tiled\Tile.cs" />
     <Compile Include="Tiled\TiledBase.cs" />
     <Compile Include="Tiled\TiledMapComponent.cs" />
     <Compile Include="Tiled\TiledLayer.cs" />
+    <Compile Include="Tiled\TiledMultiLayerComponent.cs" />
+    <Compile Include="Tiled\TiledSingleLayerComponent.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />

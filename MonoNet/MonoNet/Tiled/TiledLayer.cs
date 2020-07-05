@@ -6,6 +6,9 @@ using TiledSharp;
 
 namespace MonoNet.Tiled
 {
+    /// <summary>
+    /// Represents a single layer on a TiledMap.
+    /// </summary>
     public class TiledLayer
     {
         /// <summary>
@@ -62,8 +65,10 @@ namespace MonoNet.Tiled
 
                 Texture2D tilesetImage = tiledBase.GetTilesetImage(toFindTileset.Image.Source);
 
-                int column = gid % width;
-                int row = gid / width;
+                int columns = toFindTileset.Columns.Value;
+
+                int column = gid % columns;
+                int row = gid / columns;
 
                 float x = tile.X * tileWidth;
                 float y = tile.Y * tileHeight;
