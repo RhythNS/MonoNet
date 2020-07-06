@@ -85,8 +85,9 @@ namespace MonoNet.Tiled
         /// <param name="stage">The stage where the map should be created.</param>
         /// <param name="path">The path to the map inside the content folder.</param>
         /// <param name="growStage">If the stage should grow its layers to support each layer of the loaded map.</param>
+        /// <param name="useSharedPositionTransform">Wheter the transform should be a SharedPositionTransform or a normal one.</param>
         /// <returns>Each TiledMapComponent that is needed to display the map.</returns>
-        public TiledMapComponent[] AddMap(Stage stage, string path, bool growStage = false)
+        public TiledMapComponent[] AddMap(Stage stage, string path, bool growStage = false, bool useSharedPositionTransform = false)
         {
             TmxMap map = InnerLoadMap(path);
 
@@ -154,12 +155,21 @@ namespace MonoNet.Tiled
             {
                 if (layersToPlaceOn[lastIndex] != layersToPlaceOn[i])
                 {
-                    mapComponents.Add(InnerAddMapWithActor(map, stage, layersToPlaceOn[lastIndex], lastIndex, i - 1));
+                    mapComponents.Add(InnerAddMapWithActor(map, stage, layersToPlaceOn[lastIndex], useSharedPositionTransform, lastIndex, i - 1));
                     lastIndex = i;
                 }
             }
             // There now should still be one batch of maps that we should create.
-            mapComponents.Add(InnerAddMapWithActor(map, stage, layersToPlaceOn[lastIndex], lastIndex, layersToPlaceOn.Count - 1));
+            mapComponents.Add(InnerAddMapWithActor(map, stage, layersToPlaceOn[lastIndex], useSharedPositionTransform, lastIndex, layersToPlaceOn.Count - 1));
+
+            // If shared transforms are used then set their group.
+            if (useSharedPositionTransform == true)
+            {
+                SharedPositionTransform2[] sharedTrans = new SharedPositionTransform2[mapComponents.Count];
+                for (int i = 0; i < sharedTrans.Length; i++)
+                    sharedTrans[i] = mapComponents[i].Actor.GetComponent<SharedPositionTransform2>();
+                sharedTrans[0].SetGroup(sharedTrans);
+            }
 
             // Go through each map and set the connected maps which are all the maps we just created.
             for (int i = 0; i < mapComponents.Count; i++)
@@ -183,11 +193,14 @@ namespace MonoNet.Tiled
         /// <param name="from">First index of layer to be created.</param>
         /// <param name="to">Last index of layer to be created.</param>
         /// <returns>The new TiledMapComponent of the specified layers.</returns>
-        private TiledMapComponent InnerAddMapWithActor(TmxMap map, Stage stage, int actorLayer, int from, int to)
+        private TiledMapComponent InnerAddMapWithActor(TmxMap map, Stage stage, int actorLayer, bool useSharedTrans, int from, int to)
         {
-            // First create and actor on the specified layer and add a transform2 to it.
+            // First create and actor on the specified layer and add a transform to it.
             Actor actor = stage.CreateActor(actorLayer);
-            actor.AddComponent<Transform2>();
+            if (useSharedTrans == true)
+                actor.AddComponent<SharedPositionTransform2>();
+            else
+                actor.AddComponent<Transform2>();
 
             int count = to - from;
             if (count == 0) // If only one layer should be made
@@ -199,7 +212,7 @@ namespace MonoNet.Tiled
             else // If more than one layer should be made
             {
                 TiledMultiLayerComponent multiLayer = actor.AddComponent<TiledMultiLayerComponent>();
-                multiLayer.Set(map, this, from, count);
+                multiLayer.Set(map, this, from, count + 1);
                 return multiLayer;
             }
         }

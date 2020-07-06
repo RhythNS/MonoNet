@@ -44,6 +44,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECS\Actor\Component\Components\SharedPositionTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />

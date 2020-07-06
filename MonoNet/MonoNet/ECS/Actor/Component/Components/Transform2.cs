@@ -35,12 +35,12 @@ namespace MonoNet.ECS.Components
         /// <summary>
         /// Scale relative to this parents scale or acctual scale if this transform has no parents.
         /// </summary>
-        public Vector2 LocalScale { get; set; }
+        public virtual Vector2 LocalScale { get; set; }
 
         /// <summary>
         /// The acctual scale this transform has.
         /// </summary>
-        public Vector2 WorldScale
+        public virtual Vector2 WorldScale
         {
             get => parent == null ? LocalScale : LocalScale * parent.WorldScale;
             set
@@ -59,12 +59,12 @@ namespace MonoNet.ECS.Components
         /// <summary>
         /// The position relative to this parents location or acctual position if this transform has no parent.
         /// </summary>
-        public Vector2 LocalPosition { get; set; }
+        public virtual Vector2 LocalPosition { get; set; }
 
         /// <summary>
         /// The acctual position this transform has.
         /// </summary>
-        public Vector2 WorldPosition
+        public virtual Vector2 WorldPosition
         {
             get => parent == null ? LocalPosition : LocalPosition + parent.WorldPosition;
             set
