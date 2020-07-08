@@ -16,7 +16,7 @@ namespace MonoNet
         [STAThread]
         static void Main()
         {
-            using (var game = new TiledTestGame())
+            using (var game = new MonoNet())
                 game.Run();
         }
     }

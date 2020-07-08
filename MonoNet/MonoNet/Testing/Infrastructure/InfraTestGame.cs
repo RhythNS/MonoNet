@@ -8,6 +8,7 @@ using MonoNet.Graphics;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
+using Myra;
 
 namespace MonoNet.Testing.ECS
 {
@@ -88,6 +89,8 @@ namespace MonoNet.Testing.ECS
                 childTrans.LocalScale = new Vector2(0.5f, 0.5f);
                 childActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
             }
+
+            MyraEnvironment.Game = this;
         }
 
         protected override void Update(GameTime gameTime)

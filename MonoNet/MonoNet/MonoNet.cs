@@ -1,6 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using MonoNet.GameSystems;
+using MonoNet.Screen;
+using MonoNet.Testing.Infrastructure;
+using MonoNet.Testing.UI;
+using MonoNet.Util;
+using Myra;
 
 namespace MonoNet
 {
@@ -12,10 +18,19 @@ namespace MonoNet
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        private GameSystemManager manager;
+
+        private static IScreen currentScreen;
+
         public MonoNet()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+
+            // start in MainMenu
+            currentScreen = new MainMenu(this);
+
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -29,6 +44,13 @@ namespace MonoNet
             // TODO: Add your initialization logic here
 
             base.Initialize();
+
+            new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
+
+            manager = new GameSystemManager();
+            manager.Add(new Time(), new Input());
+
+            currentScreen.Initialize();
         }
 
         /// <summary>
@@ -41,6 +63,11 @@ namespace MonoNet
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+
+            // needs to be set for Myra
+            MyraEnvironment.Game = this;
+
+            currentScreen.LoadContent();
         }
 
         /// <summary>
@@ -50,6 +77,8 @@ namespace MonoNet
         protected override void UnloadContent()
         {
             // TODO: Unload any non ContentManager content here
+
+            currentScreen.UnloadContent();
         }
 
         /// <summary>
@@ -64,7 +93,11 @@ namespace MonoNet
 
             // TODO: Add your update logic here
 
+            currentScreen.Update(gameTime);
+
             base.Update(gameTime);
+
+            manager.Update(gameTime);
         }
 
         /// <summary>
@@ -76,6 +109,8 @@ namespace MonoNet
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+
+            currentScreen.Draw(gameTime);
 
             base.Draw(gameTime);
         }

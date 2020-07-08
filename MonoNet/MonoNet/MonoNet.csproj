@@ -15,6 +15,21 @@
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -74,6 +89,8 @@
     <Compile Include="Tiled\TiledBase.cs" />
     <Compile Include="Tiled\TiledMapComponent.cs" />
     <Compile Include="Tiled\TiledLayer.cs" />
+    <Compile Include="Testing\UI\MainMenu.cs" />
+    <Compile Include="Testing\UI\UITestScreen.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />
@@ -104,6 +121,24 @@
     </MonoGameContentReference>
     <None Include="app.config" />
     <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\Myra\src\Myra\Myra.MonoGame.csproj">
+      <Project>{72e3c1ae-4700-4c22-a26b-17ccd616f607}</Project>
+      <Name>Myra.MonoGame</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Libs\TiledSharp\TiledSharp\TiledSharp.csproj">
