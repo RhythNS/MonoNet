@@ -7,6 +7,7 @@ using MonoNet.Graphics;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Tiled;
 using System;
+using System.Collections.Generic;
 using TiledSharp;
 
 namespace MonoNet.Testing.Tiled
@@ -22,12 +23,12 @@ namespace MonoNet.Testing.Tiled
             this.textureRegion = textureRegion;
         }
 
-        public void OnObjectLoaded(TiledMapComponent onMap, TmxObject loadedObject)
+        public void OnObjectLoaded(List<TiledMapComponent> onMap, TmxObject loadedObject)
         {
             if (loadedObject.Type.Equals("player", StringComparison.CurrentCultureIgnoreCase))
             {
                 Actor playerActor = stage.CreateActor(1);
-                playerActor.AddComponent<Transform2>().WorldPosition = onMap.TiledToWorld(new Vector2((float)loadedObject.X, (float)loadedObject.Y));
+                playerActor.AddComponent<Transform2>().WorldPosition = onMap[0].TiledToWorld(new Vector2((float)loadedObject.X, (float)loadedObject.Y));
                 playerActor.AddComponent<TiledTestPlayer>();
                 playerActor.AddComponent<DrawTextureRegionComponent>().region = textureRegion;
             }

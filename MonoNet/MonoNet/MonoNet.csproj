@@ -59,6 +59,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECS\Actor\Component\Components\SharedPositionTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
@@ -84,11 +85,14 @@
     <Compile Include="Testing\Tiled\TiledTestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
     <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
+    <Compile Include="Testing\World\WorldTest.cs" />
     <Compile Include="Tiled\StaticTile.cs" />
     <Compile Include="Tiled\Tile.cs" />
     <Compile Include="Tiled\TiledBase.cs" />
     <Compile Include="Tiled\TiledMapComponent.cs" />
     <Compile Include="Tiled\TiledLayer.cs" />
+    <Compile Include="Tiled\TiledMultiLayerComponent.cs" />
+    <Compile Include="Tiled\TiledSingleLayerComponent.cs" />
     <Compile Include="Testing\UI\MainMenu.cs" />
     <Compile Include="Testing\UI\UITestScreen.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />

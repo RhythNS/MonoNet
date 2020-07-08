@@ -1,4 +1,5 @@
-﻿using MonoNet.Testing.ECS;
+﻿using MonoNet.Testing;
+using MonoNet.Testing.ECS;
 using MonoNet.Testing.Tiled;
 using System;
 

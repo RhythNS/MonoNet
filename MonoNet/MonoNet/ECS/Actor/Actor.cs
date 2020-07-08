@@ -74,9 +74,12 @@ namespace MonoNet.ECS
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <param name="component">The returning component.</param>
         /// <returns>Wheter it successded.</returns>
-        public bool TryGetComponent<T>(out T component) where T : Component {
-            for (int i = 0; i < components.Count; i++) {
-                if (components[i].GetType() == typeof(T)) {
+        public bool TryGetComponent<T>(out T component) where T : Component
+        {
+            for (int i = 0; i < components.Count; i++)
+            {
+                if (components[i] is T)
+                {
                     component = (T)components[i];
                     return true;
                 }
@@ -91,9 +94,12 @@ namespace MonoNet.ECS
         /// </summary>
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <returns>The first component found. Null if none was found.</returns>
-        public T GetComponent<T>() where T : Component {
-            for (int i = 0; i < components.Count; i++) {
-                if (components[i].GetType() == typeof(T)) {
+        public T GetComponent<T>() where T : Component
+        {
+            for (int i = 0; i < components.Count; i++)
+            {
+                if (components[i] is T)
+                {
                     return (T)components[i];
                 }
             }
@@ -112,7 +118,7 @@ namespace MonoNet.ECS
             List<T> returnList = new List<T>();
             for (int i = 0; i < components.Count; i++)
             {
-                if (components[i].GetType() == typeof(T))
+                if (components[i] is T)
                 {
                     returnList.Add((T)components[i]);
                 }
@@ -131,7 +137,7 @@ namespace MonoNet.ECS
         {
             for (int i = 0; i < components.Count; i++)
             {
-                if (components[i].GetType() == typeof(T))
+                if (components[i] is T)
                 {
                     InnerRemoveComponent(components[i]);
                     components.RemoveAt(i);
@@ -152,7 +158,7 @@ namespace MonoNet.ECS
             bool deletedOne = false;
             for (int i = components.Count - 1; i > -1; i--)
             {
-                if (components[i].GetType() == typeof(T))
+                if (components[i] is T)
                 {
                     InnerRemoveComponent(components[i]);
                     components.RemoveAt(i);

@@ -14,6 +14,8 @@ namespace MonoNet.ECS
     /// </summary>
     public class Stage : IUpdateable, IDrawable, IDisposable
     {
+        public static readonly int MAXIMUM_LAYERS = 32; // integer bit length so one can perform bit operations for the layers.
+
         public event ComponentAdded ComponentAdded;
         public int Layers { get; private set; }
 
@@ -32,6 +34,9 @@ namespace MonoNet.ECS
         /// <param name="actorPool">The pool of actors the stage draws from when creating actors.</param>
         public Stage(int layers, Pool<Actor> actorPool)
         {
+            if (Layers > MAXIMUM_LAYERS)
+                throw new ArgumentOutOfRangeException("layers", layers, "A maximum of " + MAXIMUM_LAYERS + " layers are allowed on a stage!");
+
             Layers = layers;
 
             actors = new LinkedList<Actor>();
@@ -51,6 +56,36 @@ namespace MonoNet.ECS
         }
 
         /// <summary>
+        /// Grows the stage to the specefied layerCount.
+        /// </summary>
+        /// <param name="newLayerCount">The new number of layers of this stage.</param>
+        public void GrowToLayers(int newLayerCount)
+        {
+            // Check argument and print error if something is wrong.
+            if (newLayerCount > MAXIMUM_LAYERS || newLayerCount < Layers)
+            {
+                Log.Warn("Stage tried to grow to an illegal amount of layers! Previously:" + Layers + ", Tried to grow to:" + newLayerCount);
+                return;
+            }
+
+            // Grow the layerNodeArray
+            LinkedListNode<Actor>[] newLayerNodes = new LinkedListNode<Actor>[newLayerCount];
+            Array.Copy(layerNodes, newLayerNodes, layerNodes.Length);
+
+            // Add the new layerNodeElements
+            for (int i = Layers; i < newLayerCount; i++)
+            {
+                Actor actor = new Actor();
+                actor.Initialize(this, i);
+                newLayerNodes[i] = actors.AddLast(actor);
+            }
+
+            // Lasty set all old references to the new ones.
+            Layers = newLayerCount;
+            layerNodes = newLayerNodes;
+        }
+
+        /// <summary>
         /// Creates an actor on this stage.
         /// </summary>
         /// <param name="layer">The layer that the actor is on.</param>
@@ -60,7 +95,7 @@ namespace MonoNet.ECS
             // Check if the layer is correct
             if (layer < 0 || layer >= Layers)
             {
-                Log.Warn("Actor has wrong layer assigned. Setting it to 0! (" + layer + "/" + layer + ")");
+                Log.Warn("Actor has wrong layer assigned. Setting it to 0! (" + layer + "/" + (Layers - 1) + ")");
                 layer = 0;
             }
 
