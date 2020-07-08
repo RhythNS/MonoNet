@@ -9,6 +9,7 @@ using MonoNet.Graphics;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
+using Myra;
 
 namespace MonoNet.Testing.ECS
 {
@@ -105,6 +106,8 @@ namespace MonoNet.Testing.ECS
                 physActor.GetComponent<Rigidbody>().width = layerRegions[0].sourceRectangle.Width;
                 physActor.GetComponent<Rigidbody>().isSquare = true;
             }
+
+            MyraEnvironment.Game = this;
         }
 
         protected override void Update(GameTime gameTime)
