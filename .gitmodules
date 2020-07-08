@@ -1,3 +1,6 @@
 [submodule "MonoNet/Libs/TiledSharp"]
 	path = MonoNet/Libs/TiledSharp
 	url = https://github.com/marshallward/TiledSharp
+[submodule "MonoNet/Libs/Myra"]
+	path = MonoNet/Libs/Myra
+	url = https://github.com/rds1983/Myra

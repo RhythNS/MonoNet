@@ -17,7 +17,7 @@ namespace MonoNet
         [STAThread]
         static void Main()
         {
-            using (var game = new WorldTest())
+            using (var game = new MonoNet())
                 game.Run();
         }
     }
