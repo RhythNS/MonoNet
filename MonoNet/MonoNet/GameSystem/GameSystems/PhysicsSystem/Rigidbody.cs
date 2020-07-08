@@ -23,10 +23,14 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public Vector2 velocity = Vector2.Zero;
         public int height;
         public int width;
+        public bool isStatic;
+        public bool grounded;
+        public bool isSquare = true;
 
         public void Update()
         {
-            velocity.Y += gConst*Time.Delta;
+            if (isStatic == false)
+                velocity.Y += gConst * Time.Delta;
         }
 
         public void Dispose()

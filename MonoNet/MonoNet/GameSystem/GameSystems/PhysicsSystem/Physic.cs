@@ -16,166 +16,265 @@ namespace MonoNet.GameSystems.PhysicsSystem
     {
         public static Physic Instance { get; private set; }
 
-        private List<Rigidbody> rigidbodies;
-        private List<Transform2> transforms;
-        private List<int> avoidChecks;
-  
+        private List<Rigidbody> rigidbodiesSquare;
+        private List<Rigidbody> rigidbodiesCircle;
+        private List<Transform2> transformsSquare;
+        private List<Transform2> transformsCicle;
+
         public Physic()
         {
             Instance = this;
-            rigidbodies = new List<Rigidbody>();
-            transforms = new List<Transform2>();
-            avoidChecks = new List<int>();
+            rigidbodiesSquare = new List<Rigidbody>();
+            rigidbodiesCircle = new List<Rigidbody>();
+            transformsSquare = new List<Transform2>();
+            transformsCicle = new List<Transform2>();
         }
 
         public void Register(Rigidbody rigidbody)
         {
-            if (rigidbodies.Contains(rigidbody))
+            if (rigidbodiesSquare.Contains(rigidbody) || rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbobies allready contains rigidbody");
-            } else
+            }
+            else
             {
-                rigidbodies.Add(rigidbody);
-                transforms.Add(rigidbodies[rigidbodies.Count - 1].Actor.GetComponent<Transform2>());
-            }         
+                if (rigidbody.isSquare)
+                {
+                    rigidbodiesSquare.Add(rigidbody);
+                    transformsSquare.Add(rigidbodiesSquare[rigidbodiesSquare.Count - 1].Actor.GetComponent<Transform2>());
+                } else
+                {
+                    rigidbodiesCircle.Add(rigidbody);
+                    transformsCicle.Add(rigidbodiesCircle[rigidbodiesCircle.Count - 1].Actor.GetComponent<Transform2>());
+                }
+            }
         }
 
         public void DeRegister(Rigidbody rigidbody)
         {
-            if (rigidbodies.Contains(rigidbody))
-            {
-                rigidbodies.Remove(rigidbody);
-            } else
+            if (!rigidbodiesSquare.Contains(rigidbody) || !rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbodies does not contain this rigidbody");
+            }
+            else
+            {
+                if (rigidbody.isSquare)
+                {
+                    rigidbodiesSquare.Remove(rigidbody);
+                } else
+                {
+                    rigidbodiesCircle.Remove(rigidbody);
+                }
             }
         }
 
         public override void Update(GameTime gameTime)
         {
-                for (int i = 0; i < rigidbodies.Count; i++)
-                {
-                    transforms[i].WorldPosition = UpdatePosition(transforms[i].WorldPosition, rigidbodies[i].velocity);
-                }
+            for (int i = 0; i < rigidbodiesSquare.Count; i++)
+            {
+                transformsSquare[i].WorldPosition = UpdatePosition(transformsSquare[i].WorldPosition, rigidbodiesSquare[i].velocity);
+            }
 
-                for (int i = 0; i < rigidbodies.Count; i++)
+            for (int movingIndex = 0; movingIndex < rigidbodiesSquare.Count; movingIndex++)
+            {
+                if (rigidbodiesSquare[movingIndex].isStatic)
+                    return;
+
+                for (int checkingIndex = movingIndex + 1; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
                 {
-                    for (int j = 0; j < rigidbodies.Count; j++)
+                    CollisionType collisionType = CollisionCheckSS(rigidbodiesSquare[movingIndex], rigidbodiesSquare[checkingIndex], transformsSquare[movingIndex], transformsSquare[checkingIndex]);
+
+                    switch (collisionType)
                     {
-                        if (i != j && !avoidChecks.Contains(10 * j + i))
-                        {
-                            int collisionType = CollisionCheck(rigidbodies[i].velocity, 
-                                rigidbodies[j].velocity, 
-                                transforms[i],
-                                transforms[j], 
-                                rigidbodies[i].height, 
-                                rigidbodies[j].height, 
-                                rigidbodies[i].width, 
-                                rigidbodies[j].width);
-
-                            switch (collisionType)
-                            {
-                                case 1:
-                                transforms[i].WorldPosition = new Vector2(transforms[i].WorldPosition.X , transforms[j].WorldPosition.Y - rigidbodies[j].height / 2 - rigidbodies[i].height / 2);
-                                rigidbodies[i].velocity = Vector2.Zero;
-                                rigidbodies[j].velocity = Vector2.Zero;
-                                avoidChecks.Add(10 * i + j);
-                                    break;
-                                case 2:
-                                transforms[i].WorldPosition = new Vector2(transforms[j].WorldPosition.X + rigidbodies[j].width / 2 + rigidbodies[i].width / 2, transforms[i].WorldPosition.Y);
-                                rigidbodies[i].velocity = Vector2.Zero;
-                                rigidbodies[j].velocity = Vector2.Zero;
-                                avoidChecks.Add(10 * i + j);
-                                    break;
-                                case 3:
-                                transforms[i].WorldPosition = new Vector2(transforms[i].WorldPosition.X, transforms[j].WorldPosition.Y + rigidbodies[j].height / 2 + rigidbodies[i].height / 2);
-                                rigidbodies[i].velocity = Vector2.Zero;
-                                rigidbodies[j].velocity = Vector2.Zero;
-                                avoidChecks.Add(10 * i + j);
-                                   break;
-                                case 4:
-                                transforms[i].WorldPosition = new Vector2(transforms[j].WorldPosition.X - rigidbodies[j].width / 2 - rigidbodies[i].width / 2, transforms[i].WorldPosition.Y);
-                                rigidbodies[i].velocity = Vector2.Zero;
-                                rigidbodies[j].velocity = Vector2.Zero;
-                                avoidChecks.Add(10 * i + j);
-                                   break;
-                            }
-                        }
+                        case CollisionType.None:
+                            rigidbodiesSquare[movingIndex].grounded = false;
+                            continue; // no collision happend
+                        case CollisionType.Above:
+                            // case CollisionType.Below:
+                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
+                            rigidbodiesSquare[movingIndex].velocity.Y = 0;
+                            rigidbodiesSquare[movingIndex].grounded = true;
+                            break;
+                        case CollisionType.Below:
+                            // case CollisionType.Right:
+                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
+                            rigidbodiesSquare[movingIndex].velocity.Y = 0;
+                            break;
+                        case CollisionType.Left:
+                            // case CollisionType.Above:
+                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
+                            rigidbodiesSquare[movingIndex].velocity.X = 0;
+                            break;
+                        case CollisionType.Right:
+                            // ase CollisionType.Left:
+                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
+                            rigidbodiesSquare[movingIndex].velocity.X = 0;
+                            break;
                     }
-                if (transforms[i].WorldPosition.Y + rigidbodies[i].height / 2 > 400)
-                {
-                    transforms[i].WorldPosition = new Vector2(transforms[i].WorldPosition.X, 400 - rigidbodies[i].height / 2);
-                    rigidbodies[i].velocity.Y = 0;
-                    rigidbodies[i].velocity.X *= 0.9f;
                 }
-                    rigidbodies[i].Actor.GetComponent<Transform2>().WorldPosition = transforms[i].WorldPosition;
-                    avoidChecks.Clear();
-                }     
+
+                if (transformsSquare[movingIndex].WorldPosition.Y + rigidbodiesSquare[movingIndex].height / 2 > 400)
+                {
+                    transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, 400 - rigidbodiesSquare[movingIndex].height / 2);
+                    rigidbodiesSquare[movingIndex].velocity.X *= 0.95f;
+                    rigidbodiesSquare[movingIndex].velocity.Y = 0;
+                }
+                rigidbodiesSquare[movingIndex].Actor.GetComponent<Transform2>().WorldPosition = transformsSquare[movingIndex].WorldPosition;
+            }
+
+            for (int movingIndex = 0; movingIndex < rigidbodiesCircle.Count; movingIndex++)
+            {
+                for (int chekingCircles = 0; chekingCircles < rigidbodiesCircle.Count; chekingCircles++)
+                {
+                    bool isCollidingCC = CollisionCheckCC(rigidbodiesCircle[movingIndex], rigidbodiesCircle[chekingCircles], transformsCicle[movingIndex], transformsCicle[chekingCircles]);
+                    //TODO Trigger
+                }
+
+                for (int checkingSquares = 0; checkingSquares < rigidbodiesSquare.Count; checkingSquares++)
+                {
+                    bool isCollidingCS = CollisionCheckCS(rigidbodiesCircle[movingIndex], rigidbodiesSquare[checkingSquares], transformsCicle[movingIndex], transformsSquare[checkingSquares]);
+                    //TODO Trigger
+                }
+            }
         }
 
         private Vector2 UpdatePosition(Vector2 position, Vector2 velocity)
         {
-            position += velocity *Time.Delta;
+            position += velocity * Time.Delta;
             return position;
+        }
+
+        private enum CollisionType
+        {
+            None = 0, Above = 1, Below = 2, Left = 3, Right = 4
         }
 
         /// <summary>
         /// Checks if objects collide and how
         /// </summary>
         /// <param name="velocity">moving object velocity </param>
-        /// <param name="movingObj"></param>
-        /// <param name="checkingObj"></param>
+        /// <param name="movingTrans"></param>
+        /// <param name="checkingTrans"></param>
         /// <returns>Returns type of collision</returns>
-        private int CollisionCheck(Vector2 movingVel, Vector2 checkingVel, Transform2 movingObj, Transform2 checkingObj, int heightI, int heightJ, int widthI, int widthJ)
+        private CollisionType CollisionCheckSS(Rigidbody movingBody, Rigidbody checkingBody, Transform2 movingTrans, Transform2 checkingTrans)
         {
-            int collisionType = 0; //0 => No collision; 1 => from aboth; 2 => from below; 3 => from left; 4 => from right 
- 
-            float movingBottom = (movingObj.WorldPosition.Y + heightI / 2);
-            float movingTop = (movingObj.WorldPosition.Y - heightI / 2);
-            float movingLeft = (movingObj.WorldPosition.X - widthI / 2);
-            float movingRight = (movingObj.WorldPosition.X + widthI / 2);
+            Vector2 movingVel = movingBody.velocity;
+            Vector2 checkingVel = checkingBody.velocity;
+            int movingHeight = movingBody.height;
+            int checkingHeight = checkingBody.height;
+            int movingWidth = movingBody.width;
+            int checkingWidth = checkingBody.width;
 
-            float checkingBottom = (checkingObj.WorldPosition.Y + heightJ / 2);
-            float checkingTop = (checkingObj.WorldPosition.Y - heightJ / 2);
-            float checkingLeft = (checkingObj.WorldPosition.X - widthJ / 2);
-            float checkingRight = (checkingObj.WorldPosition.X + widthJ / 2);
+            float movingBottom = (movingTrans.WorldPosition.Y + movingHeight / 2);
+            float movingTop = (movingTrans.WorldPosition.Y - movingHeight / 2);
+            float movingLeft = (movingTrans.WorldPosition.X - movingWidth / 2);
+            float movingRight = (movingTrans.WorldPosition.X + movingWidth / 2);
 
-            if (!((movingBottom > checkingTop && movingTop < checkingBottom) || (movingTop < checkingBottom && movingBottom > checkingTop)))
+            float checkingBottom = (checkingTrans.WorldPosition.Y + checkingHeight / 2);
+            float checkingTop = (checkingTrans.WorldPosition.Y - checkingHeight / 2);
+            float checkingLeft = (checkingTrans.WorldPosition.X - checkingWidth / 2);
+            float checkingRight = (checkingTrans.WorldPosition.X + checkingWidth / 2);
+
+            bool one = (movingBottom > checkingTop && movingTop < checkingBottom);
+            bool two = (movingTop < checkingBottom && movingBottom > checkingTop);
+            bool three = (movingRight > checkingLeft && movingLeft < checkingRight);
+            bool four = (movingLeft < checkingRight && movingRight > checkingLeft);
+
+            if (!one && !two)
             {
-                collisionType = 0;
+                return CollisionType.None;
             }
-            else if (!((movingRight > checkingLeft && movingLeft < checkingRight) || (movingLeft < checkingRight && movingRight > checkingLeft)))
+            else if (!three && !four)
             {
-                collisionType = 0;
+                return CollisionType.None;
+            }
+
+            return CollisionSide(checkingTrans.WorldPosition, movingTrans.WorldPosition, checkingBody.width, checkingBody.height);
+        }
+
+        /// <summary>
+        /// Checks if two circles collide with eachother
+        /// </summary>
+        /// <param name="circle1Rb">circle 1 rigidbody</param>
+        /// <param name="circle2Rb">circle 2 rigidbody </param>
+        /// <param name="circle1Trans">circle 1 transform </param>
+        /// <param name="circle2Trans">circle 2 transform </param>
+        /// <returns></returns>
+        private bool CollisionCheckCC(Rigidbody circle1Rb, Rigidbody circle2Rb, Transform2 circle1Trans, Transform2 circle2Trans)
+        {
+            float distance = Vector2.Distance(circle2Trans.WorldPosition, circle1Trans.WorldPosition);
+
+            if (distance < (circle1Rb.width + circle2Rb.width) / 2)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Checks if a circle collides with a square
+        /// </summary>
+        /// <param name="circleRb">circle rigidbody </param>
+        /// <param name="squareRb">square rigidbody </param>
+        /// <param name="circleTrans">circle transform </param>
+        /// <param name="squareTrans">square transform </param>
+        /// <returns>collision(ture) no collision(false) </returns>
+        private bool CollisionCheckCS(Rigidbody circleRb, Rigidbody squareRb, Transform2 circleTrans, Transform2 squareTrans)
+        {
+            float distance = Vector2.Distance(squareTrans.WorldPosition, circleTrans.WorldPosition);
+            CollisionType cType = CollisionSide(squareTrans.WorldPosition, circleTrans.WorldPosition, squareRb.width, squareRb.height);
+            
+            switch (cType)
+            {
+                case CollisionType.Above:
+                    return distance < (circleRb.width + squareRb.height) / 2;
+
+                case CollisionType.Below:
+                    return distance < (circleRb.width + squareRb.height) / 2;
+                    
+                case CollisionType.Left:
+                    return distance < (circleRb.width + squareRb.width) / 2;
+      
+                case CollisionType.Right:
+                    return distance < (circleRb.width + squareRb.width) / 2;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// returns the side of the collision
+        /// </summary>
+        /// <param name="position1">position of checking object </param>
+        /// <param name="position2">position of moving object </param>
+        /// <param name="width">width of checking object</param>
+        /// <param name="height">height of checking object</param>
+        /// <returns>returns the side of the collision</returns>
+        private CollisionType CollisionSide(Vector2 position1, Vector2 position2, float width, float height)
+        {
+            Vector2 vector = position1 - position2;
+
+            if (vector.X * vector.X * width > vector.Y * vector.Y * height)
+            {
+                if (vector.X > 0)
+                {
+                    return CollisionType.Left;
+                }
+                else
+                {
+                    return CollisionType.Right;
+                }
+            }
+            else if (vector.Y > 0)
+            {
+                return CollisionType.Above;
             }
             else
             {
-                Vector2 vector;
-                vector = movingVel - checkingVel;
-
-                if ((vector.X*vector.X) > (vector.Y*vector.Y))
-                {
-                    if (vector.X > 0)
-                    {
-                        collisionType = 4; //Left
-                    } else
-                    {
-                        collisionType = 2; //Right
-                    }
-                } else
-                {
-                    if (vector.Y > 0)
-                    {
-                        collisionType = 3; //Top
-                    } else
-                    {
-                        collisionType = 1; //Bottom
-                    }
-                }
-
-
+                return CollisionType.Below;
             }
-            return collisionType;
         }
     }
 }

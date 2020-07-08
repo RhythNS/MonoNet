@@ -99,10 +99,11 @@ namespace MonoNet.Testing.ECS
                 Transform2 physTrans = physActor.AddComponent<Transform2>();
                 physTrans.WorldPosition = new Vector2(300, height * 0.2f * i);
                 physTrans.LocalScale = new Vector2(1f, 1f);
-                physActor.AddComponent<Rigidbody>().velocity = new Vector2(10 * i, 0);
+                physActor.AddComponent<Rigidbody>().velocity = new Vector2(20 * i, 0);
                 physActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
                 physActor.GetComponent<Rigidbody>().height = layerRegions[0].sourceRectangle.Height;
                 physActor.GetComponent<Rigidbody>().width = layerRegions[0].sourceRectangle.Width;
+                physActor.GetComponent<Rigidbody>().isSquare = true;
             }
         }
 
