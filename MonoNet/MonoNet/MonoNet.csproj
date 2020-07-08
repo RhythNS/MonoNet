@@ -80,6 +80,15 @@
     <Compile Include="Testing\Infrastructure\AnimatedTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
+    <Compile Include="Testing\TestGame.cs" />
+    <Compile Include="Testing\Tiled\TiledTestGame.cs" />
+    <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
+    <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
+    <Compile Include="Tiled\StaticTile.cs" />
+    <Compile Include="Tiled\Tile.cs" />
+    <Compile Include="Tiled\TiledBase.cs" />
+    <Compile Include="Tiled\TiledMapComponent.cs" />
+    <Compile Include="Tiled\TiledLayer.cs" />
     <Compile Include="Testing\UI\MainMenu.cs" />
     <Compile Include="Testing\UI\UITestScreen.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
@@ -99,6 +108,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Test\spritesheet.png" />
@@ -106,7 +116,9 @@
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" />
+    <MonoGameContentReference Include="Content\Content.mgcb">
+      <SubType>Designer</SubType>
+    </MonoGameContentReference>
     <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
@@ -127,6 +139,16 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\TiledSharp\TiledSharp\TiledSharp.csproj">
+      <Project>{dea69b18-2787-43f0-b593-1160add8e9d1}</Project>
+      <Name>TiledSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoNetContentPipelineExtensions\MonoNetContentPipelineExtensions.csproj">
+      <Project>{a19079a3-ec52-4eb7-9f09-5e7b5a6c4bd6}</Project>
+      <Name>MonoNetContentPipelineExtensions</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />

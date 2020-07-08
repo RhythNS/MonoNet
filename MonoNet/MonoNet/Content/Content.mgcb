@@ -10,8 +10,14 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\MonoNetContentPipelineExtensions\bin\Debug\MonoNetContentPipelineExtensions.dll
 
 #---------------------------------- Content ---------------------------------#
+
+#begin Test/DatMapWithObjectLayer.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:Test/DatMapWithObjectLayer.tmx
 
 #begin Test/spritesheet.png
 /importer:TextureImporter
@@ -36,4 +42,19 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Test/testingLayers.png
+
+#begin Test/Tiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Test/Tiles.png
+
+#begin Test/tileset.tsx
+/copy:Test/tileset.tsx
 
