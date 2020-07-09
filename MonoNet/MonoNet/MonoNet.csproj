@@ -66,6 +66,7 @@
     <Compile Include="GameSystem\GameSystemManager.cs" />
     <Compile Include="GameSystem\GameSystems\PhysicsSystem\Physic.cs" />
     <Compile Include="GameSystem\GameSystems\PhysicsSystem\Rigidbody.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\TriggerableHelper.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="MonoNet.cs" />
@@ -83,6 +84,8 @@
     <Compile Include="Testing\Infrastructure\AnimatedTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
+    <Compile Include="Testing\Physics\PhysicTest.cs" />
+    <Compile Include="Testing\Physics\TriggerTest.cs" />
     <Compile Include="Testing\TestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
@@ -129,12 +132,6 @@
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libs\Myra\src\Myra\Myra.MonoGame.csproj">
-      <Project>{72e3c1ae-4700-4c22-a26b-17ccd616f607}</Project>
-      <Name>Myra.MonoGame</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
@@ -147,6 +144,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Libs\Myra\src\Myra\Myra.MonoGame.csproj">
+      <Project>{72e3c1ae-4700-4c22-a26b-17ccd616f607}</Project>
+      <Name>Myra.MonoGame</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libs\TiledSharp\TiledSharp\TiledSharp.csproj">
       <Project>{dea69b18-2787-43f0-b593-1160add8e9d1}</Project>
       <Name>TiledSharp</Name>

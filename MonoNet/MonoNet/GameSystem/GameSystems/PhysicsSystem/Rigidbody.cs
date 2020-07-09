@@ -1,18 +1,19 @@
-﻿using MonoNet.ECS;
-using MonoNet.Interfaces;
+﻿using Microsoft.Xna.Framework;
+using MonoNet.ECS;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoNet.ECS.Components;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
+    public delegate void OnTriggerEnter(Rigidbody other);
+    public delegate void OnTriggerStay(Rigidbody other);
+    public delegate void OnTriggerExit(Rigidbody other);
+
     public class Rigidbody : Component, Interfaces.IUpdateable, IDisposable
     {
+        public event OnTriggerEnter OnTriggerEnter;
+        public event OnTriggerStay OnTriggerStay;
+        public event OnTriggerExit OnTriggerExit;
+
         protected override void OnInitialize()
         {
             Physic.Instance.Register(this);
@@ -21,11 +22,12 @@ namespace MonoNet.GameSystems.PhysicsSystem
         private static float gConst = 98.1f;
 
         public Vector2 velocity = Vector2.Zero;
-        public int height;
-        public int width;
+        public float height;
+        public float width;
         public bool isStatic;
         public bool grounded;
         public bool isSquare = true;
+        public bool isTrigger = false;
 
         public void Update()
         {
@@ -38,6 +40,11 @@ namespace MonoNet.GameSystems.PhysicsSystem
             Physic.Instance.DeRegister(this);
         }
 
+        public void FireEventEnter(Rigidbody other) => OnTriggerEnter?.Invoke(other);
+
+        public void FireEventStay(Rigidbody other) => OnTriggerStay?.Invoke(other);
+
+        public void FireEventExit(Rigidbody other) => OnTriggerExit?.Invoke(other);
 
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.GameSystems;
+using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
 
@@ -31,7 +32,7 @@ namespace MonoNet.Testing
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();
-            manager.Add(new Time(), new Input());
+            manager.Add(new Time(), new Input(), new Physic());
 
             stage = new Stage(LayersForStage, new Pool<Actor>(50, 10));
 
