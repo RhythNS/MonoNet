@@ -69,6 +69,8 @@ namespace MonoNet.Testing
 
         protected override void Draw(GameTime gameTime)
         {
+            PreDraw();
+
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             spriteBatch.Begin();
@@ -80,6 +82,8 @@ namespace MonoNet.Testing
         }
 
         protected virtual void InSpriteBatchDraw(SpriteBatch batch) { }
+
+        protected virtual void PreDraw() { }
 
     }
 }

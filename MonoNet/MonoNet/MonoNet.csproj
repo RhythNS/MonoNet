@@ -65,6 +65,7 @@
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
     <Compile Include="GameSystem\GameSystemManager.cs" />
     <Compile Include="Graphics\Animation.cs" />
+    <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="ECS\Actor\Component\Component.cs" />
     <Compile Include="ECS\Actor\Coroutine\Coroutine.cs" />
     <Compile Include="Testing\Infrastructure\AnimatedTextureRegionComponent.cs" />
+    <Compile Include="Testing\Infrastructure\CameraTestComponent.cs" />
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
     <Compile Include="Testing\TestGame.cs" />
