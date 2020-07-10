@@ -21,6 +21,8 @@ namespace MonoNet.Testing.ECS
         private GameSystemManager manager;
         private Stage stage;
 
+        private Camera camera;
+
         public InfraTestGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -39,6 +41,8 @@ namespace MonoNet.Testing.ECS
             // various testing components
             stage.CreateActor(0).AddComponent<InputTesterComponent>();
             stage.CreateActor(0).AddComponent<CoroutineTest>();
+
+            camera = new Camera(GraphicsDevice.Viewport);
 
             base.Initialize();
         }
@@ -75,6 +79,8 @@ namespace MonoNet.Testing.ECS
             TextureRegion[] layerRegions = TextureRegion.CreateAllFromSheet(testingLayers, 20, 20);
             
             MyraEnvironment.Game = this;
+
+            stage.CreateActor(0).AddComponent<CameraTestComponent>().camera = camera;
         }
 
         protected override void Update(GameTime gameTime)
@@ -93,7 +99,7 @@ namespace MonoNet.Testing.ECS
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(transformMatrix: camera.GetViewMatrix());
             stage.Draw(spriteBatch);
             spriteBatch.End();
 
