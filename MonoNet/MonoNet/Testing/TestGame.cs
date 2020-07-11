@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
+using MonoNet.Graphics;
+using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
 
@@ -18,8 +20,10 @@ namespace MonoNet.Testing
         protected SpriteBatch spriteBatch;
         protected GameSystemManager manager;
         protected Stage stage;
+        protected Camera camera;
 
         protected virtual int LayersForStage => 5;
+        protected virtual bool CreateCameraTestComponent => true;
 
         public TestGame()
         {
@@ -36,6 +40,11 @@ namespace MonoNet.Testing
 
             stage = new Stage(LayersForStage, new Pool<Actor>(50, 10));
 
+            camera = new Camera(GraphicsDevice.Viewport);
+
+            if (CreateCameraTestComponent == true)
+                stage.CreateActor(0).AddComponent<CameraTestComponent>().camera = camera;
+            
             base.Initialize();
         }
 
@@ -74,7 +83,7 @@ namespace MonoNet.Testing
 
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(transformMatrix: camera.GetViewMatrix());
             stage.Draw(spriteBatch);
             InSpriteBatchDraw(spriteBatch);
             spriteBatch.End();

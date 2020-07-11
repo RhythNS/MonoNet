@@ -59,6 +59,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECS\Actor\Component\Components\ScaledTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\SharedPositionTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
@@ -92,6 +93,8 @@
     <Compile Include="Testing\Tiled\TiledTestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
     <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
+    <Compile Include="Testing\World\HitboxLoader.cs" />
+    <Compile Include="Testing\World\PlayerSpawn.cs" />
     <Compile Include="Testing\World\WorldTest.cs" />
     <Compile Include="Tiled\StaticTile.cs" />
     <Compile Include="Tiled\Tile.cs" />
@@ -102,6 +105,7 @@
     <Compile Include="Tiled\TiledSingleLayerComponent.cs" />
     <Compile Include="Testing\UI\MainMenu.cs" />
     <Compile Include="Testing\UI\UITestScreen.cs" />
+    <Compile Include="Util\Datatypes\Box2D.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />
@@ -110,6 +114,10 @@
     <Compile Include="Testing\Infrastructure\InputTesterComponent.cs" />
     <Compile Include="Util\Datatypes\Fast2DArray.cs" />
     <Compile Include="Util\Log.cs" />
+    <Compile Include="Util\Overlap\IOverlapable.cs" />
+    <Compile Include="Util\Overlap\IOverlapManager.cs" />
+    <Compile Include="Util\Overlap\Overlapable.cs" />
+    <Compile Include="Util\Overlap\RecursiveOverlapManager.cs" />
     <Compile Include="Util\Pools\IPoolable.cs" />
     <Compile Include="Util\Pools\Pool.cs" />
   </ItemGroup>

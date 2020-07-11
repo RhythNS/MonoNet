@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using MonoNet.ECS.Components;
 using MonoNet.Graphics;
 using System.Collections.Generic;
 using TiledSharp;
@@ -24,9 +25,10 @@ namespace MonoNet.Tiled
         /// <param name="map">Instance of the map from where this layer is from.</param>
         /// <param name="layerIndex">The index of the layer that should be loaded from the map.</param>
         /// <param name="enabled">If it should be rendered after initialization.</param>
-        public TiledLayer(TiledBase tiledBase, TmxMap map, int layerIndex, bool enabled = true)
+        public TiledLayer(TiledBase tiledBase, TmxMap map, TiledMapComponent mapComponent, int layerIndex, bool enabled = true)
         {
             TmxLayer layer = map.TileLayers[layerIndex];
+            Transform2 transform = mapComponent.Actor.GetComponent<Transform2>();
 
             this.enabled = enabled;
             tiles = new List<Tile>();
@@ -38,8 +40,8 @@ namespace MonoNet.Tiled
             // Go through all tiles
             for (int i = 0; i < layer.Tiles.Count; i++)
             {
-                TmxLayerTile tile = layer.Tiles[i];
-                int gid = tile.Gid;
+                TmxLayerTile layerTile = layer.Tiles[i];
+                int gid = layerTile.Gid;
 
                 // Empty tile, do nothing
                 if (gid == 0)
@@ -60,8 +62,10 @@ namespace MonoNet.Tiled
                     }
                 }
 
+
                 // set gid to a positive value again
                 gid += toFindTileset.TileCount ?? 0;
+
 
                 Texture2D tilesetImage = tiledBase.GetTilesetImage(toFindTileset.Image.Source);
 
@@ -70,9 +74,20 @@ namespace MonoNet.Tiled
                 int column = gid % columns;
                 int row = gid / columns;
 
-                float x = tile.X * tileWidth;
-                float y = tile.Y * tileHeight;
+                float x = layerTile.X * tileWidth;
+                float y = layerTile.Y * tileHeight;
 
+                if (toFindTileset.Tiles.TryGetValue(gid, out TmxTilesetTile tilesetTile) == true)
+                {
+                    // Get all hitboxes
+                    for (int groupIndex = 0; groupIndex < tilesetTile.ObjectGroups.Count; groupIndex++)
+                    {
+                        for (int objectIndex = 0; objectIndex < tilesetTile.ObjectGroups[groupIndex].Objects.Count; objectIndex++)
+                        {
+                            tiledBase.NotifyHitboxLoaded(mapComponent, transform, tilesetTile.ObjectGroups[groupIndex].Objects[objectIndex], x, y);
+                        }
+                    }
+                }
                 // TODO: Add AnimationTile
                 tiles.Add(new StaticTile(x, y, new TextureRegion(tilesetImage, column * tileWidth, row * tileHeight, tileWidth, tileHeight)));
             }

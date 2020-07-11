@@ -23,7 +23,7 @@ namespace MonoNet.Tiled
             Layers = new TiledLayer[amountToLoad];
             int index = -1;
             for (int i = fromLayer; i < fromLayer + amountToLoad; i++)
-                Layers[++index] = new TiledLayer(tiledBase, Map, i);
+                Layers[++index] = new TiledLayer(tiledBase, Map, this, i);
         }
 
         /// <summary>
@@ -37,7 +37,7 @@ namespace MonoNet.Tiled
 
             Layers = new TiledLayer[map.TileLayers.Count];
             for (int i = 0; i < Layers.Length; i++)
-                Layers[i] = new TiledLayer(tiledBase, Map, i);
+                Layers[i] = new TiledLayer(tiledBase, Map, this, i);
         }
 
         public override void Draw(SpriteBatch spriteBatch)
