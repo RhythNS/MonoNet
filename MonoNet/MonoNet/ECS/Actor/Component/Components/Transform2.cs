@@ -19,13 +19,18 @@ namespace MonoNet.ECS.Components
                 if (parent == value)
                     return;
 
-                // If the old parent is not null then remove the reference to this transfrom
+                Vector2 oldPosition = WorldPosition;
+
+                // If the old parent is not null then remove the reference to this transfrom.
                 if (parent != null)
                     parent.children.Remove(this);
 
-                // If the new parent is not null then add it a reference to it
+                // If the new parent is not null then add it a reference to it.
                 if (value != null)
                     value.children.Add(this);
+
+                // Set the local position so the acctual position does not change.
+                WorldPosition = oldPosition;
 
                 // lastly assign the parent to the new value
                 parent = value;
