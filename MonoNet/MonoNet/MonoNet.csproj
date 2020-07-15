@@ -15,6 +15,21 @@
     <MonoGamePlatform>Windows</MonoGamePlatform>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <TargetFrameworkProfile />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
@@ -44,18 +59,26 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECS\Actor\Component\Components\SharedPositionTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
     <Compile Include="GameSystem\GameSystemManager.cs" />
     <Compile Include="GameSystem\GameSystems\PhysicsSystem\Physic.cs" />
     <Compile Include="GameSystem\GameSystems\PhysicsSystem\Rigidbody.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\TriggerableHelper.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
     <Compile Include="GameSystem\GameSystems\Time.cs" />
+    <Compile Include="PickUps\DoubleJump.cs" />
+    <Compile Include="PickUps\Equip.cs" />
+    <Compile Include="PickUps\Knife.cs" />
+    <Compile Include="PickUps\PickUp.cs" />
+    <Compile Include="PickUps\Pistol.cs" />
+    <Compile Include="PickUps\Weapon.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\IScreen.cs" />
@@ -67,6 +90,22 @@
     <Compile Include="Testing\Infrastructure\AnimatedTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
+    <Compile Include="Testing\Physics\PhysicTest.cs" />
+    <Compile Include="Testing\Physics\TriggerTest.cs" />
+    <Compile Include="Testing\TestGame.cs" />
+    <Compile Include="Testing\Tiled\TiledTestGame.cs" />
+    <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
+    <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
+    <Compile Include="Testing\World\WorldTest.cs" />
+    <Compile Include="Tiled\StaticTile.cs" />
+    <Compile Include="Tiled\Tile.cs" />
+    <Compile Include="Tiled\TiledBase.cs" />
+    <Compile Include="Tiled\TiledMapComponent.cs" />
+    <Compile Include="Tiled\TiledLayer.cs" />
+    <Compile Include="Tiled\TiledMultiLayerComponent.cs" />
+    <Compile Include="Tiled\TiledSingleLayerComponent.cs" />
+    <Compile Include="Testing\UI\MainMenu.cs" />
+    <Compile Include="Testing\UI\UITestScreen.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />
@@ -83,7 +122,9 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Test\spritesheet.png" />
@@ -91,11 +132,38 @@
     <Content Include="Icon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <MonoGameContentReference Include="Content\Content.mgcb" />
+    <MonoGameContentReference Include="Content\Content.mgcb">
+      <SubType>Designer</SubType>
+    </MonoGameContentReference>
     <None Include="app.config" />
     <None Include="app.manifest" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libs\Myra\src\Myra\Myra.MonoGame.csproj">
+      <Project>{72e3c1ae-4700-4c22-a26b-17ccd616f607}</Project>
+      <Name>Myra.MonoGame</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Libs\TiledSharp\TiledSharp\TiledSharp.csproj">
+      <Project>{dea69b18-2787-43f0-b593-1160add8e9d1}</Project>
+      <Name>TiledSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MonoNetContentPipelineExtensions\MonoNetContentPipelineExtensions.csproj">
+      <Project>{a19079a3-ec52-4eb7-9f09-5e7b5a6c4bd6}</Project>
+      <Name>MonoNetContentPipelineExtensions</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

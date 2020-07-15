@@ -10,10 +10,21 @@
 
 #-------------------------------- References --------------------------------#
 
+/reference:..\..\MonoNetContentPipelineExtensions\bin\Debug\MonoNetContentPipelineExtensions.dll
 
 #---------------------------------- Content ---------------------------------#
 
-#begin Test/Block2.png
+#begin Test/DatMapWithObjectLayer.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:Test/DatMapWithObjectLayer.tmx
+
+#begin Test/FinalWorld.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:Test/FinalWorld.tmx
+
+#begin Test/generic_platformer_tiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -23,7 +34,10 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Test/Block2.png
+/build:Test/generic_platformer_tiles.png
+
+#begin Test/plattformer.tsx
+/copy:Test/plattformer.tsx
 
 #begin Test/spritesheet.png
 /importer:TextureImporter
@@ -49,6 +63,11 @@
 /processorParam:TextureFormat=Color
 /build:Test/testingLayers.png
 
+#begin Test/testPlattform.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:Test/testPlattform.tmx
+
 #begin Test/Tiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -60,4 +79,10 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Test/Tiles.png
+
+#begin Test/tileset.tsx
+/copy:Test/tileset.tsx
+
+#begin Test/Unbenannt.tsx
+/copy:Test/Unbenannt.tsx
 

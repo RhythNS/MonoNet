@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoNet.ECS;
+﻿using Microsoft.Xna.Framework;
 using MonoNet.ECS.Components;
 using MonoNet.Util;
-
+using System.Collections.Generic;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
@@ -21,6 +14,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
         private List<Transform2> transformsSquare;
         private List<Transform2> transformsCicle;
 
+        private TriggerableHelper triggerableHelper;
+
         public Physic()
         {
             Instance = this;
@@ -28,6 +23,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             rigidbodiesCircle = new List<Rigidbody>();
             transformsSquare = new List<Transform2>();
             transformsCicle = new List<Transform2>();
+            triggerableHelper = new TriggerableHelper();
         }
 
         public void Register(Rigidbody rigidbody)
@@ -42,7 +38,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 {
                     rigidbodiesSquare.Add(rigidbody);
                     transformsSquare.Add(rigidbodiesSquare[rigidbodiesSquare.Count - 1].Actor.GetComponent<Transform2>());
-                } else
+                }
+                else
                 {
                     rigidbodiesCircle.Add(rigidbody);
                     transformsCicle.Add(rigidbodiesCircle[rigidbodiesCircle.Count - 1].Actor.GetComponent<Transform2>());
@@ -61,7 +58,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 if (rigidbody.isSquare)
                 {
                     rigidbodiesSquare.Remove(rigidbody);
-                } else
+                }
+                else
                 {
                     rigidbodiesCircle.Remove(rigidbody);
                 }
@@ -75,38 +73,58 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 transformsSquare[i].WorldPosition = UpdatePosition(transformsSquare[i].WorldPosition, rigidbodiesSquare[i].velocity);
             }
 
+            // Reset all Triggers in the TriggerHelper class
+            triggerableHelper.SetAllToNonTouching();
+
             for (int movingIndex = 0; movingIndex < rigidbodiesSquare.Count; movingIndex++)
             {
                 if (rigidbodiesSquare[movingIndex].isStatic)
-                    return;
+                    continue;
 
                 for (int checkingIndex = movingIndex + 1; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
                 {
                     CollisionType collisionType = CollisionCheckSS(rigidbodiesSquare[movingIndex], rigidbodiesSquare[checkingIndex], transformsSquare[movingIndex], transformsSquare[checkingIndex]);
 
+                    // Is one a trigger and the other not a trigger?
+                    if (collisionType != CollisionType.None &&
+                        ((rigidbodiesSquare[checkingIndex].isTrigger == true && rigidbodiesSquare[movingIndex].isTrigger == false) ||
+                        (rigidbodiesSquare[checkingIndex].isTrigger == false && rigidbodiesSquare[movingIndex].isTrigger == true)))
+                    {
+                        // If the Triggers were not touching each other in the prev Frame then try to add them and fire the event.
+                        if (triggerableHelper.Add(rigidbodiesSquare[checkingIndex], rigidbodiesSquare[movingIndex]) == true)
+                        {
+                            rigidbodiesSquare[checkingIndex].FireEventEnter(rigidbodiesSquare[movingIndex]);
+                            rigidbodiesSquare[movingIndex].FireEventEnter(rigidbodiesSquare[checkingIndex]);
+                        }
+                        else // Triggers touched each other in the prev Frame and are still touching.
+                        {
+                            rigidbodiesSquare[checkingIndex].FireEventStay(rigidbodiesSquare[movingIndex]);
+                            rigidbodiesSquare[movingIndex].FireEventStay(rigidbodiesSquare[checkingIndex]);
+                        }
+
+                        continue; // Continue the loop.
+                    }
+
+                    // Both are either triggers or non triggers. Continue with normal collision detection.
                     switch (collisionType)
                     {
                         case CollisionType.None:
                             rigidbodiesSquare[movingIndex].grounded = false;
-                            continue; // no collision happend
+                            continue;
                         case CollisionType.Above:
-                            // case CollisionType.Below:
                             transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
                             rigidbodiesSquare[movingIndex].velocity.Y = 0;
                             rigidbodiesSquare[movingIndex].grounded = true;
                             break;
                         case CollisionType.Below:
-                            // case CollisionType.Right:
                             transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
                             rigidbodiesSquare[movingIndex].velocity.Y = 0;
                             break;
                         case CollisionType.Left:
-                            // case CollisionType.Above:
                             transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
                             rigidbodiesSquare[movingIndex].velocity.X = 0;
                             break;
                         case CollisionType.Right:
-                            // ase CollisionType.Left:
                             transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
                             rigidbodiesSquare[movingIndex].velocity.X = 0;
                             break;
@@ -136,6 +154,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     //TODO Trigger
                 }
             }
+
+            // Check to see if some triggers that were touching are not touching each other any more. If so remove them.
+            triggerableHelper.RemoveAllNonTouching();
         }
 
         private Vector2 UpdatePosition(Vector2 position, Vector2 velocity)
@@ -160,10 +181,10 @@ namespace MonoNet.GameSystems.PhysicsSystem
         {
             Vector2 movingVel = movingBody.velocity;
             Vector2 checkingVel = checkingBody.velocity;
-            int movingHeight = movingBody.height;
-            int checkingHeight = checkingBody.height;
-            int movingWidth = movingBody.width;
-            int checkingWidth = checkingBody.width;
+            float movingHeight = movingBody.height;
+            float checkingHeight = checkingBody.height;
+            float movingWidth = movingBody.width;
+            float checkingWidth = checkingBody.width;
 
             float movingBottom = (movingTrans.WorldPosition.Y + movingHeight / 2);
             float movingTop = (movingTrans.WorldPosition.Y - movingHeight / 2);
@@ -175,6 +196,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             float checkingLeft = (checkingTrans.WorldPosition.X - checkingWidth / 2);
             float checkingRight = (checkingTrans.WorldPosition.X + checkingWidth / 2);
 
+            /*
             bool one = (movingBottom > checkingTop && movingTop < checkingBottom);
             bool two = (movingTop < checkingBottom && movingBottom > checkingTop);
             bool three = (movingRight > checkingLeft && movingLeft < checkingRight);
@@ -188,6 +210,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
             {
                 return CollisionType.None;
             }
+            */
+            if (movingBottom <= checkingTop || movingTop >= checkingBottom || movingRight <= checkingLeft || movingLeft >= checkingRight)
+                return CollisionType.None;
 
             return CollisionSide(checkingTrans.WorldPosition, movingTrans.WorldPosition, checkingBody.width, checkingBody.height);
         }
@@ -204,13 +229,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
         {
             float distance = Vector2.Distance(circle2Trans.WorldPosition, circle1Trans.WorldPosition);
 
-            if (distance < (circle1Rb.width + circle2Rb.width) / 2)
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
+            return distance < (circle1Rb.width + circle2Rb.width) / 2;
         }
 
         /// <summary>
@@ -225,7 +244,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
         {
             float distance = Vector2.Distance(squareTrans.WorldPosition, circleTrans.WorldPosition);
             CollisionType cType = CollisionSide(squareTrans.WorldPosition, circleTrans.WorldPosition, squareRb.width, squareRb.height);
-            
+
             switch (cType)
             {
                 case CollisionType.Above:
@@ -233,10 +252,10 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
                 case CollisionType.Below:
                     return distance < (circleRb.width + squareRb.height) / 2;
-                    
+
                 case CollisionType.Left:
                     return distance < (circleRb.width + squareRb.width) / 2;
-      
+
                 case CollisionType.Right:
                     return distance < (circleRb.width + squareRb.width) / 2;
                 default:
