@@ -1,4 +1,4 @@
-﻿using MonoNet.Testing;
+using MonoNet.Testing;
 using MonoNet.Testing.ECS;
 using MonoNet.Testing.Physics;
 using MonoNet.Testing.Tiled;
@@ -18,7 +18,7 @@ namespace MonoNet
         [STAThread]
         static void Main()
         {
-            using (var game = new PhysicTest())
+            using (var game = new WorldTest())
                 game.Run();
         }
     }

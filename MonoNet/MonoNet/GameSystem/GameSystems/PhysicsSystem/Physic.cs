@@ -81,8 +81,11 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 if (rigidbodiesSquare[movingIndex].isStatic)
                     continue;
 
-                for (int checkingIndex = movingIndex + 1; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
+                for (int checkingIndex = 0; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
                 {
+                    if (checkingIndex == movingIndex)
+                        continue;
+
                     CollisionType collisionType = CollisionCheckSS(rigidbodiesSquare[movingIndex], rigidbodiesSquare[checkingIndex], transformsSquare[movingIndex], transformsSquare[checkingIndex]);
 
                     // Is one a trigger and the other not a trigger?
@@ -130,13 +133,13 @@ namespace MonoNet.GameSystems.PhysicsSystem
                             break;
                     }
                 }
-
+                /*
                 if (transformsSquare[movingIndex].WorldPosition.Y + rigidbodiesSquare[movingIndex].height / 2 > 400)
                 {
                     transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, 400 - rigidbodiesSquare[movingIndex].height / 2);
                     rigidbodiesSquare[movingIndex].velocity.X *= 0.95f;
                     rigidbodiesSquare[movingIndex].velocity.Y = 0;
-                }
+                } */
                 rigidbodiesSquare[movingIndex].Actor.GetComponent<Transform2>().WorldPosition = transformsSquare[movingIndex].WorldPosition;
             }
 
@@ -258,6 +261,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
                 case CollisionType.Right:
                     return distance < (circleRb.width + squareRb.width) / 2;
+
                 default:
                     return false;
             }

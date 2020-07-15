@@ -18,7 +18,7 @@ namespace MonoNet.Tiled
         {
             Set(map, tiledBase);
 
-            Layer = new TiledLayer(tiledBase, map, layer);
+            Layer = new TiledLayer(tiledBase, map, this, layer);
         }
 
         public override void Draw(SpriteBatch spriteBatch)

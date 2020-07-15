@@ -9,6 +9,7 @@ using TiledSharp;
 namespace MonoNet.Tiled
 {
     public delegate void ObjectLoaded(List<TiledMapComponent> allMapComponents, TmxObject loadedObject);
+    public delegate void CollisionHitboxLoaded(TiledMapComponent onComponent, Transform2 componentTrans, TmxObject hitbox, float localX, float localY);
 
     /// <summary>
     /// Used to manage Tiled resources.
@@ -17,6 +18,7 @@ namespace MonoNet.Tiled
     {
         public bool unloadUnusedImages;
         public event ObjectLoaded OnObjectLoaded;
+        public event CollisionHitboxLoaded OnCollisionHitboxLoaded;
 
         private ContentManager content;
         private Dictionary<string, TextureWithReferenceCount> imageForPath;
@@ -263,6 +265,15 @@ namespace MonoNet.Tiled
                 }
             }
         }
+
+        /// <summary>
+        /// Triggers the event for a loaded Hitbox.
+        /// </summary>
+        /// <param name="onComponent">The component from where the hitbox was loaded.</param>
+        /// <param name="componentTrans">The transform of the component.</param>
+        /// <param name="hitbox">The hitbox which should be created.</param>
+        public void NotifyHitboxLoaded(TiledMapComponent onComponent, Transform2 componentTrans, TmxObject hitbox, float localX, float localY)
+            => OnCollisionHitboxLoaded?.Invoke(onComponent, componentTrans, hitbox, localX, localY);
 
         /// <summary>
         /// Removes a map.
