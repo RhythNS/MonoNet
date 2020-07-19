@@ -2,6 +2,7 @@
 using MonoNet.ECS.Components;
 using MonoNet.Util;
 using System.Collections.Generic;
+using System.Windows.Forms;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
@@ -108,30 +109,30 @@ namespace MonoNet.GameSystems.PhysicsSystem
                         continue; // Continue the loop.
                     }
 
-                    // Both are either triggers or non triggers. Continue with normal collision detection.
-                    switch (collisionType)
-                    {
-                        case CollisionType.None:
-                            rigidbodiesSquare[movingIndex].grounded = false;
-                            continue;
-                        case CollisionType.Above:
-                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
-                            rigidbodiesSquare[movingIndex].velocity.Y = 0;
-                            rigidbodiesSquare[movingIndex].grounded = true;
-                            break;
-                        case CollisionType.Below:
-                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
-                            rigidbodiesSquare[movingIndex].velocity.Y = 0;
-                            break;
-                        case CollisionType.Left:
-                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
-                            rigidbodiesSquare[movingIndex].velocity.X = 0;
-                            break;
-                        case CollisionType.Right:
-                            transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
-                            rigidbodiesSquare[movingIndex].velocity.X = 0;
-                            break;
-                    }
+                        // Both are either triggers or non triggers. Continue with normal collision detection.
+                        switch (collisionType)
+                        {
+                            case CollisionType.None:
+                                rigidbodiesSquare[movingIndex].grounded = false;
+                                continue;
+                            case CollisionType.Above:
+                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
+                                rigidbodiesSquare[movingIndex].velocity.Y = 0;
+                                rigidbodiesSquare[movingIndex].grounded = true;
+                                break;
+                            case CollisionType.Below:
+                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y + rigidbodiesSquare[checkingIndex].height / 2 + rigidbodiesSquare[movingIndex].height / 2);
+                                rigidbodiesSquare[movingIndex].velocity.Y = 0;
+                                break;
+                            case CollisionType.Left:
+                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X - rigidbodiesSquare[checkingIndex].width / 2 - rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
+                                rigidbodiesSquare[movingIndex].velocity.X = 0;
+                                break;
+                            case CollisionType.Right:
+                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
+                                rigidbodiesSquare[movingIndex].velocity.X = 0;
+                                break;
+                        }
                 }
                 /*
                 if (transformsSquare[movingIndex].WorldPosition.Y + rigidbodiesSquare[movingIndex].height / 2 > 400)
@@ -182,8 +183,6 @@ namespace MonoNet.GameSystems.PhysicsSystem
         /// <returns>Returns type of collision</returns>
         private CollisionType CollisionCheckSS(Rigidbody movingBody, Rigidbody checkingBody, Transform2 movingTrans, Transform2 checkingTrans)
         {
-            Vector2 movingVel = movingBody.velocity;
-            Vector2 checkingVel = checkingBody.velocity;
             float movingHeight = movingBody.height;
             float checkingHeight = checkingBody.height;
             float movingWidth = movingBody.width;
@@ -214,7 +213,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 return CollisionType.None;
             }
             */
-            if (movingBottom <= checkingTop || movingTop >= checkingBottom || movingRight <= checkingLeft || movingLeft >= checkingRight)
+            if (movingBottom < checkingTop || movingTop > checkingBottom || movingRight < checkingLeft || movingLeft > checkingRight)
                 return CollisionType.None;
 
             return CollisionSide(checkingTrans.WorldPosition, movingTrans.WorldPosition, checkingBody.width, checkingBody.height);

@@ -56,9 +56,6 @@
 #begin Test/plattformer.tsx
 /copy:Test/plattformer.tsx
 
-#begin Test/plattformer.tsx
-/copy:Test/plattformer.tsx
-
 #begin Test/spritesheet.png
 /importer:TextureImporter
 /processor:TextureProcessor
