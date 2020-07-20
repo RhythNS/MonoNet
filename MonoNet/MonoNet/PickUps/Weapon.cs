@@ -8,17 +8,14 @@ using System.Threading.Tasks;
 
 namespace MonoNet.PickUps
 {
-    public class Weapon
+    public class Weapon : Pickable
     {
         public Actor weaponHolder;
-        public Keys activeKey;
-        public Keys dropKey;
         public bool isEquiped;
 
         public Weapon()
         {
             isEquiped = false;
-            dropKey = Keys.R;
         }
 
         /// <summary>
@@ -30,7 +27,7 @@ namespace MonoNet.PickUps
         /// Gets called when the weapon is equiped
         /// </summary>
         /// <param name="holder">Actor of the one who picks up the weapon </param>
-        public void OnEquip(Actor holder) 
+        public void OnEquip(Actor holder)
         {
             isEquiped = true;
             weaponHolder = holder;
@@ -40,7 +37,7 @@ namespace MonoNet.PickUps
         /// <summary>
         /// Gets called when the weapon gets droped
         /// </summary>
-        public void OnDeEquip() 
+        public void OnDeEquip()
         {
             isEquiped = false;
             weaponHolder = null;

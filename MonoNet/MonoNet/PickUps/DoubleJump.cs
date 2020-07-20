@@ -19,7 +19,6 @@ namespace MonoNet.PickUps
 
         public DoubleJump()
         {
-            activeKey = Keys.Space;
             canJump = true;
             jumpVel = new Vector2 (0, -50);
         }

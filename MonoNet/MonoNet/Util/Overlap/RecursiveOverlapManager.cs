@@ -35,6 +35,14 @@ namespace MonoNet.Util.Overlap
         }
         public override Box2D GetBox() => box;
 
+        public bool IsLast() => isLast;
+
+        public List<T> GetListWhenLast() => overlapables;
+
+        public List<T> GetAllOverlaps(List<T> list, T toCheck) => InnerGetOverlaps(list, toCheck.GetBox());
+
+        public List<T> GetAllOverlaps(List<T> list, Box2D toCheck) => InnerGetOverlaps(list, toCheck);
+
         public List<T> GetAllOverlaps(T toCheck) => InnerGetOverlaps(new List<T>(), toCheck.GetBox());
 
         public List<T> GetAllOverlaps(Box2D toCheck) => InnerGetOverlaps(new List<T>(), toCheck);
@@ -60,18 +68,17 @@ namespace MonoNet.Util.Overlap
             return list;
         }
 
-        public List<T> GetAllOverlapsForWorldEditor()
+        public List<T> GetAllOverlaps(List<T> list)
         {
-            List<T> list = InnerGetAllOverlaps(new List<T>());
-
-            // Remove duplicate
-            for (int i = list.Count - 1; i > 0; i--)
-                for (int j = i - 1; j >= 0; j--)
-                    if (list[i].Equals(list[j]))
-                    {
-                        list.RemoveAt(i);
-                        break;
-                    }
+            if (isLast)
+            {
+                list.AddRange(overlapables);
+            }
+            else
+            {
+                for (int i = 0; i < helpers.Length; i++)
+                    helpers[i].GetAllOverlaps(list);
+            }
 
             return list;
         }

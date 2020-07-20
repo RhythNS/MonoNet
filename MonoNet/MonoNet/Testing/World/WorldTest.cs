@@ -23,16 +23,22 @@ namespace MonoNet.Testing
             graphics.ApplyChanges();
 
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
-            HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
-
+            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
             TextureRegion playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
+
+            HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
+            BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
             PlayerSpawn playerSpawn = new PlayerSpawn(playerRegion, stage);
+            GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
+
 
             Actor baseActor = stage.CreateActor(0);
             TiledBase tiledBase = baseActor.AddComponent<TiledBase>();
             tiledBase.Set(Content);
             tiledBase.OnCollisionHitboxLoaded += hitboxLoader.OnCollisionHitboxLoaded;
+            tiledBase.OnObjectLoaded += boxSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
+            tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
             TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
 

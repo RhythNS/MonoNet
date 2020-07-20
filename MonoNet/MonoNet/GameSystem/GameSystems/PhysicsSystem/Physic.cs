@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.ECS.Components;
 using MonoNet.Util;
+using MonoNet.Util.Datatypes;
+using MonoNet.Util.Overlap;
 using System.Collections.Generic;
-using System.Windows.Forms;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
@@ -17,6 +18,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         private TriggerableHelper triggerableHelper;
 
+        private RecursiveOverlapManager<Rigidbody> overlapManager;
+        private List<Rigidbody> tempListOverlaps;
+
         public Physic()
         {
             Instance = this;
@@ -25,6 +29,25 @@ namespace MonoNet.GameSystems.PhysicsSystem
             transformsSquare = new List<Transform2>();
             transformsCicle = new List<Transform2>();
             triggerableHelper = new TriggerableHelper();
+
+            overlapManager = new RecursiveOverlapManager<Rigidbody>(new Box2D(float.MaxValue / 2, float.MaxValue / 2, float.MaxValue, float.MaxValue), 0);
+            tempListOverlaps = new List<Rigidbody>(20);
+        }
+
+        public void SetLevelBox(Box2D box, int layersForOverlap)
+        {
+            RecursiveOverlapManager<Rigidbody> newManager = new RecursiveOverlapManager<Rigidbody>(box, layersForOverlap);
+            if (overlapManager.IsLast())
+            {
+                newManager.AddAll(overlapManager.GetListWhenLast());
+            }
+            else
+            {
+                List<Rigidbody> allBodies = new List<Rigidbody>();
+                overlapManager.GetAllOverlaps(allBodies);
+                newManager.AddAll(allBodies);
+            }
+            overlapManager = newManager;
         }
 
         public void Register(Rigidbody rigidbody)
@@ -37,8 +60,16 @@ namespace MonoNet.GameSystems.PhysicsSystem
             {
                 if (rigidbody.isSquare)
                 {
-                    rigidbodiesSquare.Add(rigidbody);
-                    transformsSquare.Add(rigidbodiesSquare[rigidbodiesSquare.Count - 1].Actor.GetComponent<Transform2>());
+                    if (rigidbody.isStatic)
+                    {
+                        overlapManager.Add(rigidbody);
+                    }
+                    else
+                    {
+
+                        rigidbodiesSquare.Add(rigidbody);
+                        transformsSquare.Add(rigidbodiesSquare[rigidbodiesSquare.Count - 1].Actor.GetComponent<Transform2>());
+                    }
                 }
                 else
                 {
@@ -58,7 +89,14 @@ namespace MonoNet.GameSystems.PhysicsSystem
             {
                 if (rigidbody.isSquare)
                 {
-                    rigidbodiesSquare.Remove(rigidbody);
+                    if (rigidbody.isStatic)
+                    {
+                        overlapManager.Remove(rigidbody);
+                    }
+                    else
+                    {
+                        rigidbodiesSquare.Remove(rigidbody);
+                    }
                 }
                 else
                 {
@@ -77,11 +115,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
             // Reset all Triggers in the TriggerHelper class
             triggerableHelper.SetAllToNonTouching();
 
+            // Check collision for nonstatic body and nonstatic body
             for (int movingIndex = 0; movingIndex < rigidbodiesSquare.Count; movingIndex++)
             {
-                if (rigidbodiesSquare[movingIndex].isStatic)
-                    continue;
-
                 rigidbodiesSquare[movingIndex].grounded = false;
 
                 for (int checkingIndex = 0; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
@@ -89,57 +125,21 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     if (checkingIndex == movingIndex)
                         continue;
 
-                    CollisionType collisionType = CollisionCheckSS(rigidbodiesSquare[movingIndex], rigidbodiesSquare[checkingIndex], transformsSquare[movingIndex], transformsSquare[checkingIndex]);
-
-                    // Is one a trigger and the other not a trigger?
-                    if (collisionType != CollisionType.None &&
-                        ((rigidbodiesSquare[checkingIndex].isTrigger == true && rigidbodiesSquare[movingIndex].isTrigger == false) ||
-                        (rigidbodiesSquare[checkingIndex].isTrigger == false && rigidbodiesSquare[movingIndex].isTrigger == true)))
-                    {
-                        // If the Triggers were not touching each other in the prev Frame then try to add them and fire the event.
-                        if (triggerableHelper.Add(rigidbodiesSquare[checkingIndex], rigidbodiesSquare[movingIndex]) == true)
-                        {
-                            rigidbodiesSquare[checkingIndex].FireEventEnter(rigidbodiesSquare[movingIndex]);
-                            rigidbodiesSquare[movingIndex].FireEventEnter(rigidbodiesSquare[checkingIndex]);
-                        }
-                        else // Triggers touched each other in the prev Frame and are still touching.
-                        {
-                            rigidbodiesSquare[checkingIndex].FireEventStay(rigidbodiesSquare[movingIndex]);
-                            rigidbodiesSquare[movingIndex].FireEventStay(rigidbodiesSquare[checkingIndex]);
-                        }
-
-                        continue; // Continue the loop.
-                    }
-
-                        // Both are either triggers or non triggers. Continue with normal collision detection.
-                        switch (collisionType)
-                        {
-                            case CollisionType.None:
-                                continue;
-                            case CollisionType.Above:
-                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
-                                rigidbodiesSquare[movingIndex].velocity.Y = 0;
-                                rigidbodiesSquare[movingIndex].grounded = true;
-                                break;
-                            case CollisionType.Below:
-                                if (!rigidbodiesSquare[movingIndex].grounded)
-                                {
-                                    transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y + rigidbodiesSquare[checkingIndex].height / 2 + rigidbodiesSquare[movingIndex].height / 2);
-                                }
-                                rigidbodiesSquare[movingIndex].velocity.Y = 0;
-                                rigidbodiesSquare[checkingIndex].grounded = true;
-                                break;
-                            case CollisionType.Left:
-                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X - rigidbodiesSquare[checkingIndex].width / 2 - rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
-                                rigidbodiesSquare[movingIndex].velocity.X = 0;
-                                break;
-                            case CollisionType.Right:
-                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X + rigidbodiesSquare[checkingIndex].width / 2 + rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
-                                rigidbodiesSquare[movingIndex].velocity.X = 0;
-                                break;
-                        }
+                    HandleCheckSS(rigidbodiesSquare[movingIndex], rigidbodiesSquare[checkingIndex], transformsSquare[movingIndex], transformsSquare[checkingIndex]);
                 }
-                rigidbodiesSquare[movingIndex].Actor.GetComponent<Transform2>().WorldPosition = transformsSquare[movingIndex].WorldPosition;
+                // rigidbodiesSquare[movingIndex].Actor.GetComponent<Transform2>().WorldPosition = transformsSquare[movingIndex].WorldPosition;
+            }
+
+            // Check collision for nonstatic body and static body
+            for (int movingIndex = 0; movingIndex < rigidbodiesSquare.Count; movingIndex++)
+            {
+                tempListOverlaps.Clear();
+                overlapManager.GetAllOverlaps(tempListOverlaps, rigidbodiesSquare[movingIndex]);
+
+                for (int checkingIndex = 0; checkingIndex < tempListOverlaps.Count; checkingIndex++)
+                {
+                    HandleCheckSS(rigidbodiesSquare[movingIndex], tempListOverlaps[checkingIndex], transformsSquare[movingIndex], tempListOverlaps[checkingIndex].Actor.GetComponent<Transform2>());
+                }
             }
 
             for (int movingIndex = 0; movingIndex < rigidbodiesCircle.Count; movingIndex++)
@@ -159,6 +159,59 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
             // Check to see if some triggers that were touching are not touching each other any more. If so remove them.
             triggerableHelper.RemoveAllNonTouching();
+        }
+
+        private void HandleCheckSS(Rigidbody movingBody, Rigidbody checkingBody, Transform2 movingTrans, Transform2 checkingTrans)
+        {
+            CollisionType collisionType = CollisionCheckSS(movingBody, checkingBody, movingTrans, checkingTrans);
+
+            // Is one a trigger and the other not a trigger?
+            if (collisionType != CollisionType.None &&
+                ((checkingBody.isTrigger == true && movingBody.isTrigger == false) ||
+                (checkingBody.isTrigger == false && movingBody.isTrigger == true)))
+            {
+                // If the Triggers were not touching each other in the prev Frame then try to add them and fire the event.
+                if (triggerableHelper.Add(checkingBody, movingBody) == true)
+                {
+                    checkingBody.FireEventEnter(movingBody);
+                    movingBody.FireEventEnter(checkingBody);
+                }
+                else // Triggers touched each other in the prev Frame and are still touching.
+                {
+                    checkingBody.FireEventStay(movingBody);
+                    movingBody.FireEventStay(checkingBody);
+                }
+
+                return;
+            }
+
+            // Both are either triggers or non triggers. Continue with normal collision detection.
+            switch (collisionType)
+            {
+                case CollisionType.None:
+                    return;
+                case CollisionType.Above:
+                    movingTrans.WorldPosition = new Vector2(movingTrans.WorldPosition.X, checkingTrans.WorldPosition.Y - checkingBody.height / 2 - movingBody.height / 2);
+                    movingBody.velocity.Y = 0;
+                    movingBody.grounded = true;
+                    break;
+                case CollisionType.Below:
+                    if (!movingBody.grounded)
+                    {
+                        movingTrans.WorldPosition = new Vector2(movingTrans.WorldPosition.X, checkingTrans.WorldPosition.Y + checkingBody.height / 2 + movingBody.height / 2);
+                    }
+                    movingBody.velocity.Y = 0;
+                    checkingBody.grounded = true;
+                    break;
+                case CollisionType.Left:
+                    movingTrans.WorldPosition = new Vector2(checkingTrans.WorldPosition.X - checkingBody.width / 2 - movingBody.width / 2, movingTrans.WorldPosition.Y);
+                    movingBody.velocity.X = 0;
+                    break;
+                case CollisionType.Right:
+                    movingTrans.WorldPosition = new Vector2(checkingTrans.WorldPosition.X + checkingBody.width / 2 + movingBody.width / 2, movingTrans.WorldPosition.Y);
+                    movingBody.velocity.X = 0;
+                    break;
+            }
         }
 
         private Vector2 UpdatePosition(Vector2 position, Vector2 velocity)

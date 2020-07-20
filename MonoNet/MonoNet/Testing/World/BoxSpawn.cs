@@ -7,17 +7,19 @@ using MonoNet.Testing.Infrastructure;
 using MonoNet.Tiled;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using TiledSharp;
-using MonoNet.Player;
 
 namespace MonoNet.Testing.World
 {
-    public class PlayerSpawn
+    public class BoxSpawn
     {
         private TextureRegion textureRegion;
         private Stage stage;
 
-        public PlayerSpawn(TextureRegion textureRegion, Stage stage)
+        public BoxSpawn(TextureRegion textureRegion, Stage stage)
         {
             this.textureRegion = textureRegion;
             this.stage = stage;
@@ -25,7 +27,7 @@ namespace MonoNet.Testing.World
 
         public void OnObjectLoaded(List<TiledMapComponent> allMapComponents, TmxObject loadedObject)
         {
-            if (loadedObject.Type.Equals("playerSpawn", StringComparison.CurrentCultureIgnoreCase) == false)
+            if (loadedObject.Type.Equals("boxSpawn", StringComparison.CurrentCultureIgnoreCase) == false)
                 return;
 
             Actor actor = stage.CreateActor(2);
@@ -33,7 +35,6 @@ namespace MonoNet.Testing.World
             trans.LocalPosition = new Vector2((float)loadedObject.X, (float)loadedObject.Y);
             Rigidbody body = actor.AddComponent<Rigidbody>();
             body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, isStatic: false, isSquare: true, isTrigger: false);
-            actor.AddComponent<PlayerManager>();
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
         }

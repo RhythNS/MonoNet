@@ -14,7 +14,6 @@ namespace MonoNet.PickUps
 
         public Pistol()
         {
-            activeKey = Keys.Enter;
             damage = 1; //example
         }
 

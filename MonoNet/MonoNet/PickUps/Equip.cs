@@ -12,20 +12,17 @@ using System.Threading.Tasks;
 
 namespace MonoNet.GameSystems.PickUps
 {
-    public class Equip : Component, Interfaces.IUpdateable, IDisposable
+    public class Equip : Component, IDisposable
     {
         public Actor equipHolder;
 
-        private KeyboardState input;
-
-        private Weapon weapon;
+        public Weapon ActiveWeapon { get; private set; }
         private Weapon knife;
 
         private List<PickUp> powerUps;
 
-        public Equip()
+        protected override void OnInitialize()
         {
-            weapon = new Weapon();
             knife = Knife.Instance;
 
             powerUps = new List<PickUp>();
@@ -35,27 +32,25 @@ namespace MonoNet.GameSystems.PickUps
         /// Gets Called when weapon gets picked up
         /// </summary>
         /// <param name="newWeapon">picked up weapon</param>
-        public void RegisterWeapon(Weapon newWeapon)
+        public void PickupWeapon(Weapon newWeapon)
         {
-            if (weapon != newWeapon)
+            if (ActiveWeapon != newWeapon)
             {
-                DeRegisterWeapon(weapon);
+                DropWeapon();
                 newWeapon.OnEquip(equipHolder);
-                weapon = newWeapon;
+                ActiveWeapon = newWeapon;
             }
         }
 
         /// <summary>
         /// Gets Called when weapon gets droped
         /// </summary>
-        /// <param name="oldWeapon">weapon which gets droped </param>
-        public void DeRegisterWeapon(Weapon oldWeapon)
+        public void DropWeapon()
         {
-            if (weapon != knife)
+            if (ActiveWeapon != knife)
             {
-                oldWeapon.OnDeEquip();
-                weapon = knife;
-                oldWeapon.OnDeEquip();
+                ActiveWeapon.OnDeEquip();
+                ActiveWeapon = knife;
             }
         }
 
@@ -69,29 +64,6 @@ namespace MonoNet.GameSystems.PickUps
             {
                 newPowerUp.OnEquip(equipHolder);
                 powerUps.Add(newPowerUp);
-            }
-        }
-
-        /// <summary>
-        /// checks for inputs every frame and calls core methods of the equipment when the right input is given
-        /// </summary>
-        public void Update()
-        {
-            if (input.IsKeyDown(weapon.activeKey))
-            {
-                weapon.CoreMethod();
-            }
-            else if (input.IsKeyDown(weapon.dropKey))
-            {
-                DeRegisterWeapon(weapon);
-            }
-
-            for (int i = 0; i < powerUps.Count; i++)
-            {
-                if (input.IsKeyDown(powerUps[i].activeKey))
-                {
-                    powerUps[i].CoreMethod();
-                }
             }
         }
 

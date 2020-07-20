@@ -53,6 +53,7 @@ namespace MonoNet.ECS
         public T AddComponent<T>() where T : Component, new()
         {
             T component = new T();
+            components.Add(component);
             component.Initialize(this);
 
             // Check if the component implements any of these interfaces, if so then add them to their specific list
@@ -63,7 +64,6 @@ namespace MonoNet.ECS
             if (component is IDisposable disposable)
                 disposables.Add(disposable);
 
-            components.Add(component);
             Stage.OnComponentAdded(component);
             return component;
         }

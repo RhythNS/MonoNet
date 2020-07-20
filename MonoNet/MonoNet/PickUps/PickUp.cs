@@ -8,10 +8,9 @@ using System.Threading.Tasks;
 
 namespace MonoNet.PickUps
 {
-    public class PickUp
+    public class PickUp : Pickable
     {
         public Actor powerUpHolder;
-        public Keys activeKey;
         public bool isEquiped;
 
         public PickUp()
