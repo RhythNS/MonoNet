@@ -26,6 +26,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
         private static float gConst = 98.1f;
 
         public Vector2 velocity = Vector2.Zero;
+        private Vector2 prevPos = Vector2.Zero;
         public float height;
         public float width;
         public bool isStatic;
@@ -45,9 +46,12 @@ namespace MonoNet.GameSystems.PhysicsSystem
         }
 
         public void Update()
-        {
-            if (isStatic == false)
+        {            
+            if (isStatic == false && grounded == false)
+            {
                 velocity.Y += gConst * Time.Delta;
+            }
+
         }
 
         public void Dispose()

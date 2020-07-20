@@ -82,6 +82,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 if (rigidbodiesSquare[movingIndex].isStatic)
                     continue;
 
+                rigidbodiesSquare[movingIndex].grounded = false;
+
                 for (int checkingIndex = 0; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
                 {
                     if (checkingIndex == movingIndex)
@@ -113,7 +115,6 @@ namespace MonoNet.GameSystems.PhysicsSystem
                         switch (collisionType)
                         {
                             case CollisionType.None:
-                                rigidbodiesSquare[movingIndex].grounded = false;
                                 continue;
                             case CollisionType.Above:
                                 transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y - rigidbodiesSquare[checkingIndex].height / 2 - rigidbodiesSquare[movingIndex].height / 2);
@@ -121,8 +122,12 @@ namespace MonoNet.GameSystems.PhysicsSystem
                                 rigidbodiesSquare[movingIndex].grounded = true;
                                 break;
                             case CollisionType.Below:
-                                transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y + rigidbodiesSquare[checkingIndex].height / 2 + rigidbodiesSquare[movingIndex].height / 2);
+                                if (!rigidbodiesSquare[movingIndex].grounded)
+                                {
+                                    transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, transformsSquare[checkingIndex].WorldPosition.Y + rigidbodiesSquare[checkingIndex].height / 2 + rigidbodiesSquare[movingIndex].height / 2);
+                                }
                                 rigidbodiesSquare[movingIndex].velocity.Y = 0;
+                                rigidbodiesSquare[checkingIndex].grounded = true;
                                 break;
                             case CollisionType.Left:
                                 transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[checkingIndex].WorldPosition.X - rigidbodiesSquare[checkingIndex].width / 2 - rigidbodiesSquare[movingIndex].width / 2, transformsSquare[movingIndex].WorldPosition.Y);
@@ -134,13 +139,6 @@ namespace MonoNet.GameSystems.PhysicsSystem
                                 break;
                         }
                 }
-                /*
-                if (transformsSquare[movingIndex].WorldPosition.Y + rigidbodiesSquare[movingIndex].height / 2 > 400)
-                {
-                    transformsSquare[movingIndex].WorldPosition = new Vector2(transformsSquare[movingIndex].WorldPosition.X, 400 - rigidbodiesSquare[movingIndex].height / 2);
-                    rigidbodiesSquare[movingIndex].velocity.X *= 0.95f;
-                    rigidbodiesSquare[movingIndex].velocity.Y = 0;
-                } */
                 rigidbodiesSquare[movingIndex].Actor.GetComponent<Transform2>().WorldPosition = transformsSquare[movingIndex].WorldPosition;
             }
 
