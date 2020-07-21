@@ -38,7 +38,7 @@ namespace MonoNet.PickUps
             if (canJump)
             {
                 canJump = false;
-                if (holderBody.grounded)
+                if (holderBody.isGrounded)
                 {
                     canJump = true;
                 }

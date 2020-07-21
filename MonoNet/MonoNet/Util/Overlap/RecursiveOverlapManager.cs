@@ -53,7 +53,7 @@ namespace MonoNet.Util.Overlap
             {
                 for (int i = 0; i < overlapables.Count; i++)
                 {
-                    if (overlapables[i].Overlaps(toCheck) && !list.Contains(overlapables[i]))
+                    if (!list.Contains(overlapables[i]))
                         list.Add(overlapables[i]);
                 }
             }

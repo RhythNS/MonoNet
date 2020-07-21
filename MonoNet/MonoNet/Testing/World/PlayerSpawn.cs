@@ -32,7 +32,7 @@ namespace MonoNet.Testing.World
             Transform2 trans = actor.AddComponent<ScaledTransform2>();
             trans.LocalPosition = new Vector2((float)loadedObject.X, (float)loadedObject.Y);
             Rigidbody body = actor.AddComponent<Rigidbody>();
-            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, isStatic: false, isSquare: true, isTrigger: false);
+            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 1, isStatic: false, isSquare: true, isTrigger: false);
             actor.AddComponent<PlayerManager>();
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;

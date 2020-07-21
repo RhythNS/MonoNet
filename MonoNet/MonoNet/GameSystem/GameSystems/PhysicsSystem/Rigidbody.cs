@@ -17,37 +17,48 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public event OnTriggerStay OnTriggerStay;
         public event OnTriggerExit OnTriggerExit;
 
-        protected override void OnInitialize()
-        {
-            Physic.Instance.Register(this);
-            transform = Actor.GetComponent<Transform2>();
-        }
-
         private static float gConst = 98.1f;
 
         public Vector2 velocity = Vector2.Zero;
         private Vector2 prevPos = Vector2.Zero;
+
+        public int collisionLayer;
+
         public float height;
         public float width;
+
         public bool isStatic;
-        public bool grounded;
+        public bool isGrounded;
         public bool isSquare = true;
         public bool isTrigger = false;
+        private bool registered = false;
 
         private Transform2 transform;
 
-        public void Set(float width = 1, float height = 1, bool isStatic = false, bool isSquare = true, bool isTrigger = false)
+        protected override void OnInitialize()
+        {
+            transform = Actor.GetComponent<Transform2>();
+        }
+
+        public void Set(float width = 1, float height = 1, int collisionLayer = 0, bool isStatic = false, bool isSquare = true, bool isTrigger = false)
         {
             this.width = width;
             this.height = height;
+            this.collisionLayer = collisionLayer;
             this.isStatic = isStatic;
             this.isSquare = isSquare;
             this.isTrigger = isTrigger;
+
+            if (registered == true)
+                Physic.Instance.DeRegister(this);
+            registered = true;
+
+            Physic.Instance.Register(this);
         }
 
         public void Update()
-        {            
-            if (isStatic == false && grounded == false)
+        {
+            if (isStatic == false && isGrounded == false)
             {
                 velocity.Y += gConst * Time.Delta;
             }

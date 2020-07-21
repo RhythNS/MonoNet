@@ -37,7 +37,7 @@ namespace MonoNet.Testing.World
 
             TextureRegion textureRegion = regions[random.Next(regions.Length - 1)]; // last one is empty
 
-            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, isStatic: false, isSquare: true, isTrigger: false);
+            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 2, isStatic: false, isSquare: true, isTrigger: false);
             actor.AddComponent<PlayerManager>();
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;

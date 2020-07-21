@@ -43,7 +43,7 @@ namespace MonoNet.Player
             }
             addVel.X *= Time.Delta;
 
-            if (rigidbody.grounded == true && Input.IsKeyDownThisFrame(binding.jump))
+            if (rigidbody.isGrounded == true && Input.IsKeyDownThisFrame(binding.jump))
             {
                 addVel.Y += player.JumpForce;
             }

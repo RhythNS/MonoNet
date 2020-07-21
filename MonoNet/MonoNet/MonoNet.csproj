@@ -119,6 +119,7 @@
     <Compile Include="Testing\UI\MainMenu.cs" />
     <Compile Include="Testing\UI\UITestScreen.cs" />
     <Compile Include="Util\Datatypes\Box2D.cs" />
+    <Compile Include="Util\Datatypes\MultiKey.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />

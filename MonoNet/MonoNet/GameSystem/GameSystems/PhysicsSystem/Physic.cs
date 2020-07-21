@@ -11,6 +11,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
     {
         public static Physic Instance { get; private set; }
 
+        public Dictionary<MultiKey<int>, bool> collisionRules = new Dictionary<MultiKey<int>, bool>();
+
         private List<Rigidbody> rigidbodiesSquare;
         private List<Rigidbody> rigidbodiesCircle;
         private List<Transform2> transformsSquare;
@@ -66,7 +68,6 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     }
                     else
                     {
-
                         rigidbodiesSquare.Add(rigidbody);
                         transformsSquare.Add(rigidbodiesSquare[rigidbodiesSquare.Count - 1].Actor.GetComponent<Transform2>());
                     }
@@ -96,11 +97,13 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     else
                     {
                         rigidbodiesSquare.Remove(rigidbody);
+                        transformsSquare.Remove(rigidbody.Actor.GetComponent<Transform2>());
                     }
                 }
                 else
                 {
                     rigidbodiesCircle.Remove(rigidbody);
+                    transformsCicle.Remove(rigidbody.Actor.GetComponent<Transform2>());
                 }
             }
         }
@@ -118,7 +121,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             // Check collision for nonstatic body and nonstatic body
             for (int movingIndex = 0; movingIndex < rigidbodiesSquare.Count; movingIndex++)
             {
-                rigidbodiesSquare[movingIndex].grounded = false;
+                rigidbodiesSquare[movingIndex].isGrounded = false;
 
                 for (int checkingIndex = 0; checkingIndex < rigidbodiesSquare.Count; checkingIndex++)
                 {
@@ -147,13 +150,13 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 for (int chekingCircles = 0; chekingCircles < rigidbodiesCircle.Count; chekingCircles++)
                 {
                     bool isCollidingCC = CollisionCheckCC(rigidbodiesCircle[movingIndex], rigidbodiesCircle[chekingCircles], transformsCicle[movingIndex], transformsCicle[chekingCircles]);
-                    //TODO Trigger
+                    HandleTrigger(rigidbodiesCircle[movingIndex], rigidbodiesCircle[chekingCircles]);
                 }
 
                 for (int checkingSquares = 0; checkingSquares < rigidbodiesSquare.Count; checkingSquares++)
                 {
                     bool isCollidingCS = CollisionCheckCS(rigidbodiesCircle[movingIndex], rigidbodiesSquare[checkingSquares], transformsCicle[movingIndex], transformsSquare[checkingSquares]);
-                    //TODO Trigger
+                    HandleTrigger(rigidbodiesCircle[movingIndex], rigidbodiesSquare[checkingSquares]);
                 }
             }
 
@@ -165,10 +168,52 @@ namespace MonoNet.GameSystems.PhysicsSystem
         {
             CollisionType collisionType = CollisionCheckSS(movingBody, checkingBody, movingTrans, checkingTrans);
 
-            // Is one a trigger and the other not a trigger?
-            if (collisionType != CollisionType.None &&
-                ((checkingBody.isTrigger == true && movingBody.isTrigger == false) ||
-                (checkingBody.isTrigger == false && movingBody.isTrigger == true)))
+            // If a collision occured, check if one of them is trigger and the other is not. If so do trigger methods and return
+            if (collisionType != CollisionType.None && HandleTrigger(movingBody, checkingBody))
+                return;
+
+            // Check if collisions between the layers are allowed
+            if (collisionRules.TryGetValue(new MultiKey<int>(movingBody.collisionLayer, checkingBody.collisionLayer), out bool value)
+                && value == false)
+                return;
+
+            // Both are either triggers or non triggers. Continue with normal collision detection.
+            switch (collisionType)
+            {
+                case CollisionType.None:
+                    return;
+                case CollisionType.Above:
+                    movingTrans.WorldPosition = new Vector2(movingTrans.WorldPosition.X, checkingTrans.WorldPosition.Y - checkingBody.height / 2 - movingBody.height / 2);
+                    movingBody.velocity.Y = 0;
+                    movingBody.isGrounded = true;
+                    break;
+                case CollisionType.Below:
+                    if (!movingBody.isGrounded)
+                    {
+                        movingTrans.WorldPosition = new Vector2(movingTrans.WorldPosition.X, checkingTrans.WorldPosition.Y + checkingBody.height / 2 + movingBody.height / 2);
+                    }
+                    movingBody.velocity.Y = 0;
+                    checkingBody.isGrounded = true;
+                    break;
+                case CollisionType.Left:
+                    movingTrans.WorldPosition = new Vector2(checkingTrans.WorldPosition.X - checkingBody.width / 2 - movingBody.width / 2, movingTrans.WorldPosition.Y);
+                    movingBody.velocity.X = 0;
+                    break;
+                case CollisionType.Right:
+                    movingTrans.WorldPosition = new Vector2(checkingTrans.WorldPosition.X + checkingBody.width / 2 + movingBody.width / 2, movingTrans.WorldPosition.Y);
+                    movingBody.velocity.X = 0;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Handles trigger methods for 2 rigidbodies. Only works if one is a trigger and the other is not a trigger.
+        /// </summary>
+        /// <returns>Wheter trigger methods were called.</returns>
+        private bool HandleTrigger(Rigidbody movingBody, Rigidbody checkingBody)
+        {
+            if ((checkingBody.isTrigger == true && movingBody.isTrigger == false) ||
+                (checkingBody.isTrigger == false && movingBody.isTrigger == true))
             {
                 // If the Triggers were not touching each other in the prev Frame then try to add them and fire the event.
                 if (triggerableHelper.Add(checkingBody, movingBody) == true)
@@ -182,36 +227,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     movingBody.FireEventStay(checkingBody);
                 }
 
-                return;
+                return true;
             }
-
-            // Both are either triggers or non triggers. Continue with normal collision detection.
-            switch (collisionType)
-            {
-                case CollisionType.None:
-                    return;
-                case CollisionType.Above:
-                    movingTrans.WorldPosition = new Vector2(movingTrans.WorldPosition.X, checkingTrans.WorldPosition.Y - checkingBody.height / 2 - movingBody.height / 2);
-                    movingBody.velocity.Y = 0;
-                    movingBody.grounded = true;
-                    break;
-                case CollisionType.Below:
-                    if (!movingBody.grounded)
-                    {
-                        movingTrans.WorldPosition = new Vector2(movingTrans.WorldPosition.X, checkingTrans.WorldPosition.Y + checkingBody.height / 2 + movingBody.height / 2);
-                    }
-                    movingBody.velocity.Y = 0;
-                    checkingBody.grounded = true;
-                    break;
-                case CollisionType.Left:
-                    movingTrans.WorldPosition = new Vector2(checkingTrans.WorldPosition.X - checkingBody.width / 2 - movingBody.width / 2, movingTrans.WorldPosition.Y);
-                    movingBody.velocity.X = 0;
-                    break;
-                case CollisionType.Right:
-                    movingTrans.WorldPosition = new Vector2(checkingTrans.WorldPosition.X + checkingBody.width / 2 + movingBody.width / 2, movingTrans.WorldPosition.Y);
-                    movingBody.velocity.X = 0;
-                    break;
-            }
+            return false;
         }
 
         private Vector2 UpdatePosition(Vector2 position, Vector2 velocity)

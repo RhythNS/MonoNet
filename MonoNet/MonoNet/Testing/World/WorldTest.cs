@@ -2,11 +2,13 @@
 using Microsoft.Xna.Framework.Graphics;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
+using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Testing.Tiled;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util;
+using MonoNet.Util.Datatypes;
 
 namespace MonoNet.Testing
 {
@@ -31,6 +33,7 @@ namespace MonoNet.Testing
             PlayerSpawn playerSpawn = new PlayerSpawn(playerRegion, stage);
             GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
 
+            Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 
             Actor baseActor = stage.CreateActor(0);
             TiledBase tiledBase = baseActor.AddComponent<TiledBase>();
