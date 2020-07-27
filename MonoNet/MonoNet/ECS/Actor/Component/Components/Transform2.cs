@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoNet.Network;
 using MonoNet.Util;
+using System;
 using System.Collections.Generic;
 
 namespace MonoNet.ECS.Components
@@ -7,7 +9,7 @@ namespace MonoNet.ECS.Components
     /// <summary>
     /// Holds position and scale of an Actor.
     /// </summary>
-    public class Transform2 : Component
+    public class Transform2 : Component, ISyncable
     {
         private List<Transform2> children = new List<Transform2>();
         private Transform2 parent;
@@ -96,5 +98,19 @@ namespace MonoNet.ECS.Components
         /// <param name="index">The index of the children array.</param>
         /// <returns>The requested child at index.</returns>
         public Transform2 GetChildAt(int index) => children[index];
+
+        public void Sync(byte[] data, ref int pointerAt)
+        {
+            float[] values = NetUtils.GetNextFloats(data, ref pointerAt, 4);
+            LocalPosition = new Vector2(values[0], values[1]);
+            LocalScale = new Vector2(values[2], values[3]);
+        }
+
+        public void GetSync(List<byte> data)
+        {
+            Vector2 pos = LocalPosition;
+            Vector2 scale = LocalScale;
+            NetUtils.AddFloatsToList(data, pos.X, pos.Y, scale.X, scale.Y);
+        }
     }
 }

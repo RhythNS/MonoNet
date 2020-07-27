@@ -4,6 +4,7 @@ using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.Testing.Infrastructure;
 using MonoNet.Testing.Tiled;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
@@ -42,7 +43,7 @@ namespace MonoNet.Testing
             tiledBase.OnObjectLoaded += boxSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
-
+            
             TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
 
             //float width = components[0].Width * components[0].TileWidth * 0.5f;
