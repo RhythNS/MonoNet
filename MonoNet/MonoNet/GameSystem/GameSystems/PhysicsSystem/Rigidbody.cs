@@ -17,7 +17,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public event OnTriggerStay OnTriggerStay;
         public event OnTriggerExit OnTriggerExit;
 
-        private static float gConst = 98.1f;
+        private static float gConst = 600f;
 
         public Vector2 velocity = Vector2.Zero;
         private Vector2 prevPos = Vector2.Zero;

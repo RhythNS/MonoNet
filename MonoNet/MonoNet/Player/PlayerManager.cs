@@ -19,8 +19,10 @@ namespace MonoNet.Player
         public Rigidbody Rigidbody { get; private set; }
         public Equip Equip { get; private set; }
 
-        public float XSpeed { get; private set; } = 2;
-        public float JumpForce { get; private set; } = 10;
+        public float XSpeed { get; private set; } = 150;
+        public float XMaxSpeed { get; private set; } = 350;
+
+        public float JumpForce { get; private set; } = 250;
         public bool Dead { get; private set; }
 
         private PlayerKeys binding;

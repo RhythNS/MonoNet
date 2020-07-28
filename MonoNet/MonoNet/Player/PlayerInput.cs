@@ -4,6 +4,8 @@ using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
+using System.Collections;
+using System.Globalization;
 
 namespace MonoNet.Player
 {
@@ -14,6 +16,11 @@ namespace MonoNet.Player
         private PlayerKeys binding;
         private Transform2 transform;
         private Equip equip;
+
+        private Vector2 addVel;
+        private bool movedRight;
+        private bool jumping = false;
+        private int jumpCount = 0;
 
         protected override void OnInitialize()
         {
@@ -31,23 +38,13 @@ namespace MonoNet.Player
 
         public void Update()
         {
-            Vector2 addVel = new Vector2();
+            addVel = Vector2.Zero;
 
-            if (Input.KeyDown(binding.right))
-            {
-                addVel.X += player.XSpeed;
-            }
-            if (Input.KeyDown(binding.left))
-            {
-                addVel.X -= player.XSpeed;
-            }
-            addVel.X *= Time.Delta;
+            Move();
+            Jump();
 
-            if (rigidbody.isGrounded == true && Input.IsKeyDownThisFrame(binding.jump))
-            {
-                addVel.Y += player.JumpForce;
-            }
-
+            //TODO
+            /* 
             if (Input.IsKeyDownThisFrame(binding.pickup))
             {
 
@@ -61,8 +58,94 @@ namespace MonoNet.Player
             {
                 equip.DropWeapon();
             }
-
+            */
+            addVel.X *= Time.Delta;
             rigidbody.velocity += addVel;
+        }
+
+        private void Move()
+        {
+            if (Input.KeyDown(binding.right))
+            {
+                if (movedRight == true)
+                {
+                    addVel.X += player.XSpeed;
+                    movedRight = true;
+                }
+                else
+                {
+                    StopMove();
+                    addVel.X += player.XSpeed;
+                    movedRight = true;
+                }
+            }
+            else if (Input.KeyDown(binding.left))
+            {
+                if (movedRight == false)
+                {
+                    addVel.X -= player.XSpeed;
+                    movedRight = false;
+                }
+                else
+                {
+                    StopMove();
+                    addVel.X -= player.XSpeed;
+                    movedRight = false;
+                }
+            } 
+            else if (rigidbody.isGrounded == true)
+            {
+                StopMove();
+            }
+
+            if (rigidbody.velocity.X + addVel.X > player.XMaxSpeed)
+            {
+                addVel.X = 0;
+            }
+            else if (rigidbody.velocity.X + addVel.X < -player.XMaxSpeed)
+            {
+                addVel.X = 0;
+            } 
+        }
+
+        private void StopMove()
+        {
+            rigidbody.velocity.X = 0;
+        }
+
+        private void Jump()
+        {
+            if (rigidbody.isGrounded == true && jumping == true)
+            {
+                StartCoroutine(StackJump());
+            }
+
+            if (rigidbody.isGrounded == true)
+            {
+                jumping = false;
+                if (Input.IsKeyDownThisFrame(binding.jump))
+                {
+                    jumping = true;
+                    addVel.Y -= player.JumpForce * (1 + 0.2f * jumpCount);
+                }
+            } 
+        }
+
+        IEnumerator StackJump()
+        {
+            yield return new WaitForSeconds(0.1f);
+
+            if (jumping == true && rigidbody.velocity.X * rigidbody.velocity.X > 1)
+            {
+                if (jumpCount < 3)
+                {
+                    jumpCount++;
+                }
+            }
+            else
+            {
+                jumpCount = 0;
+            }
         }
     }
 }

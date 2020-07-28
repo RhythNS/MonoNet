@@ -25,7 +25,7 @@ namespace MonoNet.Testing
             graphics.ApplyChanges();
 
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
-            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
+            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/testingLayers"), 32, 15); //changed content from gun because my content folder is not up to date
             TextureRegion playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
