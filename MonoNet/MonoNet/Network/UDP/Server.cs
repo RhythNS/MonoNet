@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoNet.Util;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
@@ -7,6 +8,8 @@ using System.Threading;
 
 namespace MonoNet.Network.UDP
 {
+    public delegate void OnMessageRecieved(ConnectedClient connectedClient, byte[] data);
+
     public class Server
     {
         private UdpClient connection;
@@ -15,12 +18,16 @@ namespace MonoNet.Network.UDP
 
         private bool exitRequested;
 
-        private readonly List<IPEndPoint> connectedAdresses = new List<IPEndPoint>();
+        private readonly List<ConnectedClient> connectedAdresses;
 
-        public Server(int port)
+        public event OnMessageRecieved OnMessageRecieved;
+
+        public Server(int port, List<ConnectedClient> connectedAdresses, OnMessageRecieved onMessageRecieved)
         {
             connection = new UdpClient(AddressFamily.InterNetworkV6);
+            OnMessageRecieved += onMessageRecieved;
             this.port = port;
+            this.connectedAdresses = connectedAdresses;
         }
 
         /// <summary>
@@ -47,7 +54,7 @@ namespace MonoNet.Network.UDP
         /// </summary>
         private void Listen()
         {
-            Console.WriteLine("Now listing");
+            Log.Info("Now listing");
 
             // Start listing for messages
             connection.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
@@ -58,7 +65,7 @@ namespace MonoNet.Network.UDP
                 IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
                 byte[] buffer;
                 try
-                { 
+                {
                     // Recieve the message.
                     buffer = connection.Receive(ref endPoint);
                 }
@@ -75,46 +82,46 @@ namespace MonoNet.Network.UDP
                     break;
                 }
 
-                // decode the message
-                string message = Encoding.ASCII.GetString(buffer);
-
                 // If the connection is a new one, save it to the end points and send a welcome message.
-                if (connectedAdresses.Contains(endPoint) == false)
+                ConnectedClient connectedClient = null;
+                for (int i = 0; i < connectedAdresses.Count; i++)
                 {
-                    connectedAdresses.Add(endPoint);
-                    Send(endPoint, "Hello!");
+                    if (connectedAdresses[i].ip == endPoint)
+                        connectedClient = connectedAdresses[i];
+                }
+
+                if (connectedClient == null)
+                {
+                    if (Encoding.ASCII.GetString(buffer).Equals("Hello?") == false)
+                        continue;
+
+                    connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint));
+                    Send(connectedClient, Encoding.ASCII.GetBytes("Hello!"));
                     continue;
                 }
 
-                // Iterate through each connectedAdress and send them the message.
-                for (int i = 0; i < connectedAdresses.Count; i++)
-                {
-                    // if the adress is not the sender
-                    if (connectedAdresses[i].Equals(endPoint) == false)
-                        Send(connectedAdresses[i], message);
-                }
+                OnMessageRecieved.Invoke(connectedClient, buffer);
             }
         }
 
         /// <summary>
         /// Sends a message to all connected clients.
         /// </summary>
-        /// <param name="message">The message to be sent.</param>
-        public void SendAll(string message)
+        /// <param name="data">The message to be sent.</param>
+        public void SendAll(byte[] data)
         {
             for (int i = 0; i < connectedAdresses.Count; i++)
-                Send(connectedAdresses[i], message);
+                Send(connectedAdresses[i], data);
         }
 
         /// <summary>
         /// Sends a message to a single endPoint.
         /// </summary>
         /// <param name="endPoint">The endpoint recipient.</param>
-        /// <param name="message">The message to be sent.</param>
-        public void Send(IPEndPoint endPoint, string message)
+        /// <param name="data">The message to be sent.</param>
+        public void Send(ConnectedClient endPoint, byte[] data)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(message);
-            connection.Send(buffer, buffer.Length, endPoint);
+            connection.Send(data, data.Length, endPoint.ip);
         }
     }
 }

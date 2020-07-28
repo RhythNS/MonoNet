@@ -1,7 +1,4 @@
-using MonoNet.Testing;
-using MonoNet.Testing.ECS;
-using MonoNet.Testing.Physics;
-using MonoNet.Testing.Tiled;
+using MonoNet.Testing.NetTest;
 using System;
 
 namespace MonoNet
@@ -18,7 +15,7 @@ namespace MonoNet
         [STAThread]
         static void Main()
         {
-            using (var game = new WorldTest())
+            using (var game = new NetTestGame())
                 game.Run();
         }
     }

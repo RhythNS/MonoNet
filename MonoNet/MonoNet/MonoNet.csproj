@@ -84,7 +84,6 @@
     <Compile Include="Network\NetSyncComponent.cs" />
     <Compile Include="Network\NetUtils.cs" />
     <Compile Include="Network\UDP\Client.cs" />
-    <Compile Include="Network\UDP\Program.cs" />
     <Compile Include="Network\UDP\Server.cs" />
     <Compile Include="PickUps\DoubleJump.cs" />
     <Compile Include="PickUps\Equip.cs" />
@@ -108,6 +107,8 @@
     <Compile Include="Testing\Infrastructure\CameraTestComponent.cs" />
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
+    <Compile Include="Testing\NetTest\NetTestGame.cs" />
+    <Compile Include="Testing\NetTest\SimpleMoveComponent.cs" />
     <Compile Include="Testing\Physics\PhysicTest.cs" />
     <Compile Include="Testing\Physics\TriggerTest.cs" />
     <Compile Include="Testing\PickupTest\PickupTestGame.cs" />

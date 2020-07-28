@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 
 namespace MonoNet.Network
@@ -22,9 +23,26 @@ namespace MonoNet.Network
             return values;
         }
 
+        public static Vector2 GetNextVector(byte[] data, ref int pointerAt)
+            => new Vector2(GetNextFloat(data, ref pointerAt), GetNextFloat(data, ref pointerAt));
+
+        public static Vector2[] GetNextVectors(byte[] data, ref int pointerAt, int amount)
+        {
+            float[] values = GetNextFloats(data, ref pointerAt, amount * 2);
+            Vector2[] vectors = new Vector2[amount];
+
+            for (int i = 0; i < amount; i++)
+                vectors[i] = new Vector2(values[i * 2], values[(i * 2) + 1]);
+            
+            return vectors;
+        }
+
         public static void AddFloatToList(float value, List<byte> toAddTo)
         {
             byte[] converted = BitConverter.GetBytes(value);
+
+            if (converted.Length != 4)
+                throw new Exception();
 
             for (int i = 0; i < converted.Length; i++)
                 toAddTo.Add(converted[i]);
@@ -34,6 +52,15 @@ namespace MonoNet.Network
         {
             for (int i = 0; i < values.Length; i++)
                 AddFloatToList(values[i], toAddTo);
+        }
+
+        public static void AddVectorToList(Vector2 vector, List<byte> toAddTo)
+            => AddFloatsToList(toAddTo, vector.X, vector.Y);
+
+        public static void AddVectorsToList(List<byte> toAddTo, params Vector2[] vectors)
+        {
+            for (int i = 0; i < vectors.Length; i++)
+                AddFloatsToList(toAddTo, vectors[i].X, vectors[i].Y);
         }
     }
 }

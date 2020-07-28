@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MonoNet.Util;
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -49,7 +50,7 @@ namespace MonoNet.Network.UDP
             connection.Connect(endPoint);
 
             // Send a ping to the server
-            Send("Hello?");
+            Send(Encoding.ASCII.GetBytes("Hello?"));
 
             // Wait to see if we get something back. If we do not get anything back
             // then we can assume that the ip adress was wrong or the server is not running
@@ -64,7 +65,7 @@ namespace MonoNet.Network.UDP
                 }
 
                 // We recieved something. Check to see if it was Hello!. If so then we are connected.
-                connected = Recieve(out string message) && message.Equals("Hello!");
+                connected = Recieve(out byte[] message) && Encoding.ASCII.GetString(message).Equals("Hello!");
                 break;
             }
 
@@ -74,65 +75,43 @@ namespace MonoNet.Network.UDP
                 Console.WriteLine("Connection could not be established!");
                 return;
             }
-
-            // Loop to recieve messages
-            while (exitRequested == false)
-            {
-                if (Recieve(out string message) == false)
-                    break;
-
-                Console.WriteLine(message);
-            }
         }
 
         /// <summary>
         /// Help method for recieving messages from the UdpClient.
         /// </summary>
-        /// <param name="message">The message as out parameter.</param>
+        /// <param name="buffer">The message as out parameter.</param>
         /// <returns>True if the message was read and false if some error occured.</returns>
-        private bool Recieve(out string message)
+        public bool Recieve(out byte[] buffer)
         {
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
-            byte[] buffer;
+            buffer = null;
 
             try
             {
+                if (connection.Available <= 0)
+                    return false;
+
                 // read the mesage
                 buffer = connection.Receive(ref endPoint);
             }
-            catch (ThreadInterruptedException) // we interrupted the thread from outside
-            {
-                message = null;
-                return false;
-            }
-            catch (SocketException se) // Anything went wrong with the socket.
-            {
-                // Interrupts are okay. So if that did not occure print the error message
-                if (se.SocketErrorCode != SocketError.Interrupted)
-                    Console.WriteLine(se.ToString());
-                message = null;
-                return false;
-            }
             catch (Exception ex) // catch any other exception that might occur
             {
-                Console.WriteLine(ex);
-                message = null;
+                Log.Error(ex.ToString());
+                buffer = null;
                 return false;
             }
 
-            // lastly convert the byte message into a string and return it.
-            message = Encoding.ASCII.GetString(buffer);
-            return true;
+            return buffer.Length != 0;
         }
 
         /// <summary>
         /// Sends a string to the server.
         /// </summary>
-        /// <param name="message">The message to be send.</param>
-        public void Send(string message)
+        /// <param name="data">The message to be send.</param>
+        public void Send(byte[] data)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(message);
-            connection.Send(buffer, buffer.Length);
+            connection.Send(data, data.Length);
         }
 
     }

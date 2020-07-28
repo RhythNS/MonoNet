@@ -25,6 +25,8 @@ namespace MonoNet.Network
         {
             Actor.OnComponentAdded += OnComponentAdded;
 
+            NetManager.OnNetComponentCreated(this);
+
             if (Actor.GetAllComponents(out ISyncable[] allComponents))
                 syncables.AddRange(allComponents);
         }

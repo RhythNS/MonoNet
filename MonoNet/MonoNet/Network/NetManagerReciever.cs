@@ -1,51 +1,58 @@
-﻿using MonoNet.Util;
+﻿using MonoNet.Network.UDP;
+using MonoNet.Util;
 using System.Collections.Generic;
+using System.Net;
 
 namespace MonoNet.Network
 {
     public class NetManagerReciever : NetManager
     {
-        private List<byte> tempData = new List<byte>();
-
-        private byte lastRecievedPackage = 0;
-
         public override bool IsServer => false;
 
-        public NetManagerReciever() : base()
+        private List<byte> tempData = new List<byte>();
+        private byte lastRecievedPackage = 0;
+        private Client client;
+
+        public NetManagerReciever(IPEndPoint ip) : base()
         {
+            client = new Client(ip);
+            client.StartListen();
         }
 
-
-        public void Recieve(byte[] data)
+        public void Recieve()
         {
+            if (client.Recieve(out byte[] data) == false)
+                return;
+
             lastRecievedPackage = GetNewerPackageNumber(lastRecievedPackage, data[0]);
 
             int pointer = 1;
             while (pointer < data.Length)
             {
                 byte address = data[pointer];
-                if (netSyncComponents[pointer] == null)
+                if (netSyncComponents[address] == null)
                 {
-                    Log.Error("NetSync tried to access a component with an invalid id. Requesting total sync!");
+                    Log.Error("NetSync tried to access a component with an invalid id (" + address + "). Requesting total sync!");
                     // request total sync;
                     break;
                 }
-                netSyncComponents[pointer].Sync(data, ref pointer);
+                pointer++;
+                netSyncComponents[address].Sync(data, ref pointer);
             }
         }
 
-        public byte[] Send()
+        public void Send()
         {
             tempData.Clear();
             tempData.Add(lastRecievedPackage);
             for (int i = 0; i < netSyncComponents.Length; i++)
             {
-                if (netSyncComponents[i].playerControlled)
+                if (netSyncComponents[i] != null && netSyncComponents[i].playerControlled)
                 {
                     netSyncComponents[i].GetSync(tempData);
                 }
             }
-            return tempData.ToArray();
+            client.Send(tempData.ToArray());
         }
 
     }

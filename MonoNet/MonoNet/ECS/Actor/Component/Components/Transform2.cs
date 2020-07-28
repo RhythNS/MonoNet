@@ -101,16 +101,13 @@ namespace MonoNet.ECS.Components
 
         public void Sync(byte[] data, ref int pointerAt)
         {
-            float[] values = NetUtils.GetNextFloats(data, ref pointerAt, 4);
-            LocalPosition = new Vector2(values[0], values[1]);
-            LocalScale = new Vector2(values[2], values[3]);
+            LocalPosition = NetUtils.GetNextVector(data, ref pointerAt);
+            LocalScale = NetUtils.GetNextVector(data, ref pointerAt);
         }
 
         public void GetSync(List<byte> data)
         {
-            Vector2 pos = LocalPosition;
-            Vector2 scale = LocalScale;
-            NetUtils.AddFloatsToList(data, pos.X, pos.Y, scale.X, scale.Y);
+            NetUtils.AddVectorsToList(data, LocalPosition, LocalScale);
         }
     }
 }

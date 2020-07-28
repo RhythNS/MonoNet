@@ -96,7 +96,7 @@ namespace MonoNet.ECS
         /// </summary>
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <returns>The first component found. Null if none was found.</returns>
-        public T GetComponent<T>() where T
+        public T GetComponent<T>()
         {
             for (int i = 0; i < components.Count; i++)
             {

@@ -4,17 +4,24 @@ namespace MonoNet.Network
 {
     public abstract class NetManager
     {
-        protected static NetManager Instance { get; private set; }
+        public static NetManager Instance { get; private set; }
 
         public abstract bool IsServer { get; }
 
         protected NetSyncComponent[] netSyncComponents = new NetSyncComponent[256]; // id in byte
+
+        private static byte probRemoveCounter = 255;
 
         public NetManager()
         {
             Instance = this;
         }
         
+        public static void OnNetComponentCreated(NetSyncComponent component)
+        {
+            Instance.ChangeId(component, ++probRemoveCounter);
+        }
+
         public static void OnIDChanged(NetSyncComponent syncComponent, byte id)
             => Instance.ChangeId(syncComponent, id);
 
