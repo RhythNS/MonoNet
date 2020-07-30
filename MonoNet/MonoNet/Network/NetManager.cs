@@ -2,11 +2,16 @@
 
 namespace MonoNet.Network
 {
+    public delegate void OnPlayerConnected(ConnectedClient client);
+    public delegate void OnPlayerDisconnected(ConnectedClient client);
+
     public abstract class NetManager
     {
         public static NetManager Instance { get; private set; }
-
         public abstract bool IsServer { get; }
+
+        public event OnPlayerConnected OnPlayerConnected;
+        public event OnPlayerDisconnected OnPlayerDisconnected;
 
         protected NetSyncComponent[] netSyncComponents = new NetSyncComponent[256]; // id in byte
 
@@ -16,11 +21,15 @@ namespace MonoNet.Network
         {
             Instance = this;
         }
-        
+
         public static void OnNetComponentCreated(NetSyncComponent component)
         {
             Instance.ChangeId(component, ++probRemoveCounter);
         }
+
+        protected void InvokePlayerConnected(ConnectedClient client) => OnPlayerConnected?.Invoke(client);
+
+        protected void InvokePlayerDisconnected(ConnectedClient client) => OnPlayerDisconnected?.Invoke(client);
 
         public static void OnIDChanged(NetSyncComponent syncComponent, byte id)
             => Instance.ChangeId(syncComponent, id);
@@ -32,8 +41,7 @@ namespace MonoNet.Network
             netSyncComponents[id] = syncComponent;
         }
 
-        protected byte GetNewerPackageNumber(byte oldNumber, byte newNumber)
-            => (oldNumber - newNumber < 128 && newNumber > oldNumber) || (oldNumber - newNumber > 128 && newNumber < oldNumber)
-                ? newNumber : oldNumber;
+        protected bool IsNewerPackage(byte oldNumber, byte newNumber)
+            => (oldNumber - newNumber < 128 && newNumber > oldNumber) || (oldNumber - newNumber > 128 && newNumber < oldNumber);
     }
 }

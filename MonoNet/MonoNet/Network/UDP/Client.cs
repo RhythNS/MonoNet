@@ -14,11 +14,13 @@ namespace MonoNet.Network.UDP
         private IPEndPoint endPoint;
 
         private bool exitRequested;
+        private string name;
 
-        public Client(IPEndPoint endPoint)
+        public Client(IPEndPoint endPoint, string name)
         {
             connection = new UdpClient(AddressFamily.InterNetworkV6);
             this.endPoint = endPoint;
+            this.name = name;
         }
 
         /// <summary>
@@ -50,7 +52,7 @@ namespace MonoNet.Network.UDP
             connection.Connect(endPoint);
 
             // Send a ping to the server
-            Send(Encoding.ASCII.GetBytes("Hello?"));
+            Send(Encoding.ASCII.GetBytes("Hello?" + name));
 
             // Wait to see if we get something back. If we do not get anything back
             // then we can assume that the ip adress was wrong or the server is not running

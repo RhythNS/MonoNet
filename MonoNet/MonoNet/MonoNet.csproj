@@ -75,6 +75,10 @@
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
     <Compile Include="GameSystem\GameSystems\Time.cs" />
+    <Compile Include="Network\Commands\Command.cs" />
+    <Compile Include="Network\Commands\CommandHandler.cs" />
+    <Compile Include="Network\Commands\GameVariables.cs" />
+    <Compile Include="Network\Commands\PlayerJoined.cs" />
     <Compile Include="Network\ConnectedClient.cs" />
     <Compile Include="Network\ISyncable.cs" />
     <Compile Include="Network\NetManager.cs" />

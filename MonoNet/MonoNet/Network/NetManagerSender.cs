@@ -1,10 +1,16 @@
-﻿using MonoNet.Network.UDP;
+﻿using MonoNet.GameSystems;
+using MonoNet.Network.UDP;
+using System;
 using System.Collections.Generic;
 
 namespace MonoNet.Network
 {
     public class NetManagerSender : NetManager
     {
+        public static readonly float UPDATES_PER_SECOND = 1 / 30f;
+        public static readonly TimeSpan TIMEOUT_TIME = new TimeSpan(0, 0, 8);
+        private float timer = 0;
+
         public override bool IsServer => true;
 
         private byte currentState;
@@ -40,6 +46,16 @@ namespace MonoNet.Network
                 }
                 netStates[currentState].Set(i, data);
             }
+
+            TimeSpan currentTime = Time.TotalGameTime;
+            for (int i = connectedAdresses.Count; i > -1; i--)
+            {
+                if (currentTime.Subtract(connectedAdresses[i].lastHeardFrom).CompareTo(TIMEOUT_TIME) > 0)
+                {
+                    InvokePlayerDisconnected(connectedAdresses[i]);
+                    connectedAdresses.RemoveAt(i);
+                }
+            }
         }
 
         public void SendToAll()
@@ -50,6 +66,10 @@ namespace MonoNet.Network
 
         public void Send(ConnectedClient connectedClient)
         {
+            timer -= Time.Delta;
+            if (timer > 0)
+                return;
+
             tempList.Clear();
             tempList.Add(currentState);
 
@@ -63,8 +83,11 @@ namespace MonoNet.Network
 
         public void Recieve(ConnectedClient connectedClient, byte[] data)
         {
-            connectedClient.lastRecievedPackage = GetNewerPackageNumber(connectedClient.lastRecievedPackage, data[0]);
+            if (IsNewerPackage(connectedClient.lastRecievedPackage, data[0]) == false)
+                return;
 
+            connectedClient.lastRecievedPackage = data[0];
+            connectedClient.lastHeardFrom = Time.TotalGameTime;
         }
 
     }

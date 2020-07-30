@@ -1,4 +1,5 @@
-﻿using MonoNet.Network.UDP;
+﻿using MonoNet.GameSystems;
+using MonoNet.Network.UDP;
 using MonoNet.Util;
 using System.Collections.Generic;
 using System.Net;
@@ -7,15 +8,18 @@ namespace MonoNet.Network
 {
     public class NetManagerReciever : NetManager
     {
+        public static readonly float UPDATES_PER_SECOND = 1 / 60f;
+        private float timer = 0;
+
         public override bool IsServer => false;
 
         private List<byte> tempData = new List<byte>();
         private byte lastRecievedPackage = 0;
         private Client client;
 
-        public NetManagerReciever(IPEndPoint ip) : base()
+        public NetManagerReciever(IPEndPoint ip, string name) : base()
         {
-            client = new Client(ip);
+            client = new Client(ip, name);
             client.StartListen();
         }
 
@@ -24,9 +28,13 @@ namespace MonoNet.Network
             if (client.Recieve(out byte[] data) == false)
                 return;
 
-            lastRecievedPackage = GetNewerPackageNumber(lastRecievedPackage, data[0]);
+            if (IsNewerPackage(lastRecievedPackage, data[0]) == false)
+                return;
+
+            lastRecievedPackage = data[0];
 
             int pointer = 1;
+            
             while (pointer < data.Length)
             {
                 byte address = data[pointer];
@@ -43,6 +51,10 @@ namespace MonoNet.Network
 
         public void Send()
         {
+            timer -= Time.Delta;
+            if (timer > 0)
+                return;
+
             tempData.Clear();
             tempData.Add(lastRecievedPackage);
             for (int i = 0; i < netSyncComponents.Length; i++)

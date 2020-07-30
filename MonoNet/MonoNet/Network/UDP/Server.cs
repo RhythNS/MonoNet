@@ -92,10 +92,13 @@ namespace MonoNet.Network.UDP
 
                 if (connectedClient == null)
                 {
-                    if (Encoding.ASCII.GetString(buffer).Equals("Hello?") == false)
+                    string response = Encoding.ASCII.GetString(buffer);
+                    if (response.StartsWith("Hello?") == false || response.Length < 6)
                         continue;
 
-                    connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint));
+                    string name = response.Substring(6, response.Length - 16 - 6 > 0 ? 16 : response.Length - 6);
+
+                    connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint, name));
                     Send(connectedClient, Encoding.ASCII.GetBytes("Hello!"));
                     continue;
                 }

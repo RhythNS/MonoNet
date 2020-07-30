@@ -46,7 +46,7 @@ namespace MonoNet.Testing.NetTest
                 }
                 else if (Input.KeyDown(Keys.F2))
                 {
-                    reciever = new NetManagerReciever(new IPEndPoint(IPAddress.Parse("0:0:0:0:0:0:0:1"), 25565));
+                    reciever = new NetManagerReciever(new IPEndPoint(IPAddress.Parse("0:0:0:0:0:0:0:1"), 25565), "Unknown");
                     playerSpawn.playerActor.AddComponent<NetSyncComponent>();
 
                 }
