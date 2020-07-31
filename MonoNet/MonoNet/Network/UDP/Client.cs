@@ -57,12 +57,12 @@ namespace MonoNet.Network.UDP
             // Wait to see if we get something back. If we do not get anything back
             // then we can assume that the ip adress was wrong or the server is not running
             bool connected = false;
-            for (int i = 0; i < 5; i++) // total of 5 seconds
+            for (int i = 0; i < 10; i++) // total of 5 seconds = 500ms * 10
             {
                 // if no data is available sleep for 1 second
                 if (connection.Available == 0)
                 {
-                    Thread.Sleep(1000);
+                    Thread.Sleep(500);
                     continue;
                 }
 

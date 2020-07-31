@@ -82,6 +82,9 @@ namespace MonoNet.Network.UDP
                     break;
                 }
 
+                if (buffer == null || buffer.Length == 0)
+                    continue;
+
                 // If the connection is a new one, save it to the end points and send a welcome message.
                 ConnectedClient connectedClient = null;
                 for (int i = 0; i < connectedAdresses.Count; i++)
@@ -93,12 +96,15 @@ namespace MonoNet.Network.UDP
                 if (connectedClient == null)
                 {
                     string response = Encoding.ASCII.GetString(buffer);
-                    if (response.StartsWith("Hello?") == false || response.Length < 6)
+                    if (response.StartsWith("Hello?") == false || response.Length < 6 || connectedAdresses.Count >= NetConstants.MAX_PLAYERS)
                         continue;
 
-                    string name = response.Substring(6, response.Length - 16 - 6 > 0 ? 16 : response.Length - 6);
+                    string name = response.Substring(6, response.Length - NetConstants.MAX_NAME_LENGTH - 6 > 0
+                        ? NetConstants.MAX_NAME_LENGTH : response.Length - 6);
 
-                    connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint, name));
+                    byte id = NetUtils.GetLowestAvailableId(connectedAdresses);
+
+                    connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint, name, id));
                     Send(connectedClient, Encoding.ASCII.GetBytes("Hello!"));
                     continue;
                 }

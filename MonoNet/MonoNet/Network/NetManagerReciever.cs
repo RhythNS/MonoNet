@@ -8,7 +8,6 @@ namespace MonoNet.Network
 {
     public class NetManagerReciever : NetManager
     {
-        public static readonly float UPDATES_PER_SECOND = 1 / 60f;
         private float timer = 0;
 
         public override bool IsServer => false;
@@ -25,16 +24,23 @@ namespace MonoNet.Network
 
         public void Recieve()
         {
-            if (client.Recieve(out byte[] data) == false)
-                return;
+            byte[] data = null;
+            bool isNewer = false;
+            while (client.Recieve(out byte[] newData) == true)
+            {
+                if (IsNewerPackage(lastRecievedPackage, newData[0]) == true)
+                {
+                    lastRecievedPackage = newData[0];
+                    isNewer = true;
+                    data = newData;
+                }
+            }
 
-            if (IsNewerPackage(lastRecievedPackage, data[0]) == false)
+            if (data == null || isNewer == false)
                 return;
-
-            lastRecievedPackage = data[0];
 
             int pointer = 1;
-            
+
             while (pointer < data.Length)
             {
                 byte address = data[pointer];
@@ -54,6 +60,7 @@ namespace MonoNet.Network
             timer -= Time.Delta;
             if (timer > 0)
                 return;
+            timer = NetConstants.CLIENT_SEND_RATE_PER_SECOND;
 
             tempData.Clear();
             tempData.Add(lastRecievedPackage);

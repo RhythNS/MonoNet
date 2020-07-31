@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoNet.Network
 {
@@ -33,7 +34,7 @@ namespace MonoNet.Network
 
             for (int i = 0; i < amount; i++)
                 vectors[i] = new Vector2(values[i * 2], values[(i * 2) + 1]);
-            
+
             return vectors;
         }
 
@@ -61,6 +62,25 @@ namespace MonoNet.Network
         {
             for (int i = 0; i < vectors.Length; i++)
                 AddFloatsToList(toAddTo, vectors[i].X, vectors[i].Y);
+        }
+
+        // TODO: Optimize me
+        public static byte GetLowestAvailableId(List<ConnectedClient> clients)
+        {
+            List<ConnectedClient> temp = new List<ConnectedClient>(clients);
+            temp.OrderBy(x => x.id);
+            byte id = 0;
+            for (int i = 0; i < temp.Count - 1; i++)
+            {
+                if (id < temp[i].id && id < temp[i + 1].id)
+                    return id;
+                id = (byte)(temp[i].id + 1);
+            }
+
+            if (id < temp[temp.Count - 1].id)
+                return id;
+
+            return (byte)(temp[temp.Count - 1].id + 1);
         }
     }
 }

@@ -8,8 +8,6 @@ namespace MonoNet.Network.Commands
 {
     public class PlayerJoined : Command
     {
-
-
         public override Type CommandType => Type.PlayerJoined;
 
         public override void Execute(GameVariables variables)

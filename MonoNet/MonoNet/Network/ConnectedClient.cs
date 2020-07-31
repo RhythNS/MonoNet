@@ -10,11 +10,14 @@ namespace MonoNet.Network
     {
         public IPEndPoint ip;
 
-        public TimeSpan lastHeardFrom;
+        public byte[] lastRecievedData;
         public byte lastRecievedPackage;
+
+        public TimeSpan lastHeardFrom;
         public bool requestResync = false;
         public string name;
         public byte id;
+
 
         public List<NetSyncComponent> controlledComponents = new List<NetSyncComponent>();
         public List<Command> toSendCommands = new List<Command>();
@@ -33,5 +36,7 @@ namespace MonoNet.Network
             this.name = name;
             this.id = id;
         }
+
+        public override string ToString() => name + " " + id;
     }
 }

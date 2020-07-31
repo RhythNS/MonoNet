@@ -8,7 +8,9 @@ using MonoNet.Graphics;
 using MonoNet.Network;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
+using MonoNet.Util;
 using MonoNet.Util.Datatypes;
+using System.Collections.Generic;
 using System.Net;
 
 namespace MonoNet.Testing.NetTest
@@ -86,6 +88,7 @@ namespace MonoNet.Testing.NetTest
             tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
             TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
+            
         }
 
     }
