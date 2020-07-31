@@ -6,6 +6,9 @@ using System.Net;
 
 namespace MonoNet.Network
 {
+    /// <summary>
+    /// Representation of a client connected to the server.
+    /// </summary>
     public class ConnectedClient
     {
         public IPEndPoint ip;

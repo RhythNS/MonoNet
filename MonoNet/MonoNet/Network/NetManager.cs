@@ -5,6 +5,9 @@ namespace MonoNet.Network
     public delegate void OnPlayerConnected(ConnectedClient client);
     public delegate void OnPlayerDisconnected(ConnectedClient client);
 
+    /// <summary>
+    /// Holds information which is both used by the Sender and Reciever.
+    /// </summary>
     public abstract class NetManager
     {
         public static NetManager Instance { get; private set; }

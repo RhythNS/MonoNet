@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace MonoNet.Network
 {
-    class NetConstants
+    /// <summary>
+    /// Holds constants for the networking.
+    /// </summary>
+    public class NetConstants
     {
         public readonly static byte MAX_PLAYERS = 8;
         public readonly static int MAX_NAME_LENGTH = 15;

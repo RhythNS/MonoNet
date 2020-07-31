@@ -6,6 +6,9 @@ using System.Collections.Generic;
 
 namespace MonoNet.Network
 {
+    /// <summary>
+    /// Manages the synchronization between each player.
+    /// </summary>
     public class NetManagerSender : NetManager
     {
         private float timer = 0;
@@ -31,9 +34,14 @@ namespace MonoNet.Network
             server.StartListen();
         }
 
+        /// <summary>
+        /// Updates the current state of the game with local calculations and package recieved from players.
+        /// </summary>
         public void UpdateCurrentState()
         {
             currentState++;
+
+            // Create the newest NetState.
             for (int i = 0; i < netSyncComponents.Length; i++)
             {
                 byte[] data = null;
@@ -46,6 +54,7 @@ namespace MonoNet.Network
                 netStates[currentState].Set(i, data);
             }
 
+            // Look if any player has timed out and remove them if necessary.
             TimeSpan currentTime = Time.TotalGameTime;
             for (int i = connectedAdresses.Count; i > -1; i--)
             {
@@ -87,38 +96,56 @@ namespace MonoNet.Network
             }
         }
 
+        /// <summary>
+        /// Send updates to each connected client.
+        /// </summary>
         public void SendToAll()
         {
+            // Check to see if we sent out updates recently.
+            timer -= Time.Delta;
+            if (timer > 0)
+                return;
+
+            timer = NetConstants.SERVER_SEND_RATE_PER_SECOND;
+
+            // Send each client an update package.
             for (int i = connectedAdresses.Count - 1; i > -1; i--)
                 Send(connectedAdresses[i]);
         }
 
+        /// <summary>
+        /// Sends an update to a specified client.
+        /// </summary>
+        /// <param name="connectedClient">The client which is updated.</param>
         public void Send(ConnectedClient connectedClient)
         {
-            timer -= Time.Delta;
-            if (timer > 0)
-                return;
-            timer = NetConstants.SERVER_SEND_RATE_PER_SECOND;
-
             tempList.Clear();
-            tempList.Add(currentState);
+            tempList.Add(currentState); // save the number of the current package
 
+            // Either send them an entire gamestate or a delta game state depending on wheter they want a complete resync.
             if (connectedClient.requestResync == false)
                 netStates[currentState].GetDif(netStates[connectedClient.lastRecievedPackage], tempList);
             else
                 netStates[currentState].GetDif(zeroState, tempList);
 
+            // Send the prepared package.
             server.Send(connectedClient, tempList.ToArray());
         }
 
+        /// <summary>
+        /// Callback function to recieve a package.
+        /// </summary>
+        /// <param name="connectedClient">The client who sent the package.</param>
+        /// <param name="data">The data of the package.</param>
         public void Recieve(ConnectedClient connectedClient, byte[] data)
         {
+            // If the package is older then what the client send previously then ignore it.
             if (IsNewerPackage(connectedClient.lastRecievedPackage, data[0]) == false)
                 return;
 
+            // Save the package to the connectedClient and let the main thread handle the synchronization.
             connectedClient.lastRecievedPackage = data[0];
             connectedClient.lastHeardFrom = Time.TotalGameTime;
-
             connectedClient.lastRecievedData = data;
         }
 
