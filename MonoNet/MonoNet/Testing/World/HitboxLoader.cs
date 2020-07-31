@@ -36,8 +36,8 @@ namespace MonoNet.Testing.World
             trans.LocalPosition = new Vector2(localX + (float)hitbox.X, localY + (float)hitbox.Y);
             Rigidbody body = hitboxActor.AddComponent<Rigidbody>();
             body.Set(width: (float)hitbox.Width, height: (float)hitbox.Height, isStatic: true, isSquare: true, isTrigger: false);
-            DrawTextureRegionComponent drawTexture = hitboxActor.AddComponent<DrawTextureRegionComponent>();
-            drawTexture.region = debugRegion;
+            //DrawTextureRegionComponent drawTexture = hitboxActor.AddComponent<DrawTextureRegionComponent>();
+            //drawTexture.region = debugRegion;
             trans.Parent = componentTrans;
         }
     }

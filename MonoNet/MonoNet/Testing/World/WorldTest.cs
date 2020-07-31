@@ -1,13 +1,9 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework.Graphics;
 using MonoNet.ECS;
-using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
-using MonoNet.Testing.Tiled;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
-using MonoNet.Util;
 using MonoNet.Util.Datatypes;
 
 namespace MonoNet.Testing
@@ -35,15 +31,15 @@ namespace MonoNet.Testing
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 
-            Actor baseActor = stage.CreateActor(0);
-            TiledBase tiledBase = baseActor.AddComponent<TiledBase>();
+            Actor tiledBaseActor = stage.CreateActor(0);
+            TiledBase tiledBase = tiledBaseActor.AddComponent<TiledBase>();
             tiledBase.Set(Content);
             tiledBase.OnCollisionHitboxLoaded += hitboxLoader.OnCollisionHitboxLoaded;
             tiledBase.OnObjectLoaded += boxSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
-            TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
+            TiledMapComponent[] components = tiledBase.AddMap(stage, "maps/level1", true, true);
 
             //float width = components[0].Width * components[0].TileWidth * 0.5f;
             //float height = components[0].Height * components[0].TileHeight * 0.5f;

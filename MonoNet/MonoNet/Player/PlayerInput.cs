@@ -5,7 +5,6 @@ using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
 using System.Collections;
-using System.Globalization;
 
 namespace MonoNet.Player
 {
@@ -65,47 +64,33 @@ namespace MonoNet.Player
 
         private void Move()
         {
-            if (Input.KeyDown(binding.right))
-            {
-                if (movedRight == true)
-                {
-                    addVel.X += player.XSpeed;
-                    movedRight = true;
-                }
-                else
-                {
-                    StopMove();
-                    addVel.X += player.XSpeed;
-                    movedRight = true;
-                }
-            }
-            else if (Input.KeyDown(binding.left))
+            if (Input.KeyDown(binding.right)) // move right
             {
                 if (movedRight == false)
-                {
-                    addVel.X -= player.XSpeed;
-                    movedRight = false;
-                }
-                else
-                {
                     StopMove();
-                    addVel.X -= player.XSpeed;
-                    movedRight = false;
-                }
-            } 
-            else if (rigidbody.isGrounded == true)
+
+                addVel.X += player.XSpeed;
+                movedRight = true;
+
+                if (rigidbody.velocity.X + addVel.X > player.XMaxSpeed)
+                    addVel.X = 0;
+            }
+            else if (Input.KeyDown(binding.left)) // move left
+            {
+                if (movedRight == true)
+                    StopMove();
+
+                addVel.X -= player.XSpeed;
+                movedRight = false;
+
+                if (rigidbody.velocity.X + addVel.X < -player.XMaxSpeed)
+                    addVel.X = 0;
+            }
+            //else // not moving
+            else if (rigidbody.isGrounded == true) // not moving and grounded
             {
                 StopMove();
             }
-
-            if (rigidbody.velocity.X + addVel.X > player.XMaxSpeed)
-            {
-                addVel.X = 0;
-            }
-            else if (rigidbody.velocity.X + addVel.X < -player.XMaxSpeed)
-            {
-                addVel.X = 0;
-            } 
         }
 
         private void StopMove()
@@ -128,7 +113,7 @@ namespace MonoNet.Player
                     jumping = true;
                     addVel.Y -= player.JumpForce * (1 + 0.2f * jumpCount);
                 }
-            } 
+            }
         }
 
         IEnumerator StackJump()
