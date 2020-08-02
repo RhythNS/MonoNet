@@ -1,5 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoNet.Network;
 using MonoNet.Util;
+using System;
 using System.Collections.Generic;
 
 namespace MonoNet.ECS.Components
@@ -7,7 +9,7 @@ namespace MonoNet.ECS.Components
     /// <summary>
     /// Holds position and scale of an Actor.
     /// </summary>
-    public class Transform2 : Component
+    public class Transform2 : Component, ISyncable
     {
         private List<Transform2> children = new List<Transform2>();
         private Transform2 parent;
@@ -19,13 +21,18 @@ namespace MonoNet.ECS.Components
                 if (parent == value)
                     return;
 
-                // If the old parent is not null then remove the reference to this transfrom
+                Vector2 oldPosition = WorldPosition;
+
+                // If the old parent is not null then remove the reference to this transfrom.
                 if (parent != null)
                     parent.children.Remove(this);
 
-                // If the new parent is not null then add it a reference to it
+                // If the new parent is not null then add it a reference to it.
                 if (value != null)
                     value.children.Add(this);
+
+                // Set the local position so the acctual position does not change.
+                WorldPosition = oldPosition;
 
                 // lastly assign the parent to the new value
                 parent = value;
@@ -91,5 +98,16 @@ namespace MonoNet.ECS.Components
         /// <param name="index">The index of the children array.</param>
         /// <returns>The requested child at index.</returns>
         public Transform2 GetChildAt(int index) => children[index];
+
+        public void Sync(byte[] data, ref int pointerAt)
+        {
+            LocalPosition = NetUtils.GetNextVector(data, ref pointerAt);
+            LocalScale = NetUtils.GetNextVector(data, ref pointerAt);
+        }
+
+        public void GetSync(List<byte> data)
+        {
+            NetUtils.AddVectorsToList(data, LocalPosition, LocalScale);
+        }
     }
 }

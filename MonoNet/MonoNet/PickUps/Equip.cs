@@ -1,0 +1,75 @@
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using MonoNet.ECS;
+using MonoNet.PickUps;
+using MonoNet.Util;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace MonoNet.GameSystems.PickUps
+{
+    public class Equip : Component, IDisposable
+    {
+        public Actor equipHolder;
+
+        public Weapon ActiveWeapon { get; private set; }
+        private Weapon knife;
+
+        private List<PickUp> powerUps;
+
+        protected override void OnInitialize()
+        {
+            knife = Knife.Instance;
+
+            powerUps = new List<PickUp>();
+        }
+
+        /// <summary>
+        /// Gets Called when weapon gets picked up
+        /// </summary>
+        /// <param name="newWeapon">picked up weapon</param>
+        public void PickupWeapon(Weapon newWeapon)
+        {
+            if (ActiveWeapon != newWeapon)
+            {
+                DropWeapon();
+                newWeapon.OnEquip(equipHolder);
+                ActiveWeapon = newWeapon;
+            }
+        }
+
+        /// <summary>
+        /// Gets Called when weapon gets droped
+        /// </summary>
+        public void DropWeapon()
+        {
+            if (ActiveWeapon != knife)
+            {
+                ActiveWeapon.OnDeEquip();
+                ActiveWeapon = knife;
+            }
+        }
+
+        /// <summary>
+        /// Gets Called if power up is picked up
+        /// </summary>
+        /// <param name="newPowerUp">Power Up which is picked up </param>
+        public void RegisterPowerUP(PickUp newPowerUp)
+        {
+            if (!powerUps.Contains(newPowerUp))
+            {
+                newPowerUp.OnEquip(equipHolder);
+                powerUps.Add(newPowerUp);
+            }
+        }
+
+        public void Dispose()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
+using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
@@ -33,7 +34,7 @@ namespace MonoNet.Testing.ECS
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();
-            manager.Add(new Time(), new Input());
+            manager.Add(new Time(), new Input(), new Physic());
 
             stage = new Stage(5, new Pool<Actor>(50, 10));
 
@@ -76,24 +77,7 @@ namespace MonoNet.Testing.ECS
 
             Texture2D testingLayers = Content.Load<Texture2D>("Test/testingLayers");
             TextureRegion[] layerRegions = TextureRegion.CreateAllFromSheet(testingLayers, 20, 20);
-
-            for (int i = 0; i < layerRegions.Length; i++)
-            {
-                Actor layerActor = stage.CreateActor(i);
-                Transform2 layerTrans = layerActor.AddComponent<Transform2>();
-                layerTrans.WorldPosition = new Vector2(width * 0.5f, height * 0.25f);
-                layerTrans.LocalScale = new Vector2(2f, 2f);
-                layerActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
-                layerActor.AddComponent<GoRightComponent>().Set(20 + i * 60, width);
-
-                Actor childActor = stage.CreateActor(i);
-                Transform2 childTrans = childActor.AddComponent<Transform2>();
-                childTrans.LocalPosition = new Vector2(0, -50);
-                childTrans.Parent = layerTrans;
-                childTrans.LocalScale = new Vector2(0.5f, 0.5f);
-                childActor.AddComponent<DrawTextureRegionComponent>().region = layerRegions[i];
-            }
-
+            
             MyraEnvironment.Game = this;
 
             stage.CreateActor(0).AddComponent<CameraTestComponent>().camera = camera;
@@ -109,7 +93,6 @@ namespace MonoNet.Testing.ECS
                 Exit();
 
             stage.Update();
-
         }
 
         protected override void Draw(GameTime gameTime)

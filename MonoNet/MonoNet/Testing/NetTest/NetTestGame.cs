@@ -1,21 +1,64 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
-using MonoNet.ECS.Components;
+using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
-using MonoNet.Testing.Tiled;
+using MonoNet.Network;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util;
 using MonoNet.Util.Datatypes;
+using System.Collections.Generic;
+using System.Net;
 
-namespace MonoNet.Testing
+namespace MonoNet.Testing.NetTest
 {
-    public class WorldTest : TestGame
+    public class NetTestGame : TestGame
     {
-        protected override int LayersForStage => 2;
+        public static bool startDebug = false;
+
+        NetManagerReciever reciever;
+        NetManagerSender sender;
+        PlayerSpawn playerSpawn;
+
+        protected override void AfterManagerPreStageUpdate(GameTime time)
+        {
+            if (reciever != null)
+            {
+                reciever.Recieve();
+                reciever.Send();
+            }
+            else if (sender != null)
+            {
+                if (startDebug == true)
+                    new Vector2();
+
+                sender.UpdateCurrentState();
+                sender.SendToAll();
+            }
+            else
+            {
+                if (Input.KeyDown(Keys.F1))
+                {
+                    sender = new NetManagerSender(25565);
+                    playerSpawn.playerActor.AddComponent<NetSyncComponent>();
+
+                }
+                else if (Input.KeyDown(Keys.F2))
+                {
+                    reciever = new NetManagerReciever(new IPEndPoint(IPAddress.Parse("0:0:0:0:0:0:0:1"), 25565), "Unknown");
+                    playerSpawn.playerActor.AddComponent<NetSyncComponent>();
+
+                }
+
+
+            }
+
+            if (Input.KeyDown(Keys.F5))
+                startDebug = true;
+        }
 
         protected override void LoadContent()
         {
@@ -31,7 +74,7 @@ namespace MonoNet.Testing
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
             BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
-            PlayerSpawn playerSpawn = new PlayerSpawn(playerRegion, stage);
+            playerSpawn = new PlayerSpawn(playerRegion, stage);
             GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
@@ -43,13 +86,9 @@ namespace MonoNet.Testing
             tiledBase.OnObjectLoaded += boxSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
-            
+
             TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
-
-            //float width = components[0].Width * components[0].TileWidth * 0.5f;
-            //float height = components[0].Height * components[0].TileHeight * 0.5f;
-
-            //components[0].Actor.GetComponent<SharedPositionTransform2>().WorldPosition = new Vector2(-width, -height);
+            
         }
 
     }

@@ -59,11 +59,15 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ECS\Actor\Component\Components\ScaledTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\SharedPositionTransform2.cs" />
     <Compile Include="ECS\Actor\Component\Components\Transform2.cs" />
     <Compile Include="ECS\Actor\Coroutine\YieldInstruction.cs" />
     <Compile Include="ECS\Actor\Coroutine\WaitForSeconds.cs" />
     <Compile Include="GameSystem\GameSystemManager.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\Physic.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\Rigidbody.cs" />
+    <Compile Include="GameSystem\GameSystems\PhysicsSystem\TriggerableHelper.cs" />
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
@@ -71,6 +75,31 @@
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
     <Compile Include="GameSystem\GameSystems\Time.cs" />
+    <Compile Include="Network\Commands\Command.cs" />
+    <Compile Include="Network\Commands\CommandHandler.cs" />
+    <Compile Include="Network\Commands\GameVariables.cs" />
+    <Compile Include="Network\Commands\PlayerJoined.cs" />
+    <Compile Include="Network\ConnectedClient.cs" />
+    <Compile Include="Network\ISyncable.cs" />
+    <Compile Include="Network\NetConstants.cs" />
+    <Compile Include="Network\NetManager.cs" />
+    <Compile Include="Network\NetManagerReciever.cs" />
+    <Compile Include="Network\NetManagerSender.cs" />
+    <Compile Include="Network\NetState.cs" />
+    <Compile Include="Network\NetSyncComponent.cs" />
+    <Compile Include="Network\NetUtils.cs" />
+    <Compile Include="Network\UDP\Client.cs" />
+    <Compile Include="Network\UDP\Server.cs" />
+    <Compile Include="PickUps\DoubleJump.cs" />
+    <Compile Include="PickUps\Equip.cs" />
+    <Compile Include="PickUps\Knife.cs" />
+    <Compile Include="PickUps\Pickable.cs" />
+    <Compile Include="PickUps\PickUp.cs" />
+    <Compile Include="PickUps\Pistol.cs" />
+    <Compile Include="PickUps\Weapon.cs" />
+    <Compile Include="Player\PlayerManager.cs" />
+    <Compile Include="Player\PlayerInput.cs" />
+    <Compile Include="Player\PlayerKeys.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Screen\IScreen.cs" />
@@ -83,10 +112,19 @@
     <Compile Include="Testing\Infrastructure\CameraTestComponent.cs" />
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
+    <Compile Include="Testing\NetTest\NetTestGame.cs" />
+    <Compile Include="Testing\NetTest\SimpleMoveComponent.cs" />
+    <Compile Include="Testing\Physics\PhysicTest.cs" />
+    <Compile Include="Testing\Physics\TriggerTest.cs" />
+    <Compile Include="Testing\PickupTest\PickupTestGame.cs" />
     <Compile Include="Testing\TestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestGame.cs" />
     <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
     <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
+    <Compile Include="Testing\World\GunSpawn.cs" />
+    <Compile Include="Testing\World\HitboxLoader.cs" />
+    <Compile Include="Testing\World\BoxSpawn.cs" />
+    <Compile Include="Testing\World\PlayerSpawn.cs" />
     <Compile Include="Testing\World\WorldTest.cs" />
     <Compile Include="Tiled\StaticTile.cs" />
     <Compile Include="Tiled\Tile.cs" />
@@ -97,6 +135,8 @@
     <Compile Include="Tiled\TiledSingleLayerComponent.cs" />
     <Compile Include="Testing\UI\MainMenu.cs" />
     <Compile Include="Testing\UI\UITestScreen.cs" />
+    <Compile Include="Util\Datatypes\Box2D.cs" />
+    <Compile Include="Util\Datatypes\MultiKey.cs" />
     <Compile Include="Util\Interfaces\IDrawable.cs" />
     <Compile Include="Util\Interfaces\IUpdateable.cs" />
     <Compile Include="ECS\Stage.cs" />
@@ -105,6 +145,10 @@
     <Compile Include="Testing\Infrastructure\InputTesterComponent.cs" />
     <Compile Include="Util\Datatypes\Fast2DArray.cs" />
     <Compile Include="Util\Log.cs" />
+    <Compile Include="Util\Overlap\IOverlapable.cs" />
+    <Compile Include="Util\Overlap\IOverlapManager.cs" />
+    <Compile Include="Util\Overlap\Overlapable.cs" />
+    <Compile Include="Util\Overlap\RecursiveOverlapManager.cs" />
     <Compile Include="Util\Pools\IPoolable.cs" />
     <Compile Include="Util\Pools\Pool.cs" />
   </ItemGroup>
@@ -113,6 +157,7 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
@@ -129,12 +174,6 @@
     <None Include="app.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Libs\Myra\src\Myra\Myra.MonoGame.csproj">
-      <Project>{72e3c1ae-4700-4c22-a26b-17ccd616f607}</Project>
-      <Name>Myra.MonoGame</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
@@ -147,6 +186,10 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Libs\Myra\src\Myra\Myra.MonoGame.csproj">
+      <Project>{72e3c1ae-4700-4c22-a26b-17ccd616f607}</Project>
+      <Name>Myra.MonoGame</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Libs\TiledSharp\TiledSharp\TiledSharp.csproj">
       <Project>{dea69b18-2787-43f0-b593-1160add8e9d1}</Project>
       <Name>TiledSharp</Name>
@@ -156,6 +199,7 @@
       <Name>MonoNetContentPipelineExtensions</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\MonoGame\v3.0\MonoGame.Content.Builder.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
