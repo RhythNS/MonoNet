@@ -7,8 +7,13 @@ using System.Reflection;
 
 namespace MonoNet.Network.Commands
 {
-    class EventHandlerDictionary : Dictionary<string, EventHandlerEntry>
+    public class EventHandlerDictionary : Dictionary<string, EventHandlerEntry>
     {
+        public static EventHandlerDictionary Instance { get; private set; }
+        public EventHandlerDictionary() {
+            Instance = this;
+        }
+
         public new EventHandlerEntry this[string key] {
             get {
                 var lookupKey = key.ToLower();
