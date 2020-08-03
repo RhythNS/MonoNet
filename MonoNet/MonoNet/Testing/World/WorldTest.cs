@@ -21,7 +21,7 @@ namespace MonoNet.Testing
             graphics.ApplyChanges();
 
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
-            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/testingLayers"), 32, 15); //changed content from gun because my content folder is not up to date
+            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
             TextureRegion playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
@@ -39,7 +39,7 @@ namespace MonoNet.Testing
             tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
-            TiledMapComponent[] components = tiledBase.AddMap(stage, "maps/level1", true, true);
+            TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
 
             //float width = components[0].Width * components[0].TileWidth * 0.5f;
             //float height = components[0].Height * components[0].TileHeight * 0.5f;

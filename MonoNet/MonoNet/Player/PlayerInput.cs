@@ -21,6 +21,8 @@ namespace MonoNet.Player
         private bool jumping = false;
         private int jumpCount = 0;
 
+        public bool onWeapon = false;
+
         protected override void OnInitialize()
         {
             transform = Actor.GetComponent<Transform2>();
@@ -41,21 +43,13 @@ namespace MonoNet.Player
 
             Move();
             Jump();
+            PickUp();
+            Drop();
 
-            //TODO
-            /* 
-            if (Input.IsKeyDownThisFrame(binding.pickup))
-            {
-
-            }
-
+            /*
             if (Input.IsKeyDownThisFrame(binding.weaponFire))
             {
                 equip.ActiveWeapon.CoreMethod();
-            }
-            if (Input.IsKeyDownThisFrame(binding.weaponDrop))
-            {
-                equip.DropWeapon();
             }
             */
             addVel.X *= Time.Delta;
@@ -130,6 +124,22 @@ namespace MonoNet.Player
             else
             {
                 jumpCount = 0;
+            }
+        }
+
+        private void PickUp()
+        {
+            if (Input.IsKeyDownThisFrame(binding.pickup) && onWeapon == true)
+            {
+                equip.PickupWeapon(equip.standingOnWeapon);
+            }
+        }
+
+        private void Drop()
+        {
+            if (Input.IsKeyDownThisFrame(binding.weaponDrop))
+            {
+                equip.DropWeapon();
             }
         }
     }

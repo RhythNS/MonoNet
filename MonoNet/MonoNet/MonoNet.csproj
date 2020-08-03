@@ -75,6 +75,7 @@
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
     <Compile Include="GameSystem\GameSystems\Time.cs" />
+    <Compile Include="PickUps\Bullet.cs" />
     <Compile Include="PickUps\DoubleJump.cs" />
     <Compile Include="PickUps\Equip.cs" />
     <Compile Include="PickUps\Knife.cs" />

@@ -1,5 +1,9 @@
-﻿using Microsoft.Xna.Framework.Input;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
+using MonoNet.ECS.Components;
+using MonoNet.GameSystems.PhysicsSystem;
+using MonoNet.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,16 +14,11 @@ namespace MonoNet.PickUps
 {
     class Pistol : Weapon
     {
-        private int damage;
-
-        public Pistol()
-        {
-            damage = 1; //example
-        }
-
         public override void CoreMethod()
         {
-            //shoot
+            /* Actor bullet = Actor.Stage.CreateActor(0);
+            Rigidbody rb = bullet.AddComponent<Rigidbody>();
+            rb.OnTriggerEnter += OnTriggerEnter; */
         }
     }
 }

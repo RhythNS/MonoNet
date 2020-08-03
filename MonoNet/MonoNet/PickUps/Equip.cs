@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
+using MonoNet.ECS.Components;
+using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.PickUps;
 using MonoNet.Util;
 using System;
@@ -12,20 +14,24 @@ using System.Threading.Tasks;
 
 namespace MonoNet.GameSystems.PickUps
 {
-    public class Equip : Component, IDisposable
+    public class Equip : Component, IDisposable, Interfaces.IUpdateable
     {
         public Actor equipHolder;
 
+        public Weapon standingOnWeapon;
         public Weapon ActiveWeapon { get; private set; }
-        private Weapon knife;
 
         private List<PickUp> powerUps;
 
         protected override void OnInitialize()
         {
-            knife = Knife.Instance;
-
+            equipHolder = Actor;
             powerUps = new List<PickUp>();
+        }
+
+        public void Update()
+        {
+            
         }
 
         /// <summary>
@@ -47,10 +53,10 @@ namespace MonoNet.GameSystems.PickUps
         /// </summary>
         public void DropWeapon()
         {
-            if (ActiveWeapon != knife)
+            if (ActiveWeapon != null)
             {
                 ActiveWeapon.OnDeEquip();
-                ActiveWeapon = knife;
+                ActiveWeapon = null;
             }
         }
 

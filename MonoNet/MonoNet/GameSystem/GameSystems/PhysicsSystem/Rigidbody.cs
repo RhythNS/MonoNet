@@ -58,7 +58,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void Update()
         {
-            if (isStatic == false && isGrounded == false)
+            if (isStatic == false && isGrounded == false && isTrigger == false)
             {
                 velocity.Y += gConst * Time.Delta;
             }
