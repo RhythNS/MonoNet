@@ -15,15 +15,18 @@ namespace MonoNet.Network
 
         public byte[] lastRecievedData;
         public byte lastRecievedPackage;
+        public byte lastHandledPackage = 255;
+
+        public CommandPackageManager commandPackageManager;
 
         public TimeSpan lastHeardFrom;
         public bool requestResync = false;
         public string name;
         public byte id;
 
-
         public List<NetSyncComponent> controlledComponents = new List<NetSyncComponent>();
-        public List<Command> toSendCommands = new List<Command>();
+        public List<byte[]> toSendCommands = new List<byte[]>();
+        public List<byte> recievedCommands = new List<byte>();
 
         public ConnectedClient(IPEndPoint ip, string name, byte id)
         {
