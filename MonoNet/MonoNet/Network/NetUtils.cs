@@ -43,6 +43,38 @@ namespace MonoNet.Network
         }
 
         /// <summary>
+        /// Gets the next short value from a given package. Automatically increments the pointer
+        /// to the next data index.
+        /// </summary>
+        /// <param name="data">The package as a byte array.</param>
+        /// <param name="pointerAt">The current location of the array.</param>
+        /// <returns>The converted short.</returns>
+        public static short GetNextShort(byte[] data, ref int pointerAt)
+        {
+            short value = BitConverter.ToInt16(data, pointerAt);
+            pointerAt += 4;
+            return value;
+        }
+
+        /// <summary>
+        /// Gets an array of short values from a given package. Automatically increments the pointer
+        /// to the next data index.
+        /// </summary>
+        /// <param name="data">The package as a byte array.</param>
+        /// <param name="pointerAt">The current location of the array.</param>
+        /// <param name="amount">The amount of shorts to be read.</param>
+        /// <returns>The converted short array.</returns>
+        public static short[] GetNextShorts(byte[] data, ref int pointerAt, int amount)
+        {
+            short[] values = new short[amount];
+
+            for (int i = 0; i < amount; i++)
+                values[i] = GetNextShort(data, ref pointerAt);
+
+            return values;
+        }
+
+        /// <summary>
         /// Gets the next vector2 value from a given package. Automatically increments the pointer
         /// to the next data index.
         /// </summary>
@@ -93,6 +125,30 @@ namespace MonoNet.Network
         /// <param name="toAddTo">The list to where the value is stored to.</param>
         /// <param name="values">The values to be converted into a byte array.</param>
         public static void AddFloatsToList(List<byte> toAddTo, params float[] values)
+        {
+            for (int i = 0; i < values.Length; i++)
+                AddFloatToList(values[i], toAddTo);
+        }
+
+        /// <summary>
+        /// Converts a short to a byte array and saves it to the list.
+        /// </summary>
+        /// <param name="value">The value to be converted into a byte array.</param>
+        /// <param name="toAddTo">The list to where the value is stored to.</param>
+        public static void AddShortToList(short value, List<byte> toAddTo)
+        {
+            byte[] converted = BitConverter.GetBytes(value);
+
+            for (int i = 0; i < converted.Length; i++)
+                toAddTo.Add(converted[i]);
+        }
+
+        /// <summary>
+        /// Converts any amount of shorts to a byte array and saves it to the list.
+        /// </summary>
+        /// <param name="toAddTo">The list to where the value is stored to.</param>
+        /// <param name="values">The values to be converted into a byte array.</param>
+        public static void AddShortsToList(List<byte> toAddTo, params short[] values)
         {
             for (int i = 0; i < values.Length; i++)
                 AddFloatToList(values[i], toAddTo);

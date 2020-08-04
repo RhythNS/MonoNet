@@ -1,4 +1,5 @@
 ﻿using MonoNet.GameSystems;
+using MonoNet.Network.Commands;
 using MonoNet.Network.UDP;
 using MonoNet.Util;
 using System.Collections.Generic;
@@ -15,9 +16,14 @@ namespace MonoNet.Network
 
         public override bool IsServer => false;
 
+        private Client client;
+
+        private readonly List<byte> recievedCommands = new List<byte>();
+        private readonly List<byte[]> toSendCommands = new List<byte[]>();
+        private readonly CommandPackageManager commandPackageManager = new CommandPackageManager();
+
         private List<byte> tempData = new List<byte>();
         private byte lastRecievedPackage = 0;
-        private Client client;
 
         public NetManagerReciever(IPEndPoint ip, string name) : base()
         {
@@ -48,6 +54,9 @@ namespace MonoNet.Network
 
             // Iterate through the package. The first byte is the package number which we already processed.
             int pointer = 1;
+
+            RecieveRPC(data, ref pointer, recievedCommands, toSendCommands, commandPackageManager);
+
             while (pointer < data.Length)
             {
                 byte address = data[pointer]; // The first byte is the id of the NetSyncComponent.
@@ -75,6 +84,10 @@ namespace MonoNet.Network
 
             tempData.Clear();
             tempData.Add(lastRecievedPackage); // Save the number of the last recieved package first.
+
+            // Handle rpcs
+            AppendRPCSend(tempData, recievedCommands, toSendCommands);
+
             // Get the byte[] of each component.
             for (int i = 0; i < netSyncComponents.Length; i++)
             {

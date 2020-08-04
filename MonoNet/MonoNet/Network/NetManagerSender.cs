@@ -21,7 +21,6 @@ namespace MonoNet.Network
         private NetState[] netStates = new NetState[256];
 
         private List<byte> tempList = new List<byte>();
-        private readonly List<ConnectedClient> connectedAdresses = new List<ConnectedClient>();
 
         private Server server;
 
@@ -30,7 +29,7 @@ namespace MonoNet.Network
             for (int i = 0; i < netStates.Length; i++)
                 netStates[i] = new NetState();
 
-            server = new Server(port, connectedAdresses, Recieve);
+            server = new Server(port, ConnectedAdresses, Recieve);
             server.StartListen();
         }
 
@@ -56,12 +55,12 @@ namespace MonoNet.Network
 
             // Look if any player has timed out and remove them if necessary.
             TimeSpan currentTime = Time.TotalGameTime;
-            for (int i = connectedAdresses.Count; i > -1; i--)
+            for (int i = ConnectedAdresses.Count; i > -1; i--)
             {
-                if (currentTime.Subtract(connectedAdresses[i].lastHeardFrom).CompareTo(NetConstants.TIMEOUT_TIME) > 0)
+                if (currentTime.Subtract(ConnectedAdresses[i].lastHeardFrom).CompareTo(NetConstants.TIMEOUT_TIME) > 0)
                 {
-                    InvokePlayerDisconnected(connectedAdresses[i]);
-                    connectedAdresses.RemoveAt(i);
+                    InvokePlayerDisconnected(ConnectedAdresses[i]);
+                    ConnectedAdresses.RemoveAt(i);
                 }
             }
 
@@ -69,22 +68,30 @@ namespace MonoNet.Network
             // This might cause some weird behaviour or it might be fine. If any
             // weird sync bugs happen then try to synchronize the writing and reading for
             // the lastRecievedData.
-            for (int i = 0; i < connectedAdresses.Count; i++)
+            for (int i = 0; i < ConnectedAdresses.Count; i++)
             {
-                byte[] data = connectedAdresses[i].lastRecievedData;
+                if (ConnectedAdresses[i].lastHandledPackage == ConnectedAdresses[i].lastRecievedPackage)
+                    continue;
+                ConnectedAdresses[i].lastHandledPackage = ConnectedAdresses[i].lastRecievedPackage;
+
+                byte[] data = ConnectedAdresses[i].lastRecievedData;
                 int pointerAt = 1;
+
+                // Handle Rpcs
+                RecieveRPC(data, ref pointerAt, ConnectedAdresses[i].recievedCommands, ConnectedAdresses[i].toSendCommands, ConnectedAdresses[i].commandPackageManager);
+
                 while (pointerAt < data.Length)
                 {
                     byte address = data[pointerAt];
                     if (netSyncComponents[address] == null)
                     {
-                        Log.Warn("Player " + connectedAdresses[i].ToString() + " tried to access an already deleted adress.");
+                        Log.Warn("Player " + ConnectedAdresses[i].ToString() + " tried to access an already deleted adress.");
                         // maybe full sync?
                         break;
                     }
-                    if (connectedAdresses[i].controlledComponents.Contains(netSyncComponents[address]) == false)
+                    if (ConnectedAdresses[i].controlledComponents.Contains(netSyncComponents[address]) == false)
                     {
-                        Log.Warn("Player " + connectedAdresses[i].ToString() + " tried to modify an component he is not controlling.");
+                        Log.Warn("Player " + ConnectedAdresses[i].ToString() + " tried to modify an component he is not controlling.");
                         // maybe full sync?
                         break;
                     }
@@ -109,8 +116,8 @@ namespace MonoNet.Network
             timer = NetConstants.SERVER_SEND_RATE_PER_SECOND;
 
             // Send each client an update package.
-            for (int i = connectedAdresses.Count - 1; i > -1; i--)
-                Send(connectedAdresses[i]);
+            for (int i = ConnectedAdresses.Count - 1; i > -1; i--)
+                Send(ConnectedAdresses[i]);
         }
 
         /// <summary>
@@ -121,6 +128,9 @@ namespace MonoNet.Network
         {
             tempList.Clear();
             tempList.Add(currentState); // save the number of the current package
+
+            // Handle rpcs
+            AppendRPCSend(tempList, connectedClient.recievedCommands, connectedClient.toSendCommands);
 
             // Either send them an entire gamestate or a delta game state depending on wheter they want a complete resync.
             if (connectedClient.requestResync == false)
