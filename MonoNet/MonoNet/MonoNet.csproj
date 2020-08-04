@@ -75,12 +75,8 @@
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
     <Compile Include="GameSystem\GameSystems\Time.cs" />
-    <Compile Include="Network\Commands\Command.cs" />
-    <Compile Include="Network\Commands\CommandHandler.cs" />
     <Compile Include="Network\Commands\EventHandlerAttribute.cs" />
     <Compile Include="Network\Commands\EventHandlerDictionary.cs" />
-    <Compile Include="Network\Commands\GameVariables.cs" />
-    <Compile Include="Network\Commands\PlayerJoined.cs" />
     <Compile Include="Network\ConnectedClient.cs" />
     <Compile Include="Network\ISyncable.cs" />
     <Compile Include="Network\NetConstants.cs" />
@@ -115,7 +111,6 @@
     <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
     <Compile Include="Testing\NetTest\NetTestGame.cs" />
-    <Compile Include="Network\Commands\RPCComponent.cs" />
     <Compile Include="Testing\NetTest\SimpleMoveComponent.cs" />
     <Compile Include="Testing\Physics\PhysicTest.cs" />
     <Compile Include="Testing\Physics\TriggerTest.cs" />

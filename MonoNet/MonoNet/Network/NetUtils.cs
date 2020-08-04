@@ -141,4 +141,36 @@ namespace MonoNet.Network
             return (byte)(temp[temp.Count - 1].id + 1);
         }
     }
+
+    public static class Extensions
+    {
+        /// <summary>
+        /// Returns just specified part of a byte array.
+        /// </summary>
+        /// <param name="data">The original byte array.</param>
+        /// <param name="index">The index to start at.</param>
+        /// <param name="length">How many elements should be copied into the sub array.</param>
+        /// <returns>The specified part of the array.</returns>
+        public static byte[] SubArray(this byte[] data, int index, int length) {
+            byte[] result = new byte[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
+
+        /// <summary>
+        /// Expands (or shortens) a string to the specified length.
+        /// </summary>
+        /// <param name="original">The string to expand / shorten.</param>
+        /// <param name="length">The length the new string should be.</param>
+        /// <returns>A new string at the exact length specified.</returns>
+        public static string ExpandTo(this string original, int length) {
+            if (length <= original.Length) return original.Substring(0, length);
+
+            while (original.Length <= length) {
+                original += " ";
+            }
+
+            return original;
+        }
+    }
 }
