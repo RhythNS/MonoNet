@@ -50,7 +50,7 @@ namespace MonoNet.Network
         protected bool IsNewerPackage(byte oldNumber, byte newNumber)
             => (oldNumber - newNumber < 128 && newNumber > oldNumber) || (oldNumber - newNumber > 128 && newNumber < oldNumber);
 
-        protected void RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager)
+        protected bool RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager)
         {
             // First get all rpcs which we do not need to send again
             int numberOfAckRpcs = data[pointerAt++];
@@ -75,9 +75,11 @@ namespace MonoNet.Network
                 recievedCommands.Add(idOfRpc);
                 if (commandPackageManager.RecievedShouldExecute(idOfRpc) == true)
                 {
-                    // Parse rpc and execute
+                    if (NetSyncComponent.ExecuteEventFromByteArray(data, ref pointerAt) == false)
+                        return false;
                 }
             }
+            return true;
         }
 
         protected void AppendRPCSend(List<byte> packageList, List<byte> recievedCommands, List<byte[]> toSendCommands)

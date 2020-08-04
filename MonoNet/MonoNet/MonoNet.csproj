@@ -75,6 +75,7 @@
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
     <Compile Include="GameSystem\GameSystems\Time.cs" />
+    <Compile Include="Network\Commands\CommandPackageManager.cs" />
     <Compile Include="Network\Commands\EventHandlerAttribute.cs" />
     <Compile Include="Network\Commands\EventHandlerDictionary.cs" />
     <Compile Include="Network\ConnectedClient.cs" />

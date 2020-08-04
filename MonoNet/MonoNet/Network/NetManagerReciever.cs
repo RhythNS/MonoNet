@@ -18,8 +18,9 @@ namespace MonoNet.Network
 
         private Client client;
 
-        private readonly List<byte> recievedCommands = new List<byte>();
         private readonly List<byte[]> toSendCommands = new List<byte[]>();
+        private byte autoIncrementRPCSend = 255;
+        private readonly List<byte> recievedCommands = new List<byte>();
         private readonly CommandPackageManager commandPackageManager = new CommandPackageManager();
 
         private List<byte> tempData = new List<byte>();
@@ -29,6 +30,12 @@ namespace MonoNet.Network
         {
             client = new Client(ip, name);
             client.StartListen();
+        }
+
+        public void AddRPC(List<byte> rpc)
+        {
+            rpc.Insert(0, ++autoIncrementRPCSend);
+            toSendCommands.Add(rpc.ToArray());
         }
 
         /// <summary>
@@ -55,7 +62,11 @@ namespace MonoNet.Network
             // Iterate through the package. The first byte is the package number which we already processed.
             int pointer = 1;
 
-            RecieveRPC(data, ref pointer, recievedCommands, toSendCommands, commandPackageManager);
+            if (RecieveRPC(data, ref pointer, recievedCommands, toSendCommands, commandPackageManager) == false)
+            {
+                Log.Error("Discarding package...");
+                return;
+            }
 
             while (pointer < data.Length)
             {

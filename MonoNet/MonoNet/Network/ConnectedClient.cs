@@ -26,6 +26,7 @@ namespace MonoNet.Network
 
         public List<NetSyncComponent> controlledComponents = new List<NetSyncComponent>();
         public List<byte[]> toSendCommands = new List<byte[]>();
+        private byte autoIncrementRPCSend = 255;
         public List<byte> recievedCommands = new List<byte>();
 
         public ConnectedClient(IPEndPoint ip, string name, byte id)
@@ -41,6 +42,12 @@ namespace MonoNet.Network
         {
             this.name = name;
             this.id = id;
+        }
+
+        public void AddRPC(List<byte> rpc)
+        {
+            rpc.Insert(0, ++autoIncrementRPCSend);
+            toSendCommands.Add(rpc.ToArray());
         }
 
         public override string ToString() => name + " " + id;

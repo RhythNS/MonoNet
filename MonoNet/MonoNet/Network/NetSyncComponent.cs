@@ -6,6 +6,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using MonoNet.Network.Commands;
 using System.Reflection;
+using MonoNet.Util;
 
 namespace MonoNet.Network
 {
@@ -70,24 +71,28 @@ namespace MonoNet.Network
         /// </summary>
         /// <param name="eventName">The name of the event to trigger.</param>
         /// <param name="args">The arguments the event expects.</param>
-        public static void TriggerServerEvent(string eventName, params object[] args) {
+        public static void TriggerServerEvent(string eventName, params object[] args)
+        {
             if (NetManager.Instance.IsServer) return;
 
-            byte[] data = EventDataToByteArray(eventName, args);
-            // TODO: send data to server
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            ((NetManagerReciever)NetManager.Instance).AddRPC(data);
         }
 
         /// <summary>
         /// Trigger an event on a specified connected client that should be executed by that client. NEEDS TO BE REGISTERED ON THE CLIENT!
         /// </summary>
-        /// <param name="playerId">The id of the player.</param>
+        /// <param name="player">The player to sent the RPC to.</param>
         /// <param name="eventName">The name of the event to trigger.</param>
         /// <param name="args">The arguments the event expects.</param>
-        public static void TriggerClientEvent(byte playerId, string eventName, params object[] args) {
+        public static void TriggerClientEvent(ConnectedClient player, string eventName, params object[] args)
+        {
             if (!NetManager.Instance.IsServer) return;
 
-            byte[] data = EventDataToByteArray(eventName, args);
-            // TODO: send data to client playerId
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            player.AddRPC(data);
         }
 
         /// <summary>
@@ -95,12 +100,14 @@ namespace MonoNet.Network
         /// </summary>
         /// <param name="eventName">The name of the event to trigger.</param>
         /// <param name="args">The arguments the event expects.</param>
-        public static void TriggerClientEvent(string eventName, params object[] args) {
+        public static void TriggerClientEvent(string eventName, params object[] args)
+        {
             if (!NetManager.Instance.IsServer) return;
 
-            // TODO: trigger on all connected clients
-            //foreach (ConnectedClient client in CONNECTEDCLIENTS)
-            //    TriggerClientEvent(client.id, eventName, args);
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            for (int i = 0; i < NetManager.Instance.ConnectedAdresses.Count; i++)
+                NetManager.Instance.ConnectedAdresses[i].AddRPC(data);
         }
 
         /// <summary>
@@ -109,35 +116,34 @@ namespace MonoNet.Network
         /// <param name="eventName">The name of the event.</param>
         /// <param name="args">The arguments for the event.</param>
         /// <returns>A byte array containing all data.</returns>
-        private static byte[] EventDataToByteArray(string eventName, params object[] args) {
+        private static List<byte> EventDataToByteArray(string eventName, params object[] args)
+        {
             List<byte> data = new List<byte>();
 
             // encode event name into 32 byte
             data.AddRange(Encoding.ASCII.GetBytes(eventName.ExpandTo(32).ToCharArray(), 0, 32));
 
             // add all parameters into the byte array
-            foreach (object arg in args) {
-                if (arg.GetType() == typeof(int)) {
-                    data.AddRange(BitConverter.GetBytes((int)arg));
-                } else if (arg.GetType() == typeof(float)) {
-                    data.AddRange(BitConverter.GetBytes((float)arg));
-                } else {
+            foreach (object arg in args)
+            {
+                if (NetUtils.TryAddValueToList(arg, data) == false)
+                {
                     // Error: Could not convert data to byte array
                 }
             }
 
-            return data.ToArray();
+            return data;
         }
 
         /// <summary>
         /// Executes an event from receiving a byte array.
         /// </summary>
         /// <param name="data">The byte array for the event.</param>
-        private static void ExecuteEventFromByteArray(byte[] data) {
+        public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer)
+        {
             // get event name from byte array
-            string eventName = Encoding.ASCII.GetString(data.SubArray(0, 32));
-
-            byte[] parameters = data.SubArray(32, data.Length - 32);
+            string eventName = Encoding.ASCII.GetString(data.SubArray(pointer, 32));
+            pointer += 32;
 
             // get method info from any registered callback
             MethodInfo method = EventHandlerDictionary.Instance[eventName].callbacks[0].GetMethodInfo();
@@ -146,23 +152,23 @@ namespace MonoNet.Network
             ParameterInfo[] paras = method.GetParameters();
             object[] args = new object[paras.Length];
 
-            int pointer = 0;
-            for (int i = 0; i < paras.Length; i++) {
-                if (paras[i].ParameterType == typeof(int)) {
-                    args[i] = BitConverter.ToInt32(parameters.SubArray(pointer, 4), 0);
-
-                    pointer += 4;
-                } else if (paras[i].ParameterType == typeof(float)) {
-                    args[i] = BitConverter.ToSingle(parameters.SubArray(pointer, 4), 0);
-
-                    pointer += 4;
-                } else {
+            for (int i = 0; i < paras.Length; i++)
+            {
+                if (NetUtils.TryGetNextValue(data, ref pointer, paras[i].ParameterType, out object parsed) == true)
+                {
+                    args[i] = parsed;
+                }
+                else
+                {
                     // Error: Could not convert from byte array to a specified type
+                    Log.Error("Could not parse event. The whole package should be discarded!");
+                    return false;
                 }
             }
 
             // execute event with its arguments
             EventHandlerDictionary.Instance[eventName].Invoke(args);
+            return true;
         }
 
         /// How an event can look

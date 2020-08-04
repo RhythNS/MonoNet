@@ -78,7 +78,11 @@ namespace MonoNet.Network
                 int pointerAt = 1;
 
                 // Handle Rpcs
-                RecieveRPC(data, ref pointerAt, ConnectedAdresses[i].recievedCommands, ConnectedAdresses[i].toSendCommands, ConnectedAdresses[i].commandPackageManager);
+                if (RecieveRPC(data, ref pointerAt, ConnectedAdresses[i].recievedCommands, ConnectedAdresses[i].toSendCommands, ConnectedAdresses[i].commandPackageManager) == false)
+                {
+                    Log.Error("Discarding package...");
+                    return;
+                }
 
                 while (pointerAt < data.Length)
                 {
