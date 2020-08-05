@@ -9,6 +9,9 @@ namespace MonoNet.PickUps
 {
     public abstract class Pickable : Component
     {
-
+        protected override void OnInitialize()
+        {
+          
+        }
     }
 }

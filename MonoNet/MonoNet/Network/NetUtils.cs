@@ -4,6 +4,7 @@ using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace MonoNet.Network
 {
@@ -42,6 +43,10 @@ namespace MonoNet.Network
             else if (type == typeof(byte))
             {
                 parsed = GetNextByte(data, ref pointer);
+            }
+            else if (type == typeof(string))
+            {
+                parsed = GetNextString(data, ref pointer);
             }
             else
             {
@@ -187,6 +192,21 @@ namespace MonoNet.Network
         }
 
         /// <summary>
+        /// Gets a string from a given package. Automatically increments the pointer
+        /// to the next data index.
+        /// </summary>
+        /// <param name="data">The package as a byte array.</param>
+        /// <param name="pointerAt">The current location of the array.</param>
+        /// <returns>The converted string.</returns>
+        public static string GetNextString(byte[] data, ref int pointerAt)
+        {
+            byte length = data[pointerAt++];
+            string s = Encoding.UTF8.GetString(data, pointerAt, length);
+            pointerAt += length;
+            return s;
+        }
+
+        /// <summary>
         /// Converts a value to a byte array and saves it to the toAddTo List.
         /// </summary>
         /// <param name="toAdd">The object to be added to the list.</param>
@@ -213,6 +233,10 @@ namespace MonoNet.Network
             else if (toAdd is byte parsedByte)
             {
                 AddByteToList(parsedByte, toAddTo);
+            }
+            else if (toAdd is string parsedString)
+            {
+                AddStringToList(parsedString, toAddTo);
             }
             else
             {
@@ -321,6 +345,22 @@ namespace MonoNet.Network
         {
             for (int i = 0; i < vectors.Length; i++)
                 AddFloatsToList(toAddTo, vectors[i].X, vectors[i].Y);
+        }
+
+        /// <summary>
+        /// Adds a string as a byte array to the list.
+        /// </summary>
+        /// <param name="toAddTo">The list where the string is added to.</param>
+        /// <param name="s">The string to be saved.</param>
+        public static void AddStringToList(string s, List<byte> toAddTo)
+        {
+            byte[] stringBytes = Encoding.UTF8.GetBytes(s);
+
+            if (stringBytes.Length > byte.MaxValue + 1)
+                throw new Exception("Could not add stringbytes. String to big! " + s);
+
+            toAddTo.Add((byte)stringBytes.Length);
+            toAddTo.AddRange(stringBytes);
         }
 
         // TODO: Optimize me

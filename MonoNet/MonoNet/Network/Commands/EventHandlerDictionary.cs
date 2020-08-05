@@ -36,7 +36,7 @@ namespace MonoNet.Network.Commands
                             if (method.IsStatic)
                                 EventHandlerDictionary.Instance[attribute.Name] += Delegate.CreateDelegate(actionType, method);
                             else
-                                EventHandlerDictionary.Instance[attribute.Name] += Delegate.CreateDelegate(actionType, this, method);
+                                EventHandlerDictionary.Instance[attribute.Name] += Delegate.CreateDelegate(actionType, null, method);
                         }
                     } catch (ReflectionTypeLoadException) { }
                 }

@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using TiledSharp;
 using MonoNet.Player;
+using MonoNet.PickUps;
 
 namespace MonoNet.Testing.World
 {
@@ -34,11 +35,11 @@ namespace MonoNet.Testing.World
             Transform2 trans = actor.AddComponent<ScaledTransform2>();
             trans.LocalPosition = new Vector2((float)loadedObject.X, (float)loadedObject.Y);
             Rigidbody body = actor.AddComponent<Rigidbody>();
+            Pistol pistol = actor.AddComponent<Pistol>();
 
             TextureRegion textureRegion = regions[random.Next(regions.Length - 1)]; // last one is empty
 
-            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 2, isStatic: false, isSquare: true, isTrigger: false);
-            actor.AddComponent<PlayerManager>();
+            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 2, isStatic: false, isSquare: true, isTrigger: true);
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
         }

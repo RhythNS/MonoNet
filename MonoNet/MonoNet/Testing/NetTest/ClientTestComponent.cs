@@ -14,7 +14,14 @@ namespace MonoNet.Testing.NetTest
 {
     public class ClientTestComponent : Component
     {
+        public static ClientTestComponent Instance { get; private set; }
+
         private TextureRegion textureRegion;
+
+        protected override void OnInitialize()
+        {
+            Instance = this;
+        }
 
         public void Set(TextureRegion region)
         {
@@ -24,18 +31,19 @@ namespace MonoNet.Testing.NetTest
         [EventHandler("CS")]
         public void CreateSyncable(byte layer)
         {
-            Actor actor = Actor.Stage.CreateActor(layer);
+            Actor actor = Instance.Actor.Stage.CreateActor(layer);
             actor.AddComponent<NetSyncComponent>();
         }
         
         [EventHandler("CP")]
         public void CreateNetPlayer(byte netId)
         {
+            TextureRegion textureRegion = Instance.textureRegion;
             Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
             Transform2 trans = actor.AddComponent<Transform2>();
+            Rigidbody body = actor.AddComponent<Rigidbody>();
             actor.AddComponent<PlayerManager>();
             actor.RemoveComponent<PlayerInput>();
-            Rigidbody body = actor.GetComponent<Rigidbody>();
             body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 1, isStatic: false, isSquare: true, isTrigger: false);
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;

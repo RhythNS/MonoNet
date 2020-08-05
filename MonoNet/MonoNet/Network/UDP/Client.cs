@@ -16,6 +16,7 @@ namespace MonoNet.Network.UDP
         private bool exitRequested;
         private bool connected = false;
         private string name;
+        public readonly byte[] welcomeMessage = Encoding.ASCII.GetBytes("Hello!");
 
         public Client(IPEndPoint endPoint, string name)
         {
@@ -119,6 +120,18 @@ namespace MonoNet.Network.UDP
         public void Send(byte[] data)
         {
             connection.Send(data, data.Length);
+        }
+
+        public bool IsWelcomeMessage(byte[] data)
+        {
+            if (data.Length < welcomeMessage.Length)
+                return false;
+
+            for (int i = 0; i < welcomeMessage.Length; i++)
+                if (data[i] != welcomeMessage[i])
+                    return false;
+
+            return true;
         }
 
     }

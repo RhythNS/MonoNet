@@ -48,6 +48,9 @@ namespace MonoNet.Network
             bool isNewer = false;
             while (client.Recieve(out byte[] newData) == true)
             {
+                if (client.IsWelcomeMessage(newData))
+                    continue;
+
                 if (IsNewerPackage(lastRecievedPackage, newData[0]) == true)
                 {
                     lastRecievedPackage = newData[0];

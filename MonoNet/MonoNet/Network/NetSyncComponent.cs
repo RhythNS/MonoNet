@@ -121,7 +121,18 @@ namespace MonoNet.Network
             List<byte> data = new List<byte>();
 
             // encode event name into 32 byte
-            data.AddRange(Encoding.ASCII.GetBytes(eventName.ExpandTo(32).ToCharArray(), 0, 32));
+            /*
+            if (eventName.Length > NetConstants.MAX_PREF_STRING_LENGTH)
+                Log.Info("Event name is longer than preferred! (" + eventName.Length + "/" + NetConstants.MAX_PREF_STRING_LENGTH + ")");
+
+            byte[] nameBytes = Encoding.Unicode.GetBytes(eventName);
+            if (nameBytes.Length > byte.MaxValue + 1)
+                Log.Error("Event name is too long!");
+
+            data.Add((byte)nameBytes.Length);
+            data.AddRange(nameBytes);
+            */
+            NetUtils.AddStringToList(eventName, data);
 
             // add all parameters into the byte array
             foreach (object arg in args)
@@ -129,6 +140,7 @@ namespace MonoNet.Network
                 if (NetUtils.TryAddValueToList(arg, data) == false)
                 {
                     // Error: Could not convert data to byte array
+                    Log.Error("Could not contert data to byte array!");
                 }
             }
 
@@ -142,8 +154,12 @@ namespace MonoNet.Network
         public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer)
         {
             // get event name from byte array
-            string eventName = Encoding.ASCII.GetString(data.SubArray(pointer, 32));
-            pointer += 32;
+            /*
+            int byteLength = data[pointer++];
+            string eventName = Encoding.Unicode.GetString(data.SubArray(pointer, byteLength));
+            pointer += byteLength;
+            */
+            string eventName = NetUtils.GetNextString(data, ref pointer);
 
             // get method info from any registered callback
             MethodInfo method = EventHandlerDictionary.Instance[eventName].callbacks[0].GetMethodInfo();
