@@ -201,7 +201,7 @@ namespace MonoNet.Network
         public static string GetNextString(byte[] data, ref int pointerAt)
         {
             byte length = data[pointerAt++];
-            string s = Encoding.UTF8.GetString(data, pointerAt, length);
+            string s = Encoding.UTF7.GetString(data, pointerAt, length);
             pointerAt += length;
             return s;
         }
@@ -354,13 +354,13 @@ namespace MonoNet.Network
         /// <param name="s">The string to be saved.</param>
         public static void AddStringToList(string s, List<byte> toAddTo)
         {
-            byte[] stringBytes = Encoding.UTF8.GetBytes(s);
+            byte[] stringBytes = Encoding.UTF7.GetBytes(s);
 
             if (stringBytes.Length > byte.MaxValue + 1)
                 throw new Exception("Could not add stringbytes. String to big! " + s);
 
             toAddTo.Add((byte)stringBytes.Length);
-            toAddTo.AddRange(stringBytes);
+            toAddTo.AddRange(stringBytes); 
         }
 
         // TODO: Optimize me

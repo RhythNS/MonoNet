@@ -95,9 +95,7 @@ namespace MonoNet.Network
             // Send all rpcs that client has not yet acknowledged
             packageList.Add((byte)toSendCommands.Count);
             for (int i = 0; i < toSendCommands.Count; i++)
-                for (int j = 0; j < toSendCommands[i].Length; j++)
-                    packageList.Add(toSendCommands[i][j]);
-
+                    packageList.AddRange(toSendCommands[i]);
         }
     }
 }

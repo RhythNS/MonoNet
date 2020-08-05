@@ -53,6 +53,7 @@ namespace MonoNet.Testing.NetTest
         public void TakeControl(byte netId, Vector2 location)
         {
             NetSyncComponent nsc = NetManager.Instance.GetNetSyncComponent(netId);
+            nsc.playerControlled = true;
             nsc.Actor.AddComponent<PlayerInput>();
             nsc.Actor.GetComponent<Transform2>().WorldPosition = location;
             nsc.Actor.GetComponent<Rigidbody>().velocity = new Vector2(0);

@@ -30,15 +30,16 @@ namespace MonoNet.Testing.NetTest
         public void OnPlayerConnected(ConnectedClient client)
         {
             Log.Info("Player connected!");
-            byte id = CreateSyncable(2);
+            byte id = CreateSyncable(2, out NetSyncComponent ncs);
             Vector2 vector = CreateNetPlayer(id);
             NetSyncComponent.TriggerClientEvent(client, "TC", id, vector);
+            client.controlledComponents.Add(ncs);
         }
 
-        public byte CreateSyncable(byte layer)
+        public byte CreateSyncable(byte layer, out NetSyncComponent ncs)
         {
             Actor actor = Actor.Stage.CreateActor(layer);
-            NetSyncComponent ncs = actor.AddComponent<NetSyncComponent>();
+            ncs = actor.AddComponent<NetSyncComponent>();
 
             NetSyncComponent.TriggerClientEvent("CS", layer);
 
@@ -63,6 +64,6 @@ namespace MonoNet.Testing.NetTest
 
             return location;
         }
-
+        
     }
 }

@@ -9,6 +9,7 @@ using MonoNet.Network;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util.Datatypes;
+using System.Collections.Generic;
 using System.Net;
 
 namespace MonoNet.Testing.NetTest

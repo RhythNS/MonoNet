@@ -18,7 +18,7 @@ namespace MonoNet.Network
         /// <param name="fromState">The previous state.</param>
         /// <param name="difList">A ready to send package with all changes.</param>
         /// <returns>The reference of the given list for chaining.</returns>
-        public List<byte> GetDif(NetState fromState, List<byte> difList)
+        public List<byte> GetDif(ConnectedClient client, NetState fromState, List<byte> difList)
         {
             for (int i = 0; i < rawState.Length; i++)
             {
@@ -26,6 +26,20 @@ namespace MonoNet.Network
                 if (rawState[i] == null)
                     continue;
 
+                bool shouldContinue = false;
+
+                // Check to see if the client owns the component
+                for (int j = 0; j < client.controlledComponents.Count; j++)
+                {
+                    if (client.controlledComponents[j].Id == i)
+                    {
+                        shouldContinue = true;
+                        break;
+                    }
+                }
+                if (shouldContinue == true)
+                    continue;
+                    
                 // Check to see if the given state has the NetStateComponent. If it does
                 // then check if it is the same. Otherwise we can directly append the array
                 // to the outgoing list.
@@ -35,7 +49,6 @@ namespace MonoNet.Network
                     // then invistigate furthor.
                     if (rawState[i].Length == fromState.rawState[i].Length)
                     {
-                        bool shouldContinue = false;
 
                         // go through the entire array and see if each byte is the same
                         for (int j = 0; j < rawState[i].Length; j++)

@@ -90,7 +90,7 @@ namespace MonoNet.Network.UDP
                 ConnectedClient connectedClient = null;
                 for (int i = 0; i < connectedAdresses.Count; i++)
                 {
-                    if (connectedAdresses[i].ip == endPoint)
+                    if (connectedAdresses[i].ip.Equals(endPoint))
                         connectedClient = connectedAdresses[i];
                 }
 

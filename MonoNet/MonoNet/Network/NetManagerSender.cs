@@ -141,9 +141,9 @@ namespace MonoNet.Network
 
             // Either send them an entire gamestate or a delta game state depending on wheter they want a complete resync.
             if (connectedClient.requestResync == false)
-                netStates[currentState].GetDif(netStates[connectedClient.lastRecievedPackage], tempList);
+                netStates[currentState].GetDif(connectedClient, netStates[connectedClient.lastRecievedPackage], tempList);
             else
-                netStates[currentState].GetDif(zeroState, tempList);
+                netStates[currentState].GetDif(connectedClient, zeroState, tempList);
 
             // Send the prepared package.
             server.Send(connectedClient, tempList.ToArray());
