@@ -15,6 +15,7 @@ namespace MonoNet.Network.UDP
         private UdpClient connection;
         private Thread listenThread;
         private int port;
+        private readonly byte[] welcomeMessage = Encoding.ASCII.GetBytes("Hello?");
 
         private bool exitRequested;
 
@@ -93,10 +94,15 @@ namespace MonoNet.Network.UDP
                         connectedClient = connectedAdresses[i];
                 }
 
+                bool isWelcomeMessage = IsWelcomeMessage(buffer);
+
+                if (isWelcomeMessage == true && connectedClient != null)
+                    continue;
+
                 if (connectedClient == null)
                 {
                     string response = Encoding.ASCII.GetString(buffer);
-                    if (response.StartsWith("Hello?") == false || response.Length < 6 || connectedAdresses.Count >= NetConstants.MAX_PLAYERS)
+                    if (response.Length < 6 || connectedAdresses.Count >= NetConstants.MAX_PLAYERS)
                         continue;
 
                     string name = response.Substring(6, response.Length - NetConstants.MAX_NAME_LENGTH - 6 > 0
@@ -106,11 +112,29 @@ namespace MonoNet.Network.UDP
 
                     connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint, name, id));
                     Send(connectedClient, Encoding.ASCII.GetBytes("Hello!"));
+                    NetManager.Instance.InvokePlayerConnected(connectedClient);
                     continue;
                 }
 
                 OnMessageRecieved.Invoke(connectedClient, buffer);
             }
+        }
+
+        /// <summary>
+        /// Checks if a message is a welcome message.
+        /// </summary>
+        /// <param name="data">The recieved package as byte array.</param>
+        /// <returns>Wheter it is a welcome message or not.</returns>
+        private bool IsWelcomeMessage(byte[] data)
+        {
+            if (data.Length < welcomeMessage.Length)
+                return false;
+
+            for (int i = 0; i < welcomeMessage.Length; i++)
+                if (data[i] != welcomeMessage[i])
+                    return false;
+
+            return true;
         }
 
         /// <summary>

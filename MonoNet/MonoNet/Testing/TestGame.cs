@@ -5,6 +5,7 @@ using MonoNet.ECS;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.Network.Commands;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
@@ -33,6 +34,7 @@ namespace MonoNet.Testing
 
         protected override void Initialize()
         {
+            new EventHandlerDictionary();
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();

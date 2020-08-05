@@ -17,6 +17,8 @@ namespace MonoNet
         {
             using (var game = new NetTestGame())
                 game.Run();
+
+            Environment.Exit(0);
         }
     }
 #endif

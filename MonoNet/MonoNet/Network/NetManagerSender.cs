@@ -55,7 +55,7 @@ namespace MonoNet.Network
 
             // Look if any player has timed out and remove them if necessary.
             TimeSpan currentTime = Time.TotalGameTime;
-            for (int i = ConnectedAdresses.Count; i > -1; i--)
+            for (int i = ConnectedAdresses.Count - 1; i > -1; i--)
             {
                 if (currentTime.Subtract(ConnectedAdresses[i].lastHeardFrom).CompareTo(NetConstants.TIMEOUT_TIME) > 0)
                 {
@@ -73,6 +73,9 @@ namespace MonoNet.Network
                 if (ConnectedAdresses[i].lastHandledPackage == ConnectedAdresses[i].lastRecievedPackage)
                     continue;
                 ConnectedAdresses[i].lastHandledPackage = ConnectedAdresses[i].lastRecievedPackage;
+
+                if (ConnectedAdresses[i].lastRecievedData == null)
+                    continue;
 
                 byte[] data = ConnectedAdresses[i].lastRecievedData;
                 int pointerAt = 1;

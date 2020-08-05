@@ -14,6 +14,26 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin maps/generic_platformer_tiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:maps/generic_platformer_tiles.png
+
+#begin maps/level1.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:maps/level1.tmx
+
+#begin maps/plattformer.tsx
+/copy:maps/plattformer.tsx
+
 #begin Test/DatMapWithObjectLayer.tmx
 /importer:TiledImporter
 /processor:TiledProcessor

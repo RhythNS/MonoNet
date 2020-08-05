@@ -33,9 +33,9 @@ namespace MonoNet.Network
             Instance.ChangeId(component, ++probRemoveCounter);
         }
 
-        protected void InvokePlayerConnected(ConnectedClient client) => OnPlayerConnected?.Invoke(client);
+        public void InvokePlayerConnected(ConnectedClient client) => OnPlayerConnected?.Invoke(client);
 
-        protected void InvokePlayerDisconnected(ConnectedClient client) => OnPlayerDisconnected?.Invoke(client);
+        public void InvokePlayerDisconnected(ConnectedClient client) => OnPlayerDisconnected?.Invoke(client);
 
         public static void OnIDChanged(NetSyncComponent syncComponent, byte id)
             => Instance.ChangeId(syncComponent, id);
@@ -49,6 +49,8 @@ namespace MonoNet.Network
 
         protected bool IsNewerPackage(byte oldNumber, byte newNumber)
             => (oldNumber - newNumber < 128 && newNumber > oldNumber) || (oldNumber - newNumber > 128 && newNumber < oldNumber);
+
+        public NetSyncComponent GetNetSyncComponent(byte id) => netSyncComponents[id];
 
         protected bool RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager)
         {

@@ -39,6 +39,10 @@ namespace MonoNet.Network
             {
                 parsed = GetNextVector(data, ref pointer);
             }
+            else if (type == typeof(byte))
+            {
+                parsed = GetNextByte(data, ref pointer);
+            }
             else
             {
                 Log.Error("Could not parse " + type);
@@ -47,6 +51,15 @@ namespace MonoNet.Network
             }
             return true;
         }
+
+        /// <summary>
+        /// Gets the next byte value from a given package. Automatically increments the pointer
+        /// to the next data index.
+        /// </summary>
+        /// <param name="data">The package as a byte array.</param>
+        /// <param name="pointerAt">The current location of the array.</param>
+        /// <returns>The converted byte.</returns>
+        public static byte GetNextByte(byte[] data, ref int pointerAt) => data[pointerAt++];
 
         /// <summary>
         /// Gets the next float value from a given package. Automatically increments the pointer
@@ -197,6 +210,10 @@ namespace MonoNet.Network
             {
                 AddVectorToList(parsedVector, toAddTo);
             }
+            else if (toAdd is byte parsedByte)
+            {
+                AddByteToList(parsedByte, toAddTo);
+            }
             else
             {
                 Log.Error("Could not parse " + toAdd.GetType());
@@ -204,6 +221,13 @@ namespace MonoNet.Network
             }
             return true;
         }
+
+        /// <summary>
+        /// Appends a byte to the specified list.
+        /// </summary>
+        /// <param name="value">The value to added.</param>
+        /// <param name="toAddTo">The list where the byte should be added to.</param>
+        public static void AddByteToList(byte value, List<byte> toAddTo) => toAddTo.Add(value);
 
         /// <summary>
         /// Converts a float to a byte array and saves it to the list.
@@ -307,6 +331,9 @@ namespace MonoNet.Network
         /// <returns>The lowest avilable id.</returns>
         public static byte GetLowestAvailableId(List<ConnectedClient> clients)
         {
+            if (clients.Count == 0)
+                return 0;
+
             List<ConnectedClient> temp = new List<ConnectedClient>(clients);
             temp.OrderBy(x => x.id);
             byte id = 0;

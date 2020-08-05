@@ -14,6 +14,7 @@ namespace MonoNet.Network.Commands
         /// Allows direct access to the EventHandlerDictionary.
         /// </summary>
         public static EventHandlerDictionary Instance { get; private set; }
+
         public EventHandlerDictionary() {
             Instance = this;
 
