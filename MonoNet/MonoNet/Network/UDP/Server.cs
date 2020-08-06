@@ -57,6 +57,19 @@ namespace MonoNet.Network.UDP
         {
             Log.Info("Now listing");
 
+            // ------------------------------------------------------------------------------------------------------------
+            // Taken from https://stackoverflow.com/questions/10332630/connection-reset-on-receiving-packet-in-udp-server
+            // ------------------------------------------------------------------------------------------------------------
+            // This ignores connection resets as errors. If this is not set and a client crashes then this throws exception
+            // on the server. This is why the code beneath is there. I am not sure if could have just catched the error and
+            // ignored it, but I feel like this is the most efficient way of doing it. Eventhough I don't really know why
+            // the socket needs to be configured like that.
+            const int SIO_UDP_CONNRESET = -1744830452;
+            byte[] inValue = new byte[] { 0 };
+            byte[] outValue = new byte[] { 0 };
+            connection.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+            // ------------------------------------------------------------------------------------------------------------
+
             // Start listing for messages
             connection.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
 
@@ -75,12 +88,12 @@ namespace MonoNet.Network.UDP
                     // Interrupts are okay. So if that did not occure print the error message
                     if (se.SocketErrorCode != SocketError.Interrupted)
                         Console.WriteLine(se.ToString());
-                    break;
+                    continue;
                 }
                 catch (Exception ex) // catch any other exception that might occur
                 {
                     Console.WriteLine(ex.ToString());
-                    break;
+                    continue;
                 }
 
                 if (buffer == null || buffer.Length == 0)

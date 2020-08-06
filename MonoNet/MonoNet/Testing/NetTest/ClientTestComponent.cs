@@ -58,5 +58,22 @@ namespace MonoNet.Testing.NetTest
             nsc.Actor.GetComponent<Rigidbody>().velocity = new Vector2(0);
         }
 
+        [EventHandler("DS")]
+        public void DestroySyncable(byte netId)
+        {
+            NetSyncComponent nsc = NetManager.Instance.GetNetSyncComponent(netId);
+            nsc.Actor.Stage.DeleteActor(nsc.Actor);
+            NetManager.Instance.SetNetSyncComponent(null, netId);
+        }
+
+        [EventHandler("AR")]
+        public void AddRenderer(byte netId)
+        {
+            Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
+            actor.AddComponent<Transform2>();
+            actor.AddComponent<DrawTextureRegionComponent>().region = Instance.textureRegion;
+            actor.AddComponent<Rigidbody>().Set();
+        }
+
     }
 }

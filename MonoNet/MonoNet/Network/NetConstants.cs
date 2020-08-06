@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.Network
 {
@@ -17,6 +13,6 @@ namespace MonoNet.Network
 
         public static readonly float SERVER_SEND_RATE_PER_SECOND = 1 / 30f;
         public static readonly float CLIENT_SEND_RATE_PER_SECOND = 1 / 60f;
-        public static readonly TimeSpan TIMEOUT_TIME = new TimeSpan(1, 0, 8); //TODO: Change this back to 8 sec
+        public static readonly TimeSpan TIMEOUT_TIME = new TimeSpan(0, 0, 8);
     }
 }

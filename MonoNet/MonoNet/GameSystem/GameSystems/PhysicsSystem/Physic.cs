@@ -54,7 +54,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void Register(Rigidbody rigidbody)
         {
-            if (rigidbodiesSquare.Contains(rigidbody) || rigidbodiesCircle.Contains(rigidbody))
+            if (rigidbodiesSquare.Contains(rigidbody) && rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbobies allready contains rigidbody");
             }
@@ -82,7 +82,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void DeRegister(Rigidbody rigidbody)
         {
-            if (!rigidbodiesSquare.Contains(rigidbody) || !rigidbodiesCircle.Contains(rigidbody))
+            if (!rigidbodiesSquare.Contains(rigidbody) && !rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbodies does not contain this rigidbody");
             }

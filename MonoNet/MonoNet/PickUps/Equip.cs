@@ -75,7 +75,7 @@ namespace MonoNet.GameSystems.PickUps
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
     }
 }

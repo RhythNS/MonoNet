@@ -1,6 +1,9 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
+using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Network;
@@ -10,7 +13,7 @@ using MonoNet.Util;
 
 namespace MonoNet.Testing.NetTest
 {
-    public class ServerTestComponent : Component
+    public class ServerTestComponent : Component, Interfaces.IUpdateable, IDisposable
     {
         private PlayerSpawnLocations spawnLocations;
         private TextureRegion textureRegion;
@@ -18,6 +21,7 @@ namespace MonoNet.Testing.NetTest
         protected override void OnInitialize()
         {
             NetManager.Instance.OnPlayerConnected += OnPlayerConnected;
+            NetManager.Instance.OnPlayerDisconnected += OnPlayerDisconnected;
         }
 
         public void Set(PlayerSpawnLocations spawnLocations, TextureRegion region)
@@ -25,7 +29,7 @@ namespace MonoNet.Testing.NetTest
             this.spawnLocations = spawnLocations;
             textureRegion = region;
         }
-        
+
         public void OnPlayerConnected(ConnectedClient client)
         {
             Log.Info("Player connected!");
@@ -33,6 +37,13 @@ namespace MonoNet.Testing.NetTest
             Vector2 vector = CreateNetPlayer(id);
             NetSyncComponent.TriggerClientEvent(client, "TC", id, vector);
             client.controlledComponents.Add(ncs);
+        }
+
+        public void OnPlayerDisconnected(ConnectedClient client)
+        {
+            Log.Info("Player disconnected!");
+            for (int i = 0; i < client.controlledComponents.Count; i++)
+                DestroySyncable(client.controlledComponents[i].Id);
         }
 
         public byte CreateSyncable(byte layer, out NetSyncComponent ncs)
@@ -63,6 +74,61 @@ namespace MonoNet.Testing.NetTest
 
             return location;
         }
-        
+
+        private bool alreadyJoinedSelf = false;
+        public void JoinSelf()
+        {
+            CreateSyncable(2, out NetSyncComponent ncs);
+            CreateNetPlayer(ncs.Id);
+            ncs.Actor.AddComponent<PlayerInput>();
+        }
+
+        public void DestroySyncable(byte netId)
+        {
+            NetSyncComponent nsc = NetManager.Instance.GetNetSyncComponent(netId);
+            nsc.Actor.Stage.DeleteActor(nsc.Actor);
+            NetManager.Instance.SetNetSyncComponent(null, netId);
+
+            NetSyncComponent.TriggerClientEvent("DS", netId);
+        }
+
+        public void AddRenderer(byte netId)
+        {
+            Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
+            actor.AddComponent<Transform2>();
+            actor.AddComponent<DrawTextureRegionComponent>().region = textureRegion;
+            actor.AddComponent<Rigidbody>().Set();
+
+            NetSyncComponent.TriggerClientEvent("AR", netId);
+        }
+
+        static byte autoIncrementDestroy = 1;
+
+        public void Update()
+        {
+            if (Input.IsKeyDownThisFrame(Keys.F5))
+            {
+                CreateSyncable(2, out NetSyncComponent ncs);
+                AddRenderer(ncs.Id);
+            }
+            else if (Input.IsKeyDownThisFrame(Keys.F6))
+            {
+                DestroySyncable(autoIncrementDestroy++);
+            }
+            else if (Input.IsKeyDownThisFrame(Keys.F3))
+            {
+                if (alreadyJoinedSelf == false)
+                {
+                    alreadyJoinedSelf = true;
+                    JoinSelf();
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            NetManager.Instance.OnPlayerConnected -= OnPlayerConnected;
+            NetManager.Instance.OnPlayerDisconnected -= OnPlayerDisconnected;
+        }
     }
 }
