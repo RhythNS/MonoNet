@@ -123,18 +123,6 @@ namespace MonoNet.Network
         {
             List<byte> data = new List<byte>();
 
-            // encode event name into 32 byte
-            /*
-            if (eventName.Length > NetConstants.MAX_PREF_STRING_LENGTH)
-                Log.Info("Event name is longer than preferred! (" + eventName.Length + "/" + NetConstants.MAX_PREF_STRING_LENGTH + ")");
-
-            byte[] nameBytes = Encoding.Unicode.GetBytes(eventName);
-            if (nameBytes.Length > byte.MaxValue + 1)
-                Log.Error("Event name is too long!");
-
-            data.Add((byte)nameBytes.Length);
-            data.AddRange(nameBytes);
-            */
             NetUtils.AddStringToList(eventName, data);
 
             // add all parameters into the byte array
@@ -154,14 +142,11 @@ namespace MonoNet.Network
         /// Executes an event from receiving a byte array.
         /// </summary>
         /// <param name="data">The byte array for the event.</param>
-        public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer)
+        /// <param name="pointer">Where the next byte should be read from the array.</param>
+        /// <param name="shouldExecute">If set to false the method is only parsed and the pointer is advanced.
+        /// If set to true, then the parsed method will also be executed.</param>
+        public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer, bool shouldExecute)
         {
-            // get event name from byte array
-            /*
-            int byteLength = data[pointer++];
-            string eventName = Encoding.Unicode.GetString(data.SubArray(pointer, byteLength));
-            pointer += byteLength;
-            */
             string eventName = NetUtils.GetNextString(data, ref pointer);
 
             // get method info from any registered callback
@@ -186,20 +171,9 @@ namespace MonoNet.Network
             }
 
             // execute event with its arguments
-            EventHandlerDictionary.Instance[eventName].Invoke(args);
+            if (shouldExecute == true)
+                EventHandlerDictionary.Instance[eventName].Invoke(args);
             return true;
         }
-
-        /// How an event can look
-        //[EventHandler("AngleObject")]
-        //private void Test(int objectId, float angle) {
-        //    if (objectId != this.netId) return;
-        //
-        //    this.angle = angle;
-        //}
-
-        /// How to trigger an event
-        // Triggers the event with name "TEST" on the client, passing in an int for the objectId and a float for an angle.
-        //TriggerClientEvent("AngleObject", 5, 45.343f);
     }
 }

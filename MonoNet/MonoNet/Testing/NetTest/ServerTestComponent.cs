@@ -39,10 +39,8 @@ namespace MonoNet.Testing.NetTest
         {
             Actor actor = Actor.Stage.CreateActor(layer);
             ncs = actor.AddComponent<NetSyncComponent>();
-            NetManager.Instance.TryGetNextAvailableID(out byte id);
-            ncs.Id = id;
 
-            NetSyncComponent.TriggerClientEvent("CS", id, layer);
+            NetSyncComponent.TriggerClientEvent("CS", ncs.Id, layer);
 
             return ncs.Id;
         }

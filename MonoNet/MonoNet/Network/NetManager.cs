@@ -19,7 +19,7 @@ namespace MonoNet.Network
         public event OnPlayerDisconnected OnPlayerDisconnected;
 
         protected NetSyncComponent[] netSyncComponents = new NetSyncComponent[256]; // id in byte
-        
+
         public NetManager()
         {
             Instance = this;
@@ -73,11 +73,11 @@ namespace MonoNet.Network
             {
                 byte idOfRpc = data[pointerAt++];
                 recievedCommands.Add(idOfRpc);
-                if (commandPackageManager.RecievedShouldExecute(idOfRpc) == true)
-                {
-                    if (NetSyncComponent.ExecuteEventFromByteArray(data, ref pointerAt) == false)
-                        return false;
-                }
+
+                bool shouldExecute = commandPackageManager.RecievedShouldExecute(idOfRpc);
+
+                if (NetSyncComponent.ExecuteEventFromByteArray(data, ref pointerAt, shouldExecute) == false)
+                    return false;
             }
             return true;
         }
