@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.Network;
 using MonoNet.Util;
-using System;
 using System.Collections.Generic;
 
 namespace MonoNet.ECS.Components

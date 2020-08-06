@@ -107,6 +107,7 @@ namespace MonoNet.Network
             {
                 if (netSyncComponents[i] != null && netSyncComponents[i].playerControlled)
                 {
+                    tempData.Add((byte)i);
                     netSyncComponents[i].GetSync(tempData);
                 }
             }

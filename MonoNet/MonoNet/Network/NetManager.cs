@@ -1,5 +1,4 @@
 ﻿using MonoNet.Network.Commands;
-using MonoNet.Util;
 using System.Collections.Generic;
 
 namespace MonoNet.Network
@@ -20,37 +19,36 @@ namespace MonoNet.Network
         public event OnPlayerDisconnected OnPlayerDisconnected;
 
         protected NetSyncComponent[] netSyncComponents = new NetSyncComponent[256]; // id in byte
-
-        private static byte probRemoveCounter = 255;
-
+        
         public NetManager()
         {
             Instance = this;
-        }
-
-        public static void OnNetComponentCreated(NetSyncComponent component)
-        {
-            Instance.ChangeId(component, ++probRemoveCounter);
         }
 
         public void InvokePlayerConnected(ConnectedClient client) => OnPlayerConnected?.Invoke(client);
 
         public void InvokePlayerDisconnected(ConnectedClient client) => OnPlayerDisconnected?.Invoke(client);
 
-        public static void OnIDChanged(NetSyncComponent syncComponent, byte id)
-            => Instance.ChangeId(syncComponent, id);
-
-        protected virtual void ChangeId(NetSyncComponent syncComponent, byte id)
-        {
-            if (netSyncComponents[id] != null)
-                Log.Info("Overwriting a netComponent " + netSyncComponents[id].GetType());
-            netSyncComponents[id] = syncComponent;
-        }
-
         protected bool IsNewerPackage(byte oldNumber, byte newNumber)
             => (oldNumber - newNumber < 128 && newNumber > oldNumber) || (oldNumber - newNumber > 128 && newNumber < oldNumber);
 
         public NetSyncComponent GetNetSyncComponent(byte id) => netSyncComponents[id];
+
+        public void SetNetSyncComponent(NetSyncComponent netSyncComponent, byte id) => netSyncComponents[id] = netSyncComponent;
+
+        public bool TryGetNextAvailableID(out byte id)
+        {
+            for (int i = 0; i < netSyncComponents.Length; i++)
+            {
+                if (netSyncComponents[i] == null)
+                {
+                    id = (byte)i;
+                    return true;
+                }
+            }
+            id = default;
+            return false;
+        }
 
         protected bool RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager)
         {
@@ -95,7 +93,7 @@ namespace MonoNet.Network
             // Send all rpcs that client has not yet acknowledged
             packageList.Add((byte)toSendCommands.Count);
             for (int i = 0; i < toSendCommands.Count; i++)
-                    packageList.AddRange(toSendCommands[i]);
+                packageList.AddRange(toSendCommands[i]);
         }
     }
 }

@@ -25,8 +25,7 @@ namespace MonoNet.Testing.NetTest
             this.spawnLocations = spawnLocations;
             textureRegion = region;
         }
-
-
+        
         public void OnPlayerConnected(ConnectedClient client)
         {
             Log.Info("Player connected!");
@@ -40,8 +39,10 @@ namespace MonoNet.Testing.NetTest
         {
             Actor actor = Actor.Stage.CreateActor(layer);
             ncs = actor.AddComponent<NetSyncComponent>();
+            NetManager.Instance.TryGetNextAvailableID(out byte id);
+            ncs.Id = id;
 
-            NetSyncComponent.TriggerClientEvent("CS", layer);
+            NetSyncComponent.TriggerClientEvent("CS", id, layer);
 
             return ncs.Id;
         }

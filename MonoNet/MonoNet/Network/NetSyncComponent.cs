@@ -1,12 +1,8 @@
 ﻿using MonoNet.ECS;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using MonoNet.Network.Commands;
-using System.Reflection;
 using MonoNet.Util;
+using System.Collections.Generic;
+using System.Reflection;
 
 namespace MonoNet.Network
 {
@@ -26,8 +22,8 @@ namespace MonoNet.Network
             get => id;
             set
             {
-                NetManager.OnIDChanged(this, value);
                 id = value;
+                NetManager.Instance.SetNetSyncComponent(this, id);
             }
         }
 
@@ -35,12 +31,19 @@ namespace MonoNet.Network
         {
             // Listen to added components to find out if they are ISyncable
             Actor.OnComponentAdded += OnComponentAdded;
-
-            NetManager.OnNetComponentCreated(this);
-
             // Look for already added components which have ISyncable implemented
             if (Actor.GetAllComponents(out ISyncable[] allComponents))
                 syncables.AddRange(allComponents);
+
+            if (NetManager.Instance.IsServer == true)
+            {
+                if (NetManager.Instance.TryGetNextAvailableID(out byte gottenId) == false)
+                {
+                    Log.Error("Could not get id for NetSynccomponent! CRITICAL ERROR!");
+                    return;
+                }
+                Id = gottenId;
+            }
         }
 
         /// <summary>

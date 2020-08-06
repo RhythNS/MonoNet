@@ -76,7 +76,7 @@ namespace MonoNet.Network
         public static float GetNextFloat(byte[] data, ref int pointerAt)
         {
             float value = BitConverter.ToSingle(data, pointerAt);
-            pointerAt += 4;
+            pointerAt += sizeof(float);
             return value;
         }
 
@@ -108,7 +108,7 @@ namespace MonoNet.Network
         public static short GetNextShort(byte[] data, ref int pointerAt)
         {
             short value = BitConverter.ToInt16(data, pointerAt);
-            pointerAt += 2;
+            pointerAt += sizeof(short);
             return value;
         }
 
@@ -140,7 +140,7 @@ namespace MonoNet.Network
         public static int GetNextInt(byte[] data, ref int pointerAt)
         {
             int value = BitConverter.ToInt32(data, pointerAt);
-            pointerAt += 4;
+            pointerAt += sizeof(int);
             return value;
         }
 

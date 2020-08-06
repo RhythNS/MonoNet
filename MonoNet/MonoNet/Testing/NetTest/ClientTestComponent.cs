@@ -8,7 +8,6 @@ using MonoNet.Network.Commands;
 using MonoNet.Player;
 using MonoNet.Testing.Infrastructure;
 using System;
-using System.Security;
 
 namespace MonoNet.Testing.NetTest
 {
@@ -29,12 +28,12 @@ namespace MonoNet.Testing.NetTest
         }
 
         [EventHandler("CS")]
-        public void CreateSyncable(byte layer)
+        public void CreateSyncable(byte id, byte layer)
         {
             Actor actor = Instance.Actor.Stage.CreateActor(layer);
-            actor.AddComponent<NetSyncComponent>();
+            actor.AddComponent<NetSyncComponent>().Id = id;
         }
-        
+
         [EventHandler("CP")]
         public void CreateNetPlayer(byte netId)
         {
@@ -48,7 +47,7 @@ namespace MonoNet.Testing.NetTest
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
         }
-        
+
         [EventHandler("TC")]
         public void TakeControl(byte netId, Vector2 location)
         {
