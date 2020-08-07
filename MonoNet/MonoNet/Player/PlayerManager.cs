@@ -1,4 +1,5 @@
-﻿using MonoNet.ECS;
+﻿using Microsoft.Xna.Framework;
+using MonoNet.ECS;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
 using System;
@@ -22,8 +23,12 @@ namespace MonoNet.Player
         public float XSpeed { get; private set; } = 150;
         public float XMaxSpeed { get; private set; } = 350;
 
+        public Vector2 LookingAt { get; private set; } = Vector2.UnitX;
+
         public float JumpForce { get; private set; } = 250;
         public bool Dead { get; private set; }
+
+        public int Health { get; private set; } = 3;
 
         private PlayerKeys binding;
 
@@ -34,6 +39,20 @@ namespace MonoNet.Player
             Rigidbody = Actor.GetComponent<Rigidbody>();
         }
 
+        public void TakeDamage()
+        {
+            Health--;
+            if (Health <= 0)
+            {
+                Dead = true;
+                Actor.Stage.DeleteActor(Actor);
+            }
+        }
+
+        public void LookAt(Vector2 direction)
+        {
+            LookingAt = direction;
+        }
 
 
     }

@@ -14,6 +14,7 @@ namespace MonoNet.Player
         private Rigidbody rigidbody;
         private PlayerKeys binding;
         private Transform2 transform;
+        public Vector2 lastGround;
         private Equip equip;
 
         private Vector2 addVel;
@@ -45,13 +46,9 @@ namespace MonoNet.Player
             Jump();
             PickUp();
             Drop();
-
-            /*
-            if (Input.IsKeyDownThisFrame(binding.weaponFire))
-            {
-                equip.ActiveWeapon.CoreMethod();
-            }
-            */
+            Look();
+            Shoot();
+            
             addVel.X *= Time.Delta;
             rigidbody.velocity += addVel;
         }
@@ -84,6 +81,11 @@ namespace MonoNet.Player
             else if (rigidbody.isGrounded == true) // not moving and grounded
             {
                 StopMove();
+            }
+
+            if (rigidbody.isGrounded == true)
+            {
+                lastGround = transform.WorldPosition;
             }
         }
 
@@ -142,5 +144,29 @@ namespace MonoNet.Player
                 equip.DropWeapon();
             }
         }
+
+        private void Look()
+        {
+            if (Input.KeyDown(binding.lookRight))
+            {
+                player.LookAt(Vector2.UnitX);
+            }
+            else if (Input.KeyDown(binding.lookUp))
+            {
+                player.LookAt(Vector2.UnitY * -1);
+            }
+            else if (Input.KeyDown(binding.lookLeft))
+            {
+                player.LookAt(Vector2.UnitX * -1);
+            }
+        }
+        private void Shoot()
+        {
+            if (Input.IsKeyDownThisFrame(binding.weaponFire) && equip.ActiveWeapon != null)
+            {
+                equip.ActiveWeapon.CoreMethod();
+            }
+        }
+
     }
 }

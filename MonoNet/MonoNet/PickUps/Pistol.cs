@@ -16,9 +16,7 @@ namespace MonoNet.PickUps
     {
         public override void CoreMethod()
         {
-            /* Actor bullet = Actor.Stage.CreateActor(0);
-            Rigidbody rb = bullet.AddComponent<Rigidbody>();
-            rb.OnTriggerEnter += OnTriggerEnter; */
+            LoadBullet.Shoot(Vector2.UnitX, 10, weaponHolder);
         }
     }
 }

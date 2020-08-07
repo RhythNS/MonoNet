@@ -79,6 +79,7 @@
     <Compile Include="PickUps\DoubleJump.cs" />
     <Compile Include="PickUps\Equip.cs" />
     <Compile Include="PickUps\Knife.cs" />
+    <Compile Include="PickUps\LoadBullet.cs" />
     <Compile Include="PickUps\Pickable.cs" />
     <Compile Include="PickUps\PickUp.cs" />
     <Compile Include="PickUps\Pistol.cs" />

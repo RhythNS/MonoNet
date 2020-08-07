@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace MonoNet.GameSystems.PickUps
 {
-    public class Equip : Component, IDisposable, Interfaces.IUpdateable
+    public class Equip : Component, IDisposable
     {
         public Actor equipHolder;
 
@@ -27,11 +27,6 @@ namespace MonoNet.GameSystems.PickUps
         {
             equipHolder = Actor;
             powerUps = new List<PickUp>();
-        }
-
-        public void Update()
-        {
-            
         }
 
         /// <summary>

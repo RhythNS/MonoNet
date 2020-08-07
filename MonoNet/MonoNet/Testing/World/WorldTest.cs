@@ -2,6 +2,7 @@
 using MonoNet.ECS;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.PickUps;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util.Datatypes;
@@ -23,11 +24,14 @@ namespace MonoNet.Testing
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
             TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
             TextureRegion playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
+            TextureRegion bulletRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
             BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
             PlayerSpawn playerSpawn = new PlayerSpawn(playerRegion, stage);
             GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
+            LoadBullet.region = bulletRegion;
+            LoadBullet.stage = stage;
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 
@@ -43,9 +47,9 @@ namespace MonoNet.Testing
 
             //float width = components[0].Width * components[0].TileWidth * 0.5f;
             //float height = components[0].Height * components[0].TileHeight * 0.5f;
-
+            
             //components[0].Actor.GetComponent<SharedPositionTransform2>().WorldPosition = new Vector2(-width, -height);
         }
-
+   
     }
 }

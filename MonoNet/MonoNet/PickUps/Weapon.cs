@@ -1,11 +1,14 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
+using MonoNet.Graphics;
 using MonoNet.Player;
+using MonoNet.Testing.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +20,7 @@ namespace MonoNet.PickUps
     public class Weapon : Component, Interfaces.IUpdateable
     {
         public Actor weaponHolder;
+        public Vector2 looking;
         private Transform2 weaponTrans;
         private Transform2 holderTrans;
         public bool isEquiped;
@@ -34,7 +38,8 @@ namespace MonoNet.PickUps
         {
             if (isEquiped == true)
             {
-                weaponTrans.WorldPosition = holderTrans.WorldPosition + Vector2.UnitX * 10f;
+                looking = weaponHolder.GetComponent<PlayerManager>().LookingAt;
+                weaponTrans.WorldPosition = holderTrans.WorldPosition + looking * 15;
             }
         }
 
@@ -78,21 +83,11 @@ namespace MonoNet.PickUps
         /// </summary>
         public void OnDeEquip()
         {
+            weaponTrans.WorldPosition = weaponHolder.GetComponent<PlayerInput>().lastGround;
             isEquiped = false;
             weaponHolder = null;
             //change graphic to laying on the stage
         }
 
-        private void Shoot(Vector2 direction, float velocity)
-        {
-            direction.Normalize();
-            Actor bullet = Actor.Stage.CreateActor(Actor.Layer);
-            bullet.AddComponent<Transform2>();
-            bullet.GetComponent<Transform2>().WorldPosition = Actor.GetComponent<Transform2>().WorldPosition + Vector2.UnitX * 50f;
-            bullet.AddComponent<Rigidbody>();
-            bullet.GetComponent<Rigidbody>().velocity += direction * velocity * Time.Delta;
-            bullet.AddComponent<Bullet>();
-            
-        }
     }
 }
