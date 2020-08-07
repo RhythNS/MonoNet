@@ -12,12 +12,14 @@ namespace MonoNet.GameSystems.PhysicsSystem
     public delegate void OnTriggerEnter(Rigidbody other);
     public delegate void OnTriggerStay(Rigidbody other);
     public delegate void OnTriggerExit(Rigidbody other);
+    public delegate void OnCollision(Rigidbody other);
 
     public class Rigidbody : Component, Interfaces.IUpdateable, IDisposable, IOverlapable, ISyncable
     {
         public event OnTriggerEnter OnTriggerEnter;
         public event OnTriggerStay OnTriggerStay;
         public event OnTriggerExit OnTriggerExit;
+        public event OnCollision OnCollision;
 
         private static float gConst = 600f;
 
@@ -33,6 +35,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public bool isGrounded;
         public bool isSquare = true;
         public bool isTrigger = false;
+        public bool ignoreGravity = false;
         private bool registered = false;
 
         private Transform2 transform;
@@ -42,7 +45,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             transform = Actor.GetComponent<Transform2>();
         }
 
-        public void Set(float width = 1, float height = 1, int collisionLayer = 0, bool isStatic = false, bool isSquare = true, bool isTrigger = false)
+        public void Set(float width = 1, float height = 1, int collisionLayer = 0, bool isStatic = false, bool isSquare = true, bool isTrigger = false, bool ignoreGravity = false)
         {
             this.width = width;
             this.height = height;
@@ -50,6 +53,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             this.isStatic = isStatic;
             this.isSquare = isSquare;
             this.isTrigger = isTrigger;
+            this.ignoreGravity = ignoreGravity;
 
             if (registered == true)
                 Physic.Instance.DeRegister(this);
@@ -60,11 +64,10 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void Update()
         {
-            if (isStatic == false && isGrounded == false && isTrigger == false)
+            if (isStatic == false && isGrounded == false && isTrigger == false && ignoreGravity == false)
             {
                 velocity.Y += gConst * Time.Delta;
             }
-
         }
 
         public void Dispose()
@@ -77,6 +80,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public void FireEventStay(Rigidbody other) => OnTriggerStay?.Invoke(other);
 
         public void FireEventExit(Rigidbody other) => OnTriggerExit?.Invoke(other);
+
+        public void FireOnCollision(Rigidbody other) => OnCollision?.Invoke(other);
 
         public Rigidbody[] GetOverlaps() => Physic.Instance.GetOverlaps(this);
 

@@ -114,6 +114,23 @@ namespace MonoNet.Network
         }
 
         /// <summary>
+        /// Trigger an event on all connected clients except the given one that should be executed by those clients. NEEDS TO BE REGISTERED ON THE CLIENT!
+        /// </summary>
+        /// <param name="player">The player that ignores this rpc.</param>
+        /// <param name="eventName">The name of the event to trigger.</param>
+        /// <param name="args">The arguments the event expects.</param>
+        public static void TriggerClientEventOnAllExceptGiven(ConnectedClient player, string eventName, params object[] args)
+        {
+            if (!NetManager.Instance.IsServer) return;
+
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            for (int i = 0; i < NetManager.Instance.ConnectedAdresses.Count; i++)
+                if (NetManager.Instance.ConnectedAdresses[i] != player)
+                    NetManager.Instance.ConnectedAdresses[i].AddRPC(data);
+        }
+
+        /// <summary>
         /// Encodes event data into a Byte Array.
         /// </summary>
         /// <param name="eventName">The name of the event.</param>

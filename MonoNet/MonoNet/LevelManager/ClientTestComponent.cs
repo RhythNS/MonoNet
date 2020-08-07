@@ -8,7 +8,7 @@ using MonoNet.Network.Commands;
 using MonoNet.Player;
 using System;
 
-namespace MonoNet.Testing.NetTest
+namespace MonoNet.LevelManager
 {
     public class ClientTestComponent : Component
     {
@@ -34,17 +34,23 @@ namespace MonoNet.Testing.NetTest
         }
 
         [EventHandler("CP")]
-        public void CreateNetPlayer(byte netId)
+        public void CreateNetPlayer(byte netId, string name)
         {
             TextureRegion textureRegion = Instance.textureRegion;
             Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
             Transform2 trans = actor.AddComponent<Transform2>();
             Rigidbody body = actor.AddComponent<Rigidbody>();
-            actor.AddComponent<PlayerManager>();
+            actor.AddComponent<PlayerManager>().name = name;
             actor.RemoveComponent<PlayerInput>();
             body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 1, isStatic: false, isSquare: true, isTrigger: false);
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
+        }
+
+        [EventHandler("CB")]
+        public void CreateBullet(byte playerId)
+        {
+            //TODO: Implement
         }
 
         [EventHandler("TC")]
@@ -57,6 +63,12 @@ namespace MonoNet.Testing.NetTest
             nsc.Actor.GetComponent<Rigidbody>().velocity = new Vector2(0);
         }
 
+        [EventHandler("PW")]
+        public void PickupWeapon(byte weaponId)
+        {
+            //TODO: Implement
+        }
+
         [EventHandler("DS")]
         public void DestroySyncable(byte netId)
         {
@@ -65,13 +77,17 @@ namespace MonoNet.Testing.NetTest
             NetManager.Instance.SetNetSyncComponent(null, netId);
         }
 
-        [EventHandler("AR")]
-        public void AddRenderer(byte netId)
+        [EventHandler("RL")]
+        public void ReloadLevel(byte levelNumber)
         {
-            Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
-            actor.AddComponent<Transform2>();
-            actor.AddComponent<DrawTextureRegionComponent>().region = Instance.textureRegion;
-            actor.AddComponent<Rigidbody>().Set();
+            //TODO: Implement
+        }
+
+        [EventHandler("PT")]
+        public void ParentTransform(byte childNumber, byte parentNumber)
+        {
+            // TODO: Implement
+            // if childNumber == parentNumber then child is null
         }
 
     }

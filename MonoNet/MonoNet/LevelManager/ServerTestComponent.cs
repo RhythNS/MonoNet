@@ -7,18 +7,24 @@ using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Network;
+using MonoNet.Network.Commands;
 using MonoNet.Player;
+using MonoNet.Testing.NetTest;
 using MonoNet.Util;
 
-namespace MonoNet.Testing.NetTest
+namespace MonoNet.LevelManager
 {
     public class ServerTestComponent : Component, Interfaces.IUpdateable, IDisposable
     {
+        public static ServerTestComponent Instance { get; private set; }
+
         private PlayerSpawnLocations spawnLocations;
         private TextureRegion textureRegion;
 
         protected override void OnInitialize()
         {
+            Instance = this;
+
             NetManager.Instance.OnPlayerConnected += OnPlayerConnected;
             NetManager.Instance.OnPlayerDisconnected += OnPlayerDisconnected;
         }
@@ -33,7 +39,7 @@ namespace MonoNet.Testing.NetTest
         {
             Log.Info("Player connected!");
             byte id = CreateSyncable(2, out NetSyncComponent ncs);
-            Vector2 vector = CreateNetPlayer(id);
+            Vector2 vector = CreateNetPlayer(id, client.name);
             NetSyncComponent.TriggerClientEvent(client, "TC", id, vector);
             client.controlledComponents.Add(ncs);
         }
@@ -55,7 +61,7 @@ namespace MonoNet.Testing.NetTest
             return ncs.Id;
         }
 
-        public Vector2 CreateNetPlayer(byte netId)
+        public Vector2 CreateNetPlayer(byte netId, string name)
         {
             Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
             Transform2 trans = actor.AddComponent<Transform2>();
@@ -74,11 +80,26 @@ namespace MonoNet.Testing.NetTest
             return location;
         }
 
+        [EventHandler("RB")]
+        public void RequestBullet(byte playerId, byte direction)
+        {
+            //TODO: Implement
+        }
+
+        [EventHandler("RW")]
+        public void RequestWeaponPickup(byte playerId, byte weaponId)
+        {
+            //TODO: Implement
+            // Check if 
+            // Trigger on all clients except guy who picked ParentTransform
+            // trigger only on guy who picked PickupWeapon
+        }
+
         private bool alreadyJoinedSelf = false;
         public void JoinSelf()
         {
             CreateSyncable(2, out NetSyncComponent ncs);
-            CreateNetPlayer(ncs.Id);
+            CreateNetPlayer(ncs.Id, "Server");
             ncs.Actor.AddComponent<PlayerInput>();
         }
 
@@ -91,30 +112,9 @@ namespace MonoNet.Testing.NetTest
             NetSyncComponent.TriggerClientEvent("DS", netId);
         }
 
-        public void AddRenderer(byte netId)
-        {
-            Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
-            actor.AddComponent<Transform2>();
-            actor.AddComponent<DrawTextureRegionComponent>().region = textureRegion;
-            actor.AddComponent<Rigidbody>().Set();
-
-            NetSyncComponent.TriggerClientEvent("AR", netId);
-        }
-
-        static byte autoIncrementDestroy = 1;
-
         public void Update()
         {
-            if (Input.IsKeyDownThisFrame(Keys.F5))
-            {
-                CreateSyncable(2, out NetSyncComponent ncs);
-                AddRenderer(ncs.Id);
-            }
-            else if (Input.IsKeyDownThisFrame(Keys.F6))
-            {
-                DestroySyncable(autoIncrementDestroy++);
-            }
-            else if (Input.IsKeyDownThisFrame(Keys.F3))
+            if (Input.IsKeyDownThisFrame(Keys.F3))
             {
                 if (alreadyJoinedSelf == false)
                 {

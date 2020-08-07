@@ -71,6 +71,7 @@
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
+    <Compile Include="LevelManager\GameManager.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
@@ -113,10 +114,10 @@
     <Compile Include="Testing\Infrastructure\CameraTestComponent.cs" />
     <Compile Include="Graphics\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
-    <Compile Include="Testing\NetTest\ClientTestComponent.cs" />
+    <Compile Include="LevelManager\ClientTestComponent.cs" />
     <Compile Include="Testing\NetTest\NetTestGame.cs" />
     <Compile Include="Testing\NetTest\PlayerSpawnLocations.cs" />
-    <Compile Include="Testing\NetTest\ServerTestComponent.cs" />
+    <Compile Include="LevelManager\ServerTestComponent.cs" />
     <Compile Include="Testing\NetTest\SimpleMoveComponent.cs" />
     <Compile Include="Testing\Physics\PhysicTest.cs" />
     <Compile Include="Testing\Physics\TriggerTest.cs" />

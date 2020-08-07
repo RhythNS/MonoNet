@@ -1,14 +1,4 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoNet.ECS;
-using MonoNet.ECS.Components;
-using MonoNet.GameSystems.PhysicsSystem;
-using MonoNet.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.PickUps
 {
@@ -16,7 +6,7 @@ namespace MonoNet.PickUps
     {
         public override void CoreMethod()
         {
-            LoadBullet.Shoot(Vector2.UnitX, 10, weaponHolder);
+            LoadBullet.Shoot(Vector2.UnitX, 700, holder);
         }
     }
 }

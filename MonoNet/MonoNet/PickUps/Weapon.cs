@@ -9,11 +9,10 @@ namespace MonoNet.PickUps
 {
     public class Weapon : Pickable, Interfaces.IUpdateable
     {
-        public Actor weaponHolder;
         private Transform2 weaponTrans;
 
         private Transform2 holderTrans;
-        private PlayerManager holder;
+        protected PlayerManager holder;
 
         public bool isEquiped;
         private Rigidbody body;
@@ -57,7 +56,6 @@ namespace MonoNet.PickUps
         {
             isEquiped = true;
 
-            weaponHolder = holder;
             this.holder = holder.GetComponent<PlayerManager>();
             holderTrans = holder.GetComponent<Transform2>();
 
@@ -73,7 +71,6 @@ namespace MonoNet.PickUps
         public void OnDeEquip()
         {
             isEquiped = false;
-            weaponHolder = null;
             holder = null;
 
             Vector2 curWeaponPos = weaponTrans.WorldPosition;

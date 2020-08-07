@@ -5,7 +5,9 @@ using MonoNet.ECS;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.LevelManager;
 using MonoNet.Network;
+using MonoNet.PickUps;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util.Datatypes;
@@ -71,11 +73,14 @@ namespace MonoNet.Testing.NetTest
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
             TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
             playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
+            TextureRegion bulletRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 10, 10);
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
             BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
             playerSpawns = new PlayerSpawnLocations();
             GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
+            LoadBullet.region = bulletRegion;
+            LoadBullet.stage = stage;
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 

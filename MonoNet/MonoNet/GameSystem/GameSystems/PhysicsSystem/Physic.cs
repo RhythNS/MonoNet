@@ -218,6 +218,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     movingBody.velocity.X = 0;
                     break;
             }
+
+            movingBody.FireOnCollision(checkingBody);
         }
 
         /// <summary>

@@ -48,6 +48,10 @@ namespace MonoNet.Network
             {
                 parsed = GetNextString(data, ref pointer);
             }
+            else if (type == typeof(bool))
+            {
+                parsed = GetNextBool(data, ref pointer);
+            }
             else
             {
                 Log.Error("Could not parse " + type);
@@ -56,6 +60,15 @@ namespace MonoNet.Network
             }
             return true;
         }
+
+        /// <summary>
+        /// Gets the next bool value from a given package. Automatically increments the pointer
+        /// to the next data index.
+        /// </summary>
+        /// <param name="data">The package as a byte array.</param>
+        /// <param name="pointerAt">The current location of the array.</param>
+        /// <returns>The converted bool.</returns>
+        public static bool GetNextBool(byte[] data, ref int pointerAt) => data[pointerAt++] == 1;
 
         /// <summary>
         /// Gets the next byte value from a given package. Automatically increments the pointer
@@ -238,6 +251,10 @@ namespace MonoNet.Network
             {
                 AddStringToList(parsedString, toAddTo);
             }
+            else if (toAdd is bool parsedBool)
+            {
+                AddBoolToList(parsedBool, toAddTo);
+            }
             else
             {
                 Log.Error("Could not parse " + toAdd.GetType());
@@ -245,6 +262,13 @@ namespace MonoNet.Network
             }
             return true;
         }
+
+        /// <summary>
+        /// Appends a bool to the specified list.
+        /// </summary>
+        /// <param name="value">The value to added.</param>
+        /// <param name="toAddTo">The list where the bool should be added to.</param>
+        public static void AddBoolToList(bool value, List<byte> toAddTo) => toAddTo.Add(value == true ? (byte)1 : (byte)0);
 
         /// <summary>
         /// Appends a byte to the specified list.
@@ -360,7 +384,7 @@ namespace MonoNet.Network
                 throw new Exception("Could not add stringbytes. String to big! " + s);
 
             toAddTo.Add((byte)stringBytes.Length);
-            toAddTo.AddRange(stringBytes); 
+            toAddTo.AddRange(stringBytes);
         }
 
         // TODO: Optimize me

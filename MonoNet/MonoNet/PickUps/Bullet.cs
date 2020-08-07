@@ -8,10 +8,11 @@ namespace MonoNet.PickUps
     public class Bullet : Component, Interfaces.IUpdateable
     {
         private Transform2 transform;
+        public PlayerManager shooter;
 
         protected override void OnInitialize()
         {
-            Actor.GetComponent<Rigidbody>().OnTriggerEnter += OnTriggerEnter;
+            Actor.GetComponent<Rigidbody>().OnCollision += OnCollision;
             transform = Actor.GetComponent<Transform2>();
         }
 
@@ -23,10 +24,13 @@ namespace MonoNet.PickUps
             }
         }
 
-        public void OnTriggerEnter(Rigidbody other)
+        private void OnCollision(Rigidbody other)
         {
             if (other.Actor.TryGetComponent(out PlayerManager player))
             {
+                if (player == shooter)
+                    return;
+
                 player.TakeDamage();
             }
             Actor.Stage.DeleteActor(Actor);
@@ -34,6 +38,7 @@ namespace MonoNet.PickUps
 
         private bool OfScreen()
         {
+            return false;
             bool ofScreen = false;
             float dist;
 

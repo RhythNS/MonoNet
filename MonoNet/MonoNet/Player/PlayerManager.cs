@@ -11,6 +11,7 @@ namespace MonoNet.Player
     public class PlayerManager : Component
     {
         public event OnDeath OnDeath;
+        public string name = "Unknown";
 
         public PlayerInput PlayerInput { get; private set; }
         public Rigidbody Rigidbody { get; private set; }
