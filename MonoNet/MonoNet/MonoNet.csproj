@@ -109,9 +109,9 @@
     <Compile Include="ECS\Actor\Actor.cs" />
     <Compile Include="ECS\Actor\Component\Component.cs" />
     <Compile Include="ECS\Actor\Coroutine\Coroutine.cs" />
-    <Compile Include="Testing\Infrastructure\AnimatedTextureRegionComponent.cs" />
+    <Compile Include="Graphics\AnimatedTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\CameraTestComponent.cs" />
-    <Compile Include="Testing\Infrastructure\DrawTextureRegionComponent.cs" />
+    <Compile Include="Graphics\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
     <Compile Include="Testing\NetTest\ClientTestComponent.cs" />
     <Compile Include="Testing\NetTest\NetTestGame.cs" />

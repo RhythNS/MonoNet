@@ -6,7 +6,6 @@ using MonoNet.Graphics;
 using MonoNet.Network;
 using MonoNet.Network.Commands;
 using MonoNet.Player;
-using MonoNet.Testing.Infrastructure;
 using System;
 
 namespace MonoNet.Testing.NetTest

@@ -3,7 +3,6 @@ using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Tiled;
 using System;
 using System.Collections.Generic;
@@ -35,13 +34,14 @@ namespace MonoNet.Testing.World
             Transform2 trans = actor.AddComponent<ScaledTransform2>();
             trans.LocalPosition = new Vector2((float)loadedObject.X, (float)loadedObject.Y);
             Rigidbody body = actor.AddComponent<Rigidbody>();
-            Pistol pistol = actor.AddComponent<Pistol>();
 
             TextureRegion textureRegion = regions[random.Next(regions.Length - 1)]; // last one is empty
             body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 2, isStatic: false, isSquare: true, isTrigger: false);
 
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
+
+            Pistol pistol = actor.AddComponent<Pistol>();
         }
     }
 }

@@ -8,7 +8,6 @@ using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Network;
 using MonoNet.Player;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 
 namespace MonoNet.Testing.NetTest

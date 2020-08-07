@@ -2,6 +2,7 @@
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
+using MonoNet.Graphics;
 using MonoNet.Player;
 
 namespace MonoNet.PickUps
@@ -9,25 +10,38 @@ namespace MonoNet.PickUps
     public class Weapon : Pickable, Interfaces.IUpdateable
     {
         public Actor weaponHolder;
-        public Vector2 looking;
         private Transform2 weaponTrans;
+
         private Transform2 holderTrans;
+        private PlayerManager holder;
+
         public bool isEquiped;
         private Rigidbody body;
+        private DrawTextureRegionComponent drawComponent;
 
         protected override void OnInitialize()
         {
             isEquiped = false;
             weaponTrans = Actor.GetComponent<Transform2>();
             body = Actor.GetComponent<Rigidbody>();
+            drawComponent = Actor.GetComponent<DrawTextureRegionComponent>();
         }
 
         public void Update()
         {
             if (isEquiped == true)
             {
-                looking = weaponHolder.GetComponent<PlayerManager>().LookingAt;
-                weaponTrans.LocalPosition = looking * 15;
+                if (holder.lookingAt == PlayerManager.LookingAt.Left)
+                {
+                    drawComponent.mirror = true;
+                    weaponTrans.LocalPosition = new Vector2(-drawComponent.region.sourceRectangle.Width + holder.DrawComponent.region.sourceRectangle.Width * 0.3f, 0);
+                }
+                else
+                {
+                    drawComponent.mirror = false;
+                    weaponTrans.LocalPosition = new Vector2(holder.DrawComponent.region.sourceRectangle.Width * 0.7f, 0);
+                }
+
             }
         }
         /// <summary>
@@ -42,8 +56,11 @@ namespace MonoNet.PickUps
         public void OnEquip(Actor holder)
         {
             isEquiped = true;
+
             weaponHolder = holder;
+            this.holder = holder.GetComponent<PlayerManager>();
             holderTrans = holder.GetComponent<Transform2>();
+
             weaponTrans.Parent = holderTrans;
             Physic.Instance.DeRegister(body);
 
@@ -57,6 +74,7 @@ namespace MonoNet.PickUps
         {
             isEquiped = false;
             weaponHolder = null;
+            holder = null;
 
             Vector2 curWeaponPos = weaponTrans.WorldPosition;
             weaponTrans.Parent = null;

@@ -2,11 +2,10 @@
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
-using MonoNet.Graphics;
 using MonoNet.Interfaces;
 using MonoNet.Util;
 
-namespace MonoNet.Testing.Infrastructure
+namespace MonoNet.Graphics
 {
     class AnimatedTextureRegionComponent : Component, IUpdateable, IDrawable
     {

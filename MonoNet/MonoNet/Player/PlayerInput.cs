@@ -166,15 +166,15 @@ namespace MonoNet.Player
         {
             if (Input.KeyDown(binding.lookRight))
             {
-                player.LookAt(Vector2.UnitX);
+                player.lookingAt = PlayerManager.LookingAt.Right;
             }
             else if (Input.KeyDown(binding.lookUp))
             {
-                player.LookAt(Vector2.UnitY * -1);
+                player.lookingAt = PlayerManager.LookingAt.Up;
             }
             else if (Input.KeyDown(binding.lookLeft))
             {
-                player.LookAt(Vector2.UnitX * -1);
+                player.lookingAt = PlayerManager.LookingAt.Left;
             }
         }
         private void Shoot()
