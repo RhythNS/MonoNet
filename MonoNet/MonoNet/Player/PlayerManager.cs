@@ -2,11 +2,6 @@
 using MonoNet.ECS;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.Player
 {

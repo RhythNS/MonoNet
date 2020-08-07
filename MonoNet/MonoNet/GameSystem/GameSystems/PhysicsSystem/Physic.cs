@@ -54,7 +54,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void Register(Rigidbody rigidbody)
         {
-            if (rigidbodiesSquare.Contains(rigidbody) || rigidbodiesCircle.Contains(rigidbody))
+            if (rigidbodiesSquare.Contains(rigidbody) && rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbobies allready contains rigidbody");
             }
@@ -82,7 +82,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void DeRegister(Rigidbody rigidbody)
         {
-            if (!rigidbodiesSquare.Contains(rigidbody) || !rigidbodiesCircle.Contains(rigidbody))
+            if (!rigidbodiesSquare.Contains(rigidbody) && !rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbodies does not contain this rigidbody");
             }
@@ -106,6 +106,20 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     transformsCicle.Remove(rigidbody.Actor.GetComponent<Transform2>());
                 }
             }
+        }
+
+        public Rigidbody[] GetOverlaps(Rigidbody rigidbody)
+        {
+            List<Rigidbody> overlaps = new List<Rigidbody>();
+            for (int i = 0; i < rigidbodiesCircle.Count; i++)
+                if (rigidbodiesCircle[i] != rigidbody && rigidbodiesCircle[i].Overlaps(rigidbody))
+                    overlaps.Add(rigidbodiesCircle[i]);
+
+            for (int i = 0; i < rigidbodiesSquare.Count; i++)
+                if (rigidbodiesSquare[i] != rigidbody && rigidbodiesSquare[i].Overlaps(rigidbody))
+                    overlaps.Add(rigidbodiesSquare[i]);
+
+            return overlaps.ToArray();
         }
 
         public override void Update(GameTime gameTime)

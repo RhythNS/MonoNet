@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using TiledSharp;
 using MonoNet.Player;
+using MonoNet.Testing.NetTest;
 
 namespace MonoNet.Testing.World
 {
@@ -16,6 +17,8 @@ namespace MonoNet.Testing.World
     {
         private TextureRegion textureRegion;
         private Stage stage;
+
+        public Actor playerActor;
 
         public PlayerSpawn(TextureRegion textureRegion, Stage stage)
         {
@@ -31,11 +34,13 @@ namespace MonoNet.Testing.World
             Actor actor = stage.CreateActor(2);
             Transform2 trans = actor.AddComponent<ScaledTransform2>();
             trans.LocalPosition = new Vector2((float)loadedObject.X, (float)loadedObject.Y);
-            Rigidbody body = actor.AddComponent<Rigidbody>();
-            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 1, isStatic: false, isSquare: true, isTrigger: false);
-            actor.AddComponent<PlayerManager>();
+            //Rigidbody body = actor.AddComponent<Rigidbody>();
+            //body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 1, isStatic: false, isSquare: true, isTrigger: false);
+            actor.AddComponent<SimpleMoveComponent>();
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
+
+            playerActor = actor;
         }
     }
 }

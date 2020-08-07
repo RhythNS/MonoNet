@@ -175,6 +175,7 @@ namespace MonoNet.ECS
                     actors.Remove(currentNode);
                     return;
                 }
+                currentNode = currentNode.Next;
             }
 
             // Actor was not found.

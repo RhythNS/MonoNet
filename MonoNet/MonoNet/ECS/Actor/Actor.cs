@@ -21,6 +21,7 @@ namespace MonoNet.ECS
         private List<Coroutine> coroutines;
 
         private readonly List<Component> components;
+        public event ComponentAdded OnComponentAdded;
 
         private readonly List<IUpdateable> updateables;
         private readonly List<IDrawable> drawables;
@@ -64,6 +65,7 @@ namespace MonoNet.ECS
             if (component is IDisposable disposable)
                 disposables.Add(disposable);
 
+            OnComponentAdded?.Invoke(component);
             Stage.OnComponentAdded(component);
             return component;
         }
@@ -94,17 +96,17 @@ namespace MonoNet.ECS
         /// </summary>
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <returns>The first component found. Null if none was found.</returns>
-        public T GetComponent<T>() where T : Component
+        public T GetComponent<T>()
         {
             for (int i = 0; i < components.Count; i++)
             {
-                if (components[i] is T)
+                if (components[i] is T t)
                 {
-                    return (T)components[i];
+                    return t;
                 }
             }
 
-            return null;
+            return default;
         }
 
         /// <summary>
@@ -113,14 +115,14 @@ namespace MonoNet.ECS
         /// <typeparam name="T">The type of component to look for.</typeparam>
         /// <param name="allComponents">The returning components.</param>
         /// <returns>Wheter one component was found.</returns>
-        public bool GetAllComponents<T>(out T[] allComponents) where T : Component
+        public bool GetAllComponents<T>(out T[] allComponents)
         {
             List<T> returnList = new List<T>();
             for (int i = 0; i < components.Count; i++)
             {
-                if (components[i] is T)
+                if (components[i] is T t)
                 {
-                    returnList.Add((T)components[i]);
+                    returnList.Add(t);
                 }
             }
 
@@ -261,6 +263,8 @@ namespace MonoNet.ECS
 
             coroutines.Clear();
             coroutines.TrimExcess();
+
+            OnComponentAdded = null;
         }
     }
 }

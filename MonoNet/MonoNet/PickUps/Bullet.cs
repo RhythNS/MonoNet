@@ -1,36 +1,33 @@
 ﻿using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
-using MonoNet.GameSystems.PickUps;
 using MonoNet.Player;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.PickUps
 {
     public class Bullet : Component, Interfaces.IUpdateable
     {
+        private Transform2 transform;
+
         protected override void OnInitialize()
         {
             Actor.GetComponent<Rigidbody>().OnTriggerEnter += OnTriggerEnter;
+            transform = Actor.GetComponent<Transform2>();
         }
 
         public void Update()
         {
-           if (OfScreen())
-           {
+            if (OfScreen())
+            {
                 Actor.Stage.DeleteActor(Actor);
-           }
+            }
         }
 
         public void OnTriggerEnter(Rigidbody other)
         {
-            if (other.Actor.GetComponent<PlayerManager>() != null)
+            if (other.Actor.TryGetComponent(out PlayerManager player))
             {
-                other.Actor.GetComponent<PlayerManager>().TakeDamage();
+                player.TakeDamage();
             }
             Actor.Stage.DeleteActor(Actor);
         }
@@ -40,8 +37,7 @@ namespace MonoNet.PickUps
             bool ofScreen = false;
             float dist;
 
-            dist = Actor.GetComponent<Transform2>().WorldPosition.X * Actor.GetComponent<Transform2>().WorldPosition.X
-                   + Actor.GetComponent<Transform2>().WorldPosition.Y * Actor.GetComponent<Transform2>().WorldPosition.Y;
+            dist = transform.WorldPosition.X * transform.WorldPosition.X + transform.WorldPosition.Y * transform.WorldPosition.Y;
 
             if (dist > 50000)
             {

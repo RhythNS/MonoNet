@@ -5,6 +5,7 @@ using MonoNet.ECS;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.Network.Commands;
 using MonoNet.Testing.Infrastructure;
 using MonoNet.Util;
 using MonoNet.Util.Pools;
@@ -33,6 +34,7 @@ namespace MonoNet.Testing
 
         protected override void Initialize()
         {
+            new EventHandlerDictionary();
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();
@@ -44,7 +46,7 @@ namespace MonoNet.Testing
 
             if (CreateCameraTestComponent == true)
                 stage.CreateActor(0).AddComponent<CameraTestComponent>().camera = camera;
-            
+
             base.Initialize();
         }
 
@@ -55,9 +57,12 @@ namespace MonoNet.Testing
 
         protected override void Update(GameTime gameTime)
         {
-            PreUdate(gameTime);
+            PreUpdate(gameTime);
 
             manager.Update(gameTime);
+
+            AfterManagerPreStageUpdate(gameTime);
+
             if (Input.IsKeyDownThisFrame(Keys.Escape))
                 Exit();
             stage.Update();
@@ -70,7 +75,12 @@ namespace MonoNet.Testing
         /// <summary>
         /// Called before every system and stage is updated.
         /// </summary>
-        protected virtual void PreUdate(GameTime time) { }
+        protected virtual void PreUpdate(GameTime time) { }
+
+        /// <summary>
+        /// Called after every system and before stage is updated.
+        /// </summary>
+        protected virtual void AfterManagerPreStageUpdate(GameTime time) { }
 
         /// <summary>
         /// Called after every system and stage is updated.

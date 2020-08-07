@@ -1,24 +1,14 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoNet.ECS;
-using MonoNet.ECS.Components;
-using MonoNet.GameSystems.PhysicsSystem;
+﻿using MonoNet.ECS;
 using MonoNet.PickUps;
-using MonoNet.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.GameSystems.PickUps
 {
-    public class Equip : Component, IDisposable
+    public class Equip : Component
     {
         public Actor equipHolder;
-
-        public Weapon standingOnWeapon;
+        
         public Weapon ActiveWeapon { get; private set; }
 
         private List<PickUp> powerUps;
@@ -65,12 +55,8 @@ namespace MonoNet.GameSystems.PickUps
             {
                 newPowerUp.OnEquip(equipHolder);
                 powerUps.Add(newPowerUp);
+                // TODO: Delete powerup
             }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

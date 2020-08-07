@@ -1,7 +1,5 @@
 using MonoNet.Testing;
-using MonoNet.Testing.ECS;
-using MonoNet.Testing.Physics;
-using MonoNet.Testing.Tiled;
+using MonoNet.Testing.NetTest;
 using System;
 
 namespace MonoNet
@@ -20,6 +18,8 @@ namespace MonoNet
         {
             using (var game = new WorldTest())
                 game.Run();
+
+            Environment.Exit(0);
         }
     }
 #endif

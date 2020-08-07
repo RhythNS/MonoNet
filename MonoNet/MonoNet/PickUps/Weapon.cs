@@ -1,37 +1,25 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
-using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
-using MonoNet.GameSystems.PickUps;
-using MonoNet.Graphics;
 using MonoNet.Player;
-using MonoNet.Testing.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.PickUps
 {
-    public class Weapon : Component, Interfaces.IUpdateable
+    public class Weapon : Pickable, Interfaces.IUpdateable
     {
         public Actor weaponHolder;
         public Vector2 looking;
         private Transform2 weaponTrans;
         private Transform2 holderTrans;
         public bool isEquiped;
-        //public Rigidbody weaponRB;
+        private Rigidbody body;
 
         protected override void OnInitialize()
         {
             isEquiped = false;
             weaponTrans = Actor.GetComponent<Transform2>();
-            Actor.GetComponent<Rigidbody>().OnTriggerEnter += OnTriggerEnter;
-            Actor.GetComponent<Rigidbody>().OnTriggerExit += OnTriggerExit;
+            body = Actor.GetComponent<Rigidbody>();
         }
 
         public void Update()
@@ -39,28 +27,9 @@ namespace MonoNet.PickUps
             if (isEquiped == true)
             {
                 looking = weaponHolder.GetComponent<PlayerManager>().LookingAt;
-                weaponTrans.WorldPosition = holderTrans.WorldPosition + looking * 15;
+                weaponTrans.LocalPosition = looking * 15;
             }
         }
-
-        public void OnTriggerEnter(Rigidbody holderRB)
-        {
-            if (holderRB.Actor.GetComponent<Equip>() != null && holderRB.Actor.GetComponent<PlayerInput>() != null)
-            {
-                holderRB.Actor.GetComponent<Equip>().standingOnWeapon = this;
-                holderRB.Actor.GetComponent<PlayerInput>().onWeapon = true;
-            }
-        }
-
-        public void OnTriggerExit(Rigidbody holderRB)
-        {
-            if (holderRB.Actor.GetComponent<Equip>() != null && holderRB.Actor.GetComponent<PlayerInput>() != null)
-            {
-                holderRB.Actor.GetComponent<Equip>().standingOnWeapon = null;
-                holderRB.Actor.GetComponent<PlayerInput>().onWeapon = false;
-            }
-        }
-
         /// <summary>
         /// Activates the main function of the weapon
         /// </summary>
@@ -75,6 +44,9 @@ namespace MonoNet.PickUps
             isEquiped = true;
             weaponHolder = holder;
             holderTrans = holder.GetComponent<Transform2>();
+            weaponTrans.Parent = holderTrans;
+            Physic.Instance.DeRegister(body);
+
             // change graphic to player holding the weapon
         }
 
@@ -83,9 +55,16 @@ namespace MonoNet.PickUps
         /// </summary>
         public void OnDeEquip()
         {
-            weaponTrans.WorldPosition = weaponHolder.GetComponent<PlayerInput>().lastGround;
             isEquiped = false;
             weaponHolder = null;
+
+            Vector2 curWeaponPos = weaponTrans.WorldPosition;
+            weaponTrans.Parent = null;
+            weaponTrans.WorldPosition = curWeaponPos;
+
+            Physic.Instance.Register(body);
+            body.velocity = new Vector2();
+
             //change graphic to laying on the stage
         }
 

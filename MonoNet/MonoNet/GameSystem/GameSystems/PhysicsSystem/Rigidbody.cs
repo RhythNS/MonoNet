@@ -1,9 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
+using MonoNet.Network;
 using MonoNet.Util.Datatypes;
 using MonoNet.Util.Overlap;
 using System;
+using System.Collections.Generic;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
@@ -11,7 +13,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
     public delegate void OnTriggerStay(Rigidbody other);
     public delegate void OnTriggerExit(Rigidbody other);
 
-    public class Rigidbody : Component, Interfaces.IUpdateable, IDisposable, IOverlapable
+    public class Rigidbody : Component, Interfaces.IUpdateable, IDisposable, IOverlapable, ISyncable
     {
         public event OnTriggerEnter OnTriggerEnter;
         public event OnTriggerStay OnTriggerStay;
@@ -76,6 +78,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void FireEventExit(Rigidbody other) => OnTriggerExit?.Invoke(other);
 
+        public Rigidbody[] GetOverlaps() => Physic.Instance.GetOverlaps(this);
+
         public Box2D GetBox()
         {
             Vector2 position = transform.WorldPosition;
@@ -88,5 +92,15 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public bool Overlaps(IOverlapable other) => GetBox().Intersecting(other.GetBox());
 
         public bool Overlaps(Box2D other) => GetBox().Intersecting(other);
+
+        public void Sync(byte[] data, ref int pointerAt)
+        {
+            velocity = NetUtils.GetNextVector(data, ref pointerAt);
+        }
+
+        public void GetSync(List<byte> data)
+        {
+            NetUtils.AddVectorToList(velocity, data);
+        }
     }
 }

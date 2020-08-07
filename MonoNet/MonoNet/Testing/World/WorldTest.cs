@@ -2,10 +2,13 @@
 using MonoNet.ECS;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.Testing.Infrastructure;
+using MonoNet.Testing.Tiled;
 using MonoNet.PickUps;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util.Datatypes;
+using MonoNet.Testing.NetTest;
 
 namespace MonoNet.Testing
 {
@@ -28,7 +31,7 @@ namespace MonoNet.Testing
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
             BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
-            PlayerSpawn playerSpawn = new PlayerSpawn(playerRegion, stage);
+            PlayerSpawnLocations playerSpawn = new PlayerSpawnLocations(playerRegion, stage);
             GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
             LoadBullet.region = bulletRegion;
             LoadBullet.stage = stage;
@@ -43,7 +46,9 @@ namespace MonoNet.Testing
             tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
-            TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
+            TiledMapComponent[] components = tiledBase.AddMap(stage, "maps/level1", true, true);
+
+            playerSpawn.LoadOnePlayer();
 
             //float width = components[0].Width * components[0].TileWidth * 0.5f;
             //float height = components[0].Height * components[0].TileHeight * 0.5f;

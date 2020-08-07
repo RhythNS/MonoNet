@@ -1,18 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
-using MonoNet.Testing;
 using MonoNet.Testing.Infrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.PickUps
 {

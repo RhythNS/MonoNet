@@ -31,7 +31,7 @@ namespace MonoNet.Util.Datatypes
         }
 
         public bool Intersecting(Box2D other) =>
-            x < other.x + other.width && x + width > other.x && y > other.y + height && y + height < other.y;
+            x < other.x + other.width && x + width > other.x && y < other.y + height && y + height > other.y;
 
     }
 }

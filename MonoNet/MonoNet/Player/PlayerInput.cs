@@ -4,6 +4,7 @@ using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
+using MonoNet.PickUps;
 using System.Collections;
 
 namespace MonoNet.Player
@@ -21,8 +22,6 @@ namespace MonoNet.Player
         private bool movedRight;
         private bool jumping = false;
         private int jumpCount = 0;
-
-        public bool onWeapon = false;
 
         protected override void OnInitialize()
         {
@@ -48,7 +47,7 @@ namespace MonoNet.Player
             Drop();
             Look();
             Shoot();
-            
+
             addVel.X *= Time.Delta;
             rigidbody.velocity += addVel;
         }
@@ -131,9 +130,27 @@ namespace MonoNet.Player
 
         private void PickUp()
         {
-            if (Input.IsKeyDownThisFrame(binding.pickup) && onWeapon == true)
+            if (Input.IsKeyDownThisFrame(binding.pickup))
             {
-                equip.PickupWeapon(equip.standingOnWeapon);
+                Rigidbody[] overlapingBodies = rigidbody.GetOverlaps();
+                Pickable pickup = null;
+                for (int i = 0; i < overlapingBodies.Length; i++)
+                {
+                    if (overlapingBodies[i].Actor.TryGetComponent(out pickup) == true)
+                        break;
+                }
+
+                if (pickup is null)
+                    return;
+
+                // someone already picked it up
+                if (pickup.Actor.GetComponent<Transform2>().Parent != null)
+                    return;
+
+                if (pickup is Weapon weapon)
+                    equip.PickupWeapon(weapon);
+                if (pickup is PickUp powerup)
+                    equip.RegisterPowerUP(powerup);
             }
         }
 
