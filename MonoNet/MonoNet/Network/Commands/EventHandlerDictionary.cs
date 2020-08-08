@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Linq.Expressions;
+using System.Security;
 
 namespace MonoNet.Network.Commands
 {
@@ -32,11 +33,17 @@ namespace MonoNet.Network.Commands
                             var parameters = method.GetParameters().Select(p => p.ParameterType).ToArray();
                             var actionType = Expression.GetDelegateType(parameters.Concat(new[] { typeof(void) }).ToArray());
                             var attribute = method.GetCustomAttribute<EventHandlerAttribute>();
-
+                            
                             if (method.IsStatic)
                                 EventHandlerDictionary.Instance[attribute.Name] += Delegate.CreateDelegate(actionType, method);
+<<<<<<< Updated upstream
                             else
                                 EventHandlerDictionary.Instance[attribute.Name] += Delegate.CreateDelegate(actionType, null, method);
+=======
+                            else {
+                                EventHandlerDictionary.Instance[attribute.Name] += Delegate.CreateDelegate(actionType, null, method);
+                            }
+>>>>>>> Stashed changes
                         }
                     } catch (ReflectionTypeLoadException) { }
                 }

@@ -147,7 +147,19 @@ namespace MonoNet.Network
         /// If set to true, then the parsed method will also be executed.</param>
         public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer, bool shouldExecute)
         {
+            // get event name from byte array
+<<<<<<< Updated upstream
+            /*
+            int byteLength = data[pointer++];
+            string eventName = Encoding.Unicode.GetString(data.SubArray(pointer, byteLength));
+            pointer += byteLength;
+            */
             string eventName = NetUtils.GetNextString(data, ref pointer);
+=======
+            string eventName = Encoding.ASCII.GetString(data.SubArray(pointer, 32));
+            eventName = eventName.Trim();
+            pointer += 32;
+>>>>>>> Stashed changes
 
             // get method info from any registered callback
             MethodInfo method = EventHandlerDictionary.Instance[eventName].callbacks[0].GetMethodInfo();

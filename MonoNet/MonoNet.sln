@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.902
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30330.147
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoNet", "MonoNet\MonoNet.csproj", "{0B18924B-BAA6-454A-AE3C-506D75B187AC}"
 EndProject
@@ -12,6 +12,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoNetContentPipelineExtensions", "MonoNetContentPipelineExtensions\MonoNetContentPipelineExtensions.csproj", "{A19079A3-EC52-4EB7-9F09-5E7B5A6C4BD6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Myra.MonoGame", "Libs\Myra\src\Myra\Myra.MonoGame.csproj", "{72E3C1AE-4700-4C22-A26B-17CCD616F607}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MononetMasterServer", "MononetMasterServer\MononetMasterServer\MononetMasterServer.csproj", "{965F6ECE-766C-4CA9-81E5-F9C80899ED25}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +82,18 @@ Global
 		{72E3C1AE-4700-4C22-A26B-17CCD616F607}.Release|x64.Build.0 = Release|Any CPU
 		{72E3C1AE-4700-4C22-A26B-17CCD616F607}.Release|x86.ActiveCfg = Release|Any CPU
 		{72E3C1AE-4700-4C22-A26B-17CCD616F607}.Release|x86.Build.0 = Release|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Debug|x64.Build.0 = Debug|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Debug|x86.Build.0 = Debug|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Release|x64.ActiveCfg = Release|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Release|x64.Build.0 = Release|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Release|x86.ActiveCfg = Release|Any CPU
+		{965F6ECE-766C-4CA9-81E5-F9C80899ED25}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
