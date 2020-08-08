@@ -23,7 +23,6 @@ namespace MonoNet.Testing.NetTest
         NetManagerReciever reciever;
         NetManagerSender sender;
         PlayerSpawnLocations playerSpawns;
-        TextureRegion playerRegion;
 
         protected override void AfterManagerPreStageUpdate(GameTime time)
         {
@@ -45,13 +44,13 @@ namespace MonoNet.Testing.NetTest
                 if (Input.KeyDown(Keys.F1))
                 {
                     sender = new NetManagerSender(25565);
-                    stage.CreateActor(0).AddComponent<ServerTestComponent>().Set(playerSpawns, playerRegion);
+                    stage.CreateActor(0).AddComponent<ServerConnectionComponent>().Set(playerSpawns);
 
                 }
                 else if (Input.KeyDown(Keys.F2))
                 {
                     reciever = new NetManagerReciever(new IPEndPoint(IPAddress.Parse("0:0:0:0:0:0:0:1"), 25565), "Unknown");
-                    stage.CreateActor(0).AddComponent<ClientTestComponent>().Set(playerRegion);
+                    stage.CreateActor(0).AddComponent<ClientConnectionComponent>();
 
                 }
 
@@ -66,21 +65,18 @@ namespace MonoNet.Testing.NetTest
         {
             base.LoadContent();
 
+            ComponentFactory factory = new ComponentFactory(Content);
+
             graphics.PreferredBackBufferWidth = 1920;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = 1080;   // set this value to the desired height of your window
             graphics.ApplyChanges();
 
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
-            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
-            playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
-            TextureRegion bulletRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 10, 10);
 
-            HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
-            BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
+            HitboxLoader hitboxLoader = new HitboxLoader(stage);
+            BoxSpawn boxSpawn = new BoxSpawn(factory.playerTex, stage);
             playerSpawns = new PlayerSpawnLocations();
-            GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
-            LoadBullet.region = bulletRegion;
-            LoadBullet.stage = stage;
+            GunSpawn gunSpawn = new GunSpawn(factory.gunRegions, stage);
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 

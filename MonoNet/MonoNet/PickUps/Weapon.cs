@@ -1,14 +1,23 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
+using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.LevelManager;
+using MonoNet.Network;
 using MonoNet.Player;
 
 namespace MonoNet.PickUps
 {
-    public class Weapon : Pickable, Interfaces.IUpdateable
+    public abstract class Weapon : Pickable, Interfaces.IUpdateable
     {
+        public abstract float BulletVelocity { get; }
+        public abstract float DelayAfterShoot { get; }
+        public bool CanShoot => shootTimer <= 0;
+
+        private float shootTimer;
+
         private Transform2 weaponTrans;
 
         private Transform2 holderTrans;
@@ -30,6 +39,9 @@ namespace MonoNet.PickUps
         {
             if (isEquiped == true)
             {
+                if (shootTimer > 0)
+                    shootTimer -= Time.Delta;
+
                 if (holder.lookingAt == PlayerManager.LookingAt.Left)
                 {
                     drawComponent.mirror = true;
@@ -46,7 +58,16 @@ namespace MonoNet.PickUps
         /// <summary>
         /// Activates the main function of the weapon
         /// </summary>
-        public virtual void CoreMethod() { }
+        public void CoreMethod()
+        {
+            if (CanShoot == false)
+                return;
+
+            if (NetManager.Instance.IsServer == true)
+                ServerConnectionComponent.Instance.CreateBullet(holder);
+            else
+                ClientConnectionComponent.Instance.RequestBullet(holder);
+        }
 
         /// <summary>
         /// Gets called when the weapon is equiped
@@ -54,12 +75,17 @@ namespace MonoNet.PickUps
         /// <param name="holder">Actor of the one who picks up the weapon </param>
         public void OnEquip(Actor holder)
         {
+            shootTimer = -1;
             isEquiped = true;
 
             this.holder = holder.GetComponent<PlayerManager>();
             holderTrans = holder.GetComponent<Transform2>();
 
-            weaponTrans.Parent = holderTrans;
+            if (NetManager.Instance.IsServer == true)
+                ServerConnectionComponent.Instance.ParentTransform(weaponTrans, holderTrans);
+            else
+                weaponTrans.Parent = holderTrans;
+
             Physic.Instance.DeRegister(body);
 
             // change graphic to player holding the weapon
@@ -74,7 +100,7 @@ namespace MonoNet.PickUps
             holder = null;
 
             Vector2 curWeaponPos = weaponTrans.WorldPosition;
-            weaponTrans.Parent = null;
+            ServerConnectionComponent.Instance.ParentTransform(weaponTrans, null);
             weaponTrans.WorldPosition = curWeaponPos;
 
             Physic.Instance.Register(body);

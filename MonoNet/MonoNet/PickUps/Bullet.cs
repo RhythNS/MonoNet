@@ -1,4 +1,5 @@
-﻿using MonoNet.ECS;
+﻿using Microsoft.Xna.Framework;
+using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Player;
@@ -14,6 +15,15 @@ namespace MonoNet.PickUps
         {
             Actor.GetComponent<Rigidbody>().OnCollision += OnCollision;
             transform = Actor.GetComponent<Transform2>();
+        }
+
+        public void Set(float velocity, PlayerManager shooter)
+        {
+            Vector2 direction = shooter.GetLookingVector();
+            direction.Normalize();
+
+            Actor.GetComponent<Rigidbody>().velocity += direction * velocity;
+            Actor.AddComponent<Bullet>().shooter = shooter;
         }
 
         public void Update()

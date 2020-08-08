@@ -11,6 +11,7 @@ using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using MonoNet.GameSystems;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoNet.Testing.UI
 {
@@ -30,7 +31,7 @@ namespace MonoNet.Testing.UI
             this.game = game;
         }
 
-        public void Draw(GameTime gameTime) {
+        public void Draw(SpriteBatch batch) {
             desktop.Render();
         }
 

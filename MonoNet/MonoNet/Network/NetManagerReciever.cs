@@ -32,10 +32,13 @@ namespace MonoNet.Network
             client.StartListen();
         }
 
-        public void AddRPC(List<byte> rpc)
+        public void AddRPC(List<byte> rpc, bool isPriorityMessage)
         {
             rpc.Insert(0, ++autoIncrementRPCSend);
-            toSendCommands.Add(rpc.ToArray());
+            if (isPriorityMessage == true)
+                toSendCommands.Insert(0, rpc.ToArray());
+            else
+                toSendCommands.Add(rpc.ToArray());
         }
 
         /// <summary>

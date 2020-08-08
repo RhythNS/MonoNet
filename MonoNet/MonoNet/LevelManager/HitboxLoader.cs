@@ -2,23 +2,19 @@
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
-using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Tiled;
 using MonoNet.Util;
 using TiledSharp;
 
-namespace MonoNet.Testing.World
+namespace MonoNet.LevelManager
 {
     public class HitboxLoader
     {
         private Stage stage;
-        private TextureRegion debugRegion;
 
-        public HitboxLoader(Stage stage, TextureRegion debugRegion)
+        public HitboxLoader(Stage stage)
         {
             this.stage = stage;
-            this.debugRegion = debugRegion;
         }
 
         private static int counter = -1;
@@ -36,8 +32,6 @@ namespace MonoNet.Testing.World
             trans.LocalPosition = new Vector2(localX + (float)hitbox.X, localY + (float)hitbox.Y);
             Rigidbody body = hitboxActor.AddComponent<Rigidbody>();
             body.Set(width: (float)hitbox.Width, height: (float)hitbox.Height, isStatic: true, isSquare: true, isTrigger: false);
-            //DrawTextureRegionComponent drawTexture = hitboxActor.AddComponent<DrawTextureRegionComponent>();
-            //drawTexture.region = debugRegion;
             trans.Parent = componentTrans;
         }
     }

@@ -25,9 +25,8 @@ namespace MonoNet.GameSystems.PickUps
         /// <param name="newWeapon">picked up weapon</param>
         public void PickupWeapon(Weapon newWeapon)
         {
-            if (ActiveWeapon != newWeapon)
+            if (ActiveWeapon == null)
             {
-                DropWeapon();
                 newWeapon.OnEquip(equipHolder);
                 ActiveWeapon = newWeapon;
             }

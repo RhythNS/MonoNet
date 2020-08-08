@@ -29,6 +29,8 @@ namespace MonoNet.Network
         private byte autoIncrementRPCSend = 255;
         public List<byte> recievedCommands = new List<byte>();
 
+        public bool hasChangedLevel = false;
+
         public ConnectedClient(IPEndPoint ip, string name, byte id)
         {
             this.ip = ip;

@@ -2,8 +2,9 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoNet.GameSystems;
+using MonoNet.GameSystems.PhysicsSystem;
+using MonoNet.Network.Commands;
 using MonoNet.Screen;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Testing.UI;
 using MonoNet.Util;
 using Myra;
@@ -19,8 +20,7 @@ namespace MonoNet
         SpriteBatch spriteBatch;
 
         private GameSystemManager manager;
-
-        private static IScreen currentScreen;
+        private ScreenManager screenManager;
 
         public MonoNet()
         {
@@ -28,7 +28,7 @@ namespace MonoNet
             Content.RootDirectory = "Content";
 
             // start in MainMenu
-            currentScreen = new MainMenu(this);
+            screenManager = new ScreenManager(new MainMenu(this));
 
             IsMouseVisible = true;
         }
@@ -41,16 +41,15 @@ namespace MonoNet
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
-
             base.Initialize();
 
+            new EventHandlerDictionary();
             new Log(Log.Level.PrintMessages, Log.Level.PrintMessagesAndStackTrace, Log.Level.PrintMessagesAndStackTrace);
 
             manager = new GameSystemManager();
-            manager.Add(new Time(), new Input());
+            manager.Add(new Time(), new Input(), new Physic());
 
-            currentScreen.Initialize();
+            screenManager.Initialize();
         }
 
         /// <summary>
@@ -59,15 +58,12 @@ namespace MonoNet
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-
-            // TODO: use this.Content to load your game content here
 
             // needs to be set for Myra
             MyraEnvironment.Game = this;
 
-            currentScreen.LoadContent();
+            screenManager.LoadContent();
         }
 
         /// <summary>
@@ -76,9 +72,7 @@ namespace MonoNet
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
-
-            currentScreen.UnloadContent();
+            screenManager.UnloadContent();
         }
 
         /// <summary>
@@ -91,9 +85,7 @@ namespace MonoNet
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
-
-            currentScreen.Update(gameTime);
+            screenManager.Update(gameTime);
 
             base.Update(gameTime);
 
@@ -106,13 +98,7 @@ namespace MonoNet
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
-
-            currentScreen.Draw(gameTime);
-
-            base.Draw(gameTime);
+            screenManager.Draw(spriteBatch);
         }
     }
 }

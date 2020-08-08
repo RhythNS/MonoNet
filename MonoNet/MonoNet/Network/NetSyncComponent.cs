@@ -1,6 +1,7 @@
 ﻿using MonoNet.ECS;
 using MonoNet.Network.Commands;
 using MonoNet.Util;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -74,13 +75,13 @@ namespace MonoNet.Network
         /// </summary>
         /// <param name="eventName">The name of the event to trigger.</param>
         /// <param name="args">The arguments the event expects.</param>
-        public static void TriggerServerEvent(string eventName, params object[] args)
+        public static void TriggerServerEvent(string eventName, bool isPriorityMessage, params object[] args)
         {
             if (NetManager.Instance.IsServer) return;
 
             List<byte> data = EventDataToByteArray(eventName, args);
 
-            ((NetManagerReciever)NetManager.Instance).AddRPC(data);
+            ((NetManagerReciever)NetManager.Instance).AddRPC(data, isPriorityMessage);
         }
 
         /// <summary>
@@ -162,9 +163,14 @@ namespace MonoNet.Network
         /// <param name="pointer">Where the next byte should be read from the array.</param>
         /// <param name="shouldExecute">If set to false the method is only parsed and the pointer is advanced.
         /// If set to true, then the parsed method will also be executed.</param>
-        public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer, bool shouldExecute)
+        /// <param name="connectedClient">The client who made the request.</param>
+        /// <param name="onlyExecuteEvent">If set then the event only is executed when the event name is equal to this.</param>
+        public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer, bool shouldExecute, ConnectedClient connectedClient = null, string onlyExecuteEvent = null)
         {
             string eventName = NetUtils.GetNextString(data, ref pointer);
+
+            if (onlyExecuteEvent != null && onlyExecuteEvent.Equals(eventName, StringComparison.OrdinalIgnoreCase) == false)
+                return false;
 
             // get method info from any registered callback
             MethodInfo method = EventHandlerDictionary.Instance[eventName].callbacks[0].GetMethodInfo();
@@ -175,7 +181,11 @@ namespace MonoNet.Network
 
             for (int i = 0; i < paras.Length; i++)
             {
-                if (NetUtils.TryGetNextValue(data, ref pointer, paras[i].ParameterType, out object parsed) == true)
+                if (connectedClient != null && paras[i].Name.Equals("playerId", StringComparison.OrdinalIgnoreCase))
+                {
+                    args[i] = connectedClient.id;
+                }
+                else if (NetUtils.TryGetNextValue(data, ref pointer, paras[i].ParameterType, out object parsed) == true)
                 {
                     args[i] = parsed;
                 }

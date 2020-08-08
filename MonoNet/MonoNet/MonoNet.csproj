@@ -71,7 +71,12 @@
     <Compile Include="Graphics\Animation.cs" />
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
+    <Compile Include="LevelManager\ClientLevelScreen.cs" />
+    <Compile Include="LevelManager\ComponentFactory.cs" />
     <Compile Include="LevelManager\GameManager.cs" />
+    <Compile Include="LevelManager\GunSpawnLocations.cs" />
+    <Compile Include="LevelManager\LevelScreen.cs" />
+    <Compile Include="LevelManager\ServerLevelScreen.cs" />
     <Compile Include="MonoNet.cs" />
     <Compile Include="GameSystem\GameSystem.cs" />
     <Compile Include="GameSystem\GameSystems\Input.cs" />
@@ -93,8 +98,6 @@
     <Compile Include="PickUps\Bullet.cs" />
     <Compile Include="PickUps\DoubleJump.cs" />
     <Compile Include="PickUps\Equip.cs" />
-    <Compile Include="PickUps\Knife.cs" />
-    <Compile Include="PickUps\LoadBullet.cs" />
     <Compile Include="PickUps\Pickable.cs" />
     <Compile Include="PickUps\PickUp.cs" />
     <Compile Include="PickUps\Pistol.cs" />
@@ -114,10 +117,10 @@
     <Compile Include="Testing\Infrastructure\CameraTestComponent.cs" />
     <Compile Include="Graphics\DrawTextureRegionComponent.cs" />
     <Compile Include="Testing\Infrastructure\GoRightComponent.cs" />
-    <Compile Include="LevelManager\ClientTestComponent.cs" />
+    <Compile Include="LevelManager\ClientConnectionComponent.cs" />
     <Compile Include="Testing\NetTest\NetTestGame.cs" />
-    <Compile Include="Testing\NetTest\PlayerSpawnLocations.cs" />
-    <Compile Include="LevelManager\ServerTestComponent.cs" />
+    <Compile Include="LevelManager\PlayerSpawnLocations.cs" />
+    <Compile Include="LevelManager\ServerConnectionComponent.cs" />
     <Compile Include="Testing\NetTest\SimpleMoveComponent.cs" />
     <Compile Include="Testing\Physics\PhysicTest.cs" />
     <Compile Include="Testing\Physics\TriggerTest.cs" />
@@ -127,7 +130,7 @@
     <Compile Include="Testing\Tiled\TiledTestMoverAndScaler.cs" />
     <Compile Include="Testing\Tiled\TiledTestPlayer.cs" />
     <Compile Include="Testing\World\GunSpawn.cs" />
-    <Compile Include="Testing\World\HitboxLoader.cs" />
+    <Compile Include="LevelManager\HitboxLoader.cs" />
     <Compile Include="Testing\World\BoxSpawn.cs" />
     <Compile Include="Testing\World\PlayerSpawn.cs" />
     <Compile Include="Testing\World\WorldTest.cs" />

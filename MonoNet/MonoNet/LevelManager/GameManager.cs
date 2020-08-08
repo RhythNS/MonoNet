@@ -1,6 +1,7 @@
 ﻿using MonoNet.ECS;
 using MonoNet.Interfaces;
 using MonoNet.Player;
+using System;
 using System.Collections.Generic;
 
 namespace MonoNet.LevelManager
@@ -12,6 +13,20 @@ namespace MonoNet.LevelManager
         public static GameManager Instance { get; private set; }
 
         public List<PlayerManager> Players { get; private set; } = new List<PlayerManager>();
+
+        public static Random Random { get; private set; } = new Random();
+
+        public static int playerLayer = 2;
+        public static int bulletLayer = 2;
+
+        public static int physicsPlayerLayer = 0;
+        public static int physicsBulletLayer = 1;
+        public static int physicsWeaponLayer = 2;
+
+        public static Dictionary<byte, string> LevelIDForLocation = new Dictionary<byte, string>
+            {
+                { 0, "maps/level1" }
+            };
 
         public event GameEnd OnGameEnd;
         public bool RoundStarted = false;

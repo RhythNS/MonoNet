@@ -102,7 +102,7 @@ namespace MonoNet.Tiled
 
             // Create all variables that are needed for the loop
             bool warnedNotAbleToGrow = false;
-            int atLayer = -1;
+            int atLayer = 0;
             List<int> layersToPlaceOn = new List<int>(map.TileLayers.Count);
 
             for (int i = 0; i < map.TileLayers.Count; i++)

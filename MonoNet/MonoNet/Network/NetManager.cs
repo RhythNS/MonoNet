@@ -36,6 +36,25 @@ namespace MonoNet.Network
 
         public void SetNetSyncComponent(NetSyncComponent netSyncComponent, byte id) => netSyncComponents[id] = netSyncComponent;
 
+        public void Reset()
+        {
+            for (int i = 0; i < netSyncComponents.Length; i++)
+                netSyncComponents[i] = null;
+
+            for (int i = 0; i < ConnectedAdresses.Count; i++)
+                ConnectedAdresses[i].controlledComponents.Clear();
+        }
+
+        public ConnectedClient GetClient(byte id)
+        {
+            for (int i = 0; i < ConnectedAdresses.Count; i++)
+            {
+                if (ConnectedAdresses[i].id == id)
+                    return ConnectedAdresses[i];
+            }
+            return null;
+        }
+
         public bool TryGetNextAvailableID(out byte id)
         {
             for (int i = 0; i < netSyncComponents.Length; i++)
@@ -50,7 +69,7 @@ namespace MonoNet.Network
             return false;
         }
 
-        protected bool RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager)
+        protected bool RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager, ConnectedClient connectedClient = null)
         {
             // First get all rpcs which we do not need to send again
             int numberOfAckRpcs = data[pointerAt++];
@@ -67,6 +86,11 @@ namespace MonoNet.Network
                 }
             }
 
+            // If the client has not loaded the level already, then set the string to the eventname for loading a level
+            string requireLevelChange = null;
+            if (IsServer == true && connectedClient.hasChangedLevel == false)
+                requireLevelChange = "LL";
+
             // Get Rpcs which client wants to execute
             int numberOfOwnRpcs = data[pointerAt++];
             for (int j = 0; j < numberOfOwnRpcs; j++)
@@ -76,7 +100,7 @@ namespace MonoNet.Network
 
                 bool shouldExecute = commandPackageManager.RecievedShouldExecute(idOfRpc);
 
-                if (NetSyncComponent.ExecuteEventFromByteArray(data, ref pointerAt, shouldExecute) == false)
+                if (NetSyncComponent.ExecuteEventFromByteArray(data, ref pointerAt, shouldExecute, connectedClient, requireLevelChange) == false)
                     return false;
             }
             return true;

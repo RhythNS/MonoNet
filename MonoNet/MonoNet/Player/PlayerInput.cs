@@ -4,6 +4,8 @@ using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
+using MonoNet.LevelManager;
+using MonoNet.Network;
 using MonoNet.PickUps;
 using System.Collections;
 
@@ -132,25 +134,13 @@ namespace MonoNet.Player
         {
             if (Input.IsKeyDownThisFrame(binding.pickup))
             {
-                Rigidbody[] overlapingBodies = rigidbody.GetOverlaps();
-                Pickable pickup = null;
-                for (int i = 0; i < overlapingBodies.Length; i++)
+                if (player.CanPickUp(out Pickable pickable))
                 {
-                    if (overlapingBodies[i].Actor.TryGetComponent(out pickup) == true)
-                        break;
+                    if (NetManager.Instance.IsServer == false)
+                        ClientConnectionComponent.Instance.RequestPickupWeapon(pickable);
+                    else
+                        player.PickUp(pickable);
                 }
-
-                if (pickup is null)
-                    return;
-
-                // someone already picked it up
-                if (pickup.Actor.GetComponent<Transform2>().Parent != null)
-                    return;
-
-                if (pickup is Weapon weapon)
-                    equip.PickupWeapon(weapon);
-                if (pickup is PickUp powerup)
-                    equip.RegisterPowerUP(powerup);
             }
         }
 
@@ -158,6 +148,12 @@ namespace MonoNet.Player
         {
             if (Input.IsKeyDownThisFrame(binding.weaponDrop))
             {
+                if (NetManager.Instance.IsServer == false)
+                {
+                    ClientConnectionComponent.Instance.RequestWeaponDrop();
+                    return;
+                }
+
                 equip.DropWeapon();
             }
         }
