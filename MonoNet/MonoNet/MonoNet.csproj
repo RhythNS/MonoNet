@@ -80,6 +80,8 @@
     <Compile Include="Network\Commands\EventHandlerDictionary.cs" />
     <Compile Include="Network\ConnectedClient.cs" />
     <Compile Include="Network\ISyncable.cs" />
+    <Compile Include="Network\MasterServerConnection\MasterServerConnector.cs" />
+    <Compile Include="Network\MasterServerConnection\Server.cs" />
     <Compile Include="Network\NetConstants.cs" />
     <Compile Include="Network\NetManager.cs" />
     <Compile Include="Network\NetManagerReciever.cs" />
