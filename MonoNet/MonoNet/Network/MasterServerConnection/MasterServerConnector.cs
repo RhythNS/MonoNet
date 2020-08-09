@@ -13,11 +13,18 @@ namespace MonoNet.Network.MasterServerConnection
     /// </summary>
     public class MasterServerConnector
     {
+        public static MasterServerConnector Instance;
+
+
+        public delegate void ReceivedServerlist(List<Server> servers);
+
+        public event ReceivedServerlist OnReceivedServerlist;
+
         // if this instance of the game is a server
         private static bool isServer = false;
 
         // IPAddress of Master Server
-        private static string masterServerIpAddress = "127.0.0.1"; // REPLACE THIS
+        private static string masterServerIpAddress = "176.57.171.145"; // REPLACE THIS
         // Port of the Master Server
         private static int masterServerPort = 1337; // REPLACE THIS
 
@@ -25,10 +32,22 @@ namespace MonoNet.Network.MasterServerConnection
         private TcpClient client;
         private NetworkStream stream;
 
-        // thread for listening to the master server
+        /// <summary>
+        /// Thread for listening to the master server
+        /// </summary>
         private Thread listenThread;
-        // thread to send a keep alive packet
+
+        /// <summary>
+        /// Thread to send a keep alive packet
+        /// </summary>
         private Thread keepAliveThread;
+
+        /// <summary>
+        /// Initializes the Instance of the master server.
+        /// </summary>
+        public MasterServerConnector() {
+            Instance = this;
+        }
 
         /// <summary>
         /// Initializes the connection to the master server and starts the listen and keepAlive threads.
@@ -147,7 +166,6 @@ namespace MonoNet.Network.MasterServerConnection
         /// Requests the server list from the master server
         /// </summary>
         public void RequestServerList() {
-            // only requests from clients that are not connected,count
             if (isServer) return;
 
             try {
@@ -247,9 +265,7 @@ namespace MonoNet.Network.MasterServerConnection
                                 servers.Add(sv);
                             }
 
-                            //foreach (Server sv in servers) {
-                            //    WriteToLog(sv.ToString());
-                            //}
+                            this.OnReceivedServerlist?.Invoke(servers);
                             break;
 
                         case PacketType.KeepAlive:

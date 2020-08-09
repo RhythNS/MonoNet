@@ -231,7 +231,7 @@ namespace MononetMasterServer
                             List<byte> byteList = new List<byte>();
 
                             // add packettype
-                            byteList.Add((byte)PacketType.RequestList);
+                            byteList.Add((byte)PacketType.KeepAlive);
 
                             byte[] ka = byteList.ToArray();
                             stream.Write(ka, 0, ka.Length);

@@ -15,6 +15,8 @@ namespace MonoNet.Network.MasterServerConnection
         public int MaxPlayers { get; set; }
         public long Ping { get; set; }
 
+        public Myra.Graphics2D.UI.Label label { get; set; }
+
         private Thread pingThread;
 
         public Server(string name, IPAddress address, int port, int currPlayers, int maxPlayers) {
@@ -39,7 +41,11 @@ namespace MonoNet.Network.MasterServerConnection
             if (reply.Status == IPStatus.Success) {
                 Ping = reply.RoundtripTime;
 
-                Console.WriteLine(this.ToString() + Environment.NewLine);
+                while (label == null) {
+                    Thread.Sleep(1);
+                }
+
+                label.Text = Ping.ToString() + "ms";
             }
         }
 
