@@ -14,6 +14,7 @@ namespace MonoNet.Network.MasterServerConnection
         public int CurrentPlayers { get; set; }
         public int MaxPlayers { get; set; }
         public long Ping { get; set; }
+        public IPEndPoint endPoint { get; set; }
 
         public Myra.Graphics2D.UI.Label label { get; set; }
 
@@ -25,6 +26,7 @@ namespace MonoNet.Network.MasterServerConnection
             Port = port;
             CurrentPlayers = currPlayers;
             MaxPlayers = maxPlayers;
+            endPoint = new IPEndPoint(address, port);
 
             pingThread = new Thread(PingServer);
             pingThread.Start();

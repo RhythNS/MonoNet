@@ -15,12 +15,14 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using MonoNet.Network.MasterServerConnection;
 using System.Net;
+using MonoNet.LevelManager;
+using MonoNet.Network;
 
 namespace MonoNet.Testing.UI
 {
     class MainMenu : IScreen
     {
-        private Game game;
+        private MonoNet game;
         private Desktop desktop;
 
         private Panel mainMenu;
@@ -29,11 +31,13 @@ namespace MonoNet.Testing.UI
         private Window serverCreation;
         private Window directConnect;
 
+        private TextBox nameTextBox;
+
         private Dialog dialogQuitGame;
 
         private Grid serverList = new Grid();
 
-        public MainMenu(Game game) {
+        public MainMenu(MonoNet game) {
             this.game = game;
         }
 
@@ -80,8 +84,8 @@ namespace MonoNet.Testing.UI
 
             // make a new grid on the bottom right of the game window
             Grid grid = new Grid {
-                HorizontalAlignment = HorizontalAlignment.Right,
-                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
                 RowSpacing = 8,
                 ColumnSpacing = 8,
                 Padding = new Thickness(4)
@@ -91,15 +95,33 @@ namespace MonoNet.Testing.UI
             grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
             grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
 
-            // add a start game button
-            TextButton startGameBtn = new TextButton {
-                Text = "Start Game",
-                Width = 128,
-                Height = 32,
+            nameTextBox = new TextBox {
+                Text = "",
+                HintText = "Playername",
+                Width = 256,
+                Height = 64,
                 VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 GridColumn = 0,
                 GridRow = 0
+            };
+            nameTextBox.TextChangedByUser += (s, a) => {
+                if (nameTextBox.Text.Length > NetConstants.MAX_NAME_LENGTH) {
+                    nameTextBox.Text = nameTextBox.Text.Substring(0, NetConstants.MAX_NAME_LENGTH);
+                    nameTextBox.CursorPosition = NetConstants.MAX_NAME_LENGTH - 1;
+                }
+            };
+            grid.Widgets.Add(nameTextBox);
+
+            // add a start game button
+            TextButton startGameBtn = new TextButton {
+                Text = "Start Game",
+                Width = 256,
+                Height = 64,
+                VerticalAlignment = VerticalAlignment.Bottom,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                GridColumn = 0,
+                GridRow = 1
             };
             startGameBtn.Click += (s, a) => {
                 serverBrowser.ShowModal(desktop);
@@ -109,8 +131,8 @@ namespace MonoNet.Testing.UI
             // add a quit game button
             TextButton quitGameBtn = new TextButton {
                 Text = "Quit Game",
-                Width = 128,
-                Height = 32,
+                Width = 256,
+                Height = 64,
                 VerticalAlignment = VerticalAlignment.Bottom,
                 HorizontalAlignment = HorizontalAlignment.Right,
                 GridColumn = 0,
@@ -255,7 +277,7 @@ namespace MonoNet.Testing.UI
             };
             serverSettings.Widgets.Add(maxPlayersLabel);
             TextBox maxPlayersInput = new TextBox {
-                Text = "4",
+                Text = NetConstants.MAX_PLAYERS.ToString(),
                 Width = 50,
                 GridColumn = 1,
                 GridRow = 0
@@ -263,19 +285,27 @@ namespace MonoNet.Testing.UI
             serverSettings.Widgets.Add(maxPlayersInput);
 
             serverSettings.RowsProportions.Add(new Proportion(ProportionType.Auto));
-            Label passwordLabel = new Label {
-                Text = "Password:",
+            Label portLabel = new Label {
+                Text = "Port:",
                 TextAlign = TextAlign.Center,
                 GridColumn = 0,
                 GridRow = 1
             };
-            serverSettings.Widgets.Add(passwordLabel);
-            TextBox passwordTextBox = new TextBox {
-                HintText = "Leave empty for no password.",
+            serverSettings.Widgets.Add(portLabel);
+            TextBox portTextBox = new TextBox {
+                Text = "1337",
+                TextColor = Color.Green,
                 GridColumn = 1,
                 GridRow = 1
             };
-            serverSettings.Widgets.Add(passwordTextBox);
+            portTextBox.TextChangedByUser += (s, a) => {
+                if (int.TryParse(portTextBox.Text, out int port) && port > 200 && port < 65536) {
+                    portTextBox.TextColor = Color.Green;
+                } else {
+                    portTextBox.TextColor = Color.Red;
+                }
+            };
+            serverSettings.Widgets.Add(portTextBox);
 
             verticalStackPanel.Widgets.Add(serverSettings);
 
@@ -288,6 +318,17 @@ namespace MonoNet.Testing.UI
             };
             buttonCreate.Click += (s, a) => {
                 // start server here
+                if (portTextBox.TextColor == Color.Green) {
+                    game.ScreenManager.SetScreen(new ServerLevelScreen(game, nameTextBox.Text, int.Parse(portTextBox.Text)));
+
+                    MasterServerConnector.Instance.StartListingServer(nameTextBox.Text, int.Parse(maxPlayersInput.Text));
+                } else {
+                    Window window = new Window {
+                        Title = "Port needs to be 201-65535!"
+                    };
+
+                    window.ShowModal(desktop);
+                }
             };
             horizontalStackPanel.Widgets.Add(buttonCreate);
             TextButton buttonCancel = new TextButton {
@@ -419,8 +460,10 @@ namespace MonoNet.Testing.UI
                     GridColumn = 0,
                     GridRow = i + 1
                 };
+                IPEndPoint endPoint = servers[i].endPoint;
                 name.Click += (s, a) => {
-                    // connect here
+                    // connect here PLAYERNAME
+                    game.ScreenManager.SetScreen(new ClientLevelScreen(game, endPoint, nameTextBox.Text));
                 };
                 serverList.Widgets.Add(name);
 

@@ -25,7 +25,7 @@ namespace MonoNet.Network.UDP
 
         public Server(int port, List<ConnectedClient> connectedAdresses, OnMessageRecieved onMessageRecieved)
         {
-            connection = new UdpClient(AddressFamily.InterNetworkV6);
+            connection = new UdpClient(AddressFamily.InterNetwork);
             OnMessageRecieved += onMessageRecieved;
             this.port = port;
             this.connectedAdresses = connectedAdresses;

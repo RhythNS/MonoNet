@@ -20,7 +20,7 @@ namespace MonoNet.Network.UDP
 
         public Client(IPEndPoint endPoint, string name)
         {
-            connection = new UdpClient(AddressFamily.InterNetworkV6);
+            connection = new UdpClient(AddressFamily.InterNetwork);
             this.endPoint = endPoint;
             this.name = name;
         }

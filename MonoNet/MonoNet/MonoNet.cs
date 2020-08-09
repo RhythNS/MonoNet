@@ -35,8 +35,8 @@ namespace MonoNet
             Content.RootDirectory = "Content";
             
             // start in MainMenu
-            // ScreenManager = new ScreenManager(new MainMenu(this)); 
-            ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
+            ScreenManager = new ScreenManager(new MainMenu(this)); 
+            //ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
 
             IsMouseVisible = true;
         }
@@ -108,8 +108,9 @@ namespace MonoNet
         /// This is called when the game should draw itself.
         /// </summary>
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
-        protected override void Draw(GameTime gameTime)
-        {
+        protected override void Draw(GameTime gameTime) {
+            graphics.GraphicsDevice.Clear(Color.Black);
+
             ScreenManager.Draw(spriteBatch);
         }
     }
