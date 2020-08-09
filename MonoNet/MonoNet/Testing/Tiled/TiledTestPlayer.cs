@@ -4,7 +4,6 @@ using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems;
 using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Tiled;
 using System;
 using System.Collections.Generic;

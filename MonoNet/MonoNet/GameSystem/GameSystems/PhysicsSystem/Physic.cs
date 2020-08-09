@@ -4,6 +4,7 @@ using MonoNet.Util;
 using MonoNet.Util.Datatypes;
 using MonoNet.Util.Overlap;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
@@ -32,7 +33,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             transformsCicle = new List<Transform2>();
             triggerableHelper = new TriggerableHelper();
 
-            overlapManager = new RecursiveOverlapManager<Rigidbody>(new Box2D(float.MaxValue / 2, float.MaxValue / 2, float.MaxValue, float.MaxValue), 0);
+            overlapManager = new RecursiveOverlapManager<Rigidbody>(new Box2D(-100, -100, 1000, 840), 3);
             tempListOverlaps = new List<Rigidbody>(20);
         }
 
@@ -54,7 +55,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void Register(Rigidbody rigidbody)
         {
-            if (rigidbodiesSquare.Contains(rigidbody) || rigidbodiesCircle.Contains(rigidbody))
+            if (rigidbodiesSquare.Contains(rigidbody) && rigidbodiesCircle.Contains(rigidbody))
             {
                 Log.Warn("Rigidbobies allready contains rigidbody");
             }
@@ -82,30 +83,37 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void DeRegister(Rigidbody rigidbody)
         {
-            if (!rigidbodiesSquare.Contains(rigidbody) || !rigidbodiesCircle.Contains(rigidbody))
+            if (rigidbody.isSquare)
             {
-                Log.Warn("Rigidbodies does not contain this rigidbody");
-            }
-            else
-            {
-                if (rigidbody.isSquare)
+                if (rigidbody.isStatic)
                 {
-                    if (rigidbody.isStatic)
-                    {
-                        overlapManager.Remove(rigidbody);
-                    }
-                    else
-                    {
-                        rigidbodiesSquare.Remove(rigidbody);
-                        transformsSquare.Remove(rigidbody.Actor.GetComponent<Transform2>());
-                    }
+                    overlapManager.Remove(rigidbody);
                 }
                 else
                 {
-                    rigidbodiesCircle.Remove(rigidbody);
-                    transformsCicle.Remove(rigidbody.Actor.GetComponent<Transform2>());
+                    rigidbodiesSquare.Remove(rigidbody);
+                    transformsSquare.Remove(rigidbody.Actor.GetComponent<Transform2>());
                 }
             }
+            else
+            {
+                rigidbodiesCircle.Remove(rigidbody);
+                transformsCicle.Remove(rigidbody.Actor.GetComponent<Transform2>());
+            }
+        }
+
+        public Rigidbody[] GetOverlaps(Rigidbody rigidbody)
+        {
+            List<Rigidbody> overlaps = new List<Rigidbody>();
+            for (int i = 0; i < rigidbodiesCircle.Count; i++)
+                if (rigidbodiesCircle[i] != rigidbody && rigidbodiesCircle[i].Overlaps(rigidbody))
+                    overlaps.Add(rigidbodiesCircle[i]);
+
+            for (int i = 0; i < rigidbodiesSquare.Count; i++)
+                if (rigidbodiesSquare[i] != rigidbody && rigidbodiesSquare[i].Overlaps(rigidbody))
+                    overlaps.Add(rigidbodiesSquare[i]);
+
+            return overlaps.ToArray();
         }
 
         public override void Update(GameTime gameTime)
@@ -177,6 +185,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
                 && value == false)
                 return;
 
+            if (movingBody.IgnoreBodies != null && movingBody.IgnoreBodies.Contains(checkingBody))
+                return;
+
             // Both are either triggers or non triggers. Continue with normal collision detection.
             switch (collisionType)
             {
@@ -204,6 +215,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
                     movingBody.velocity.X = 0;
                     break;
             }
+
+            movingBody.FireOnCollision(checkingBody);
         }
 
         /// <summary>

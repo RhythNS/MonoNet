@@ -5,12 +5,11 @@ using MonoNet.ECS;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
+using MonoNet.LevelManager;
 using MonoNet.Network;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
-using MonoNet.Util;
 using MonoNet.Util.Datatypes;
-using System.Collections.Generic;
 using System.Net;
 
 namespace MonoNet.Testing.NetTest
@@ -21,7 +20,7 @@ namespace MonoNet.Testing.NetTest
 
         NetManagerReciever reciever;
         NetManagerSender sender;
-        PlayerSpawn playerSpawn;
+        PlayerSpawnLocations playerSpawns;
 
         protected override void AfterManagerPreStageUpdate(GameTime time)
         {
@@ -43,13 +42,13 @@ namespace MonoNet.Testing.NetTest
                 if (Input.KeyDown(Keys.F1))
                 {
                     sender = new NetManagerSender(25565);
-                    playerSpawn.playerActor.AddComponent<NetSyncComponent>();
+                    stage.CreateActor(0).AddComponent<ServerConnectionComponent>().Set(playerSpawns, "Unknown", stage);
 
                 }
                 else if (Input.KeyDown(Keys.F2))
                 {
                     reciever = new NetManagerReciever(new IPEndPoint(IPAddress.Parse("0:0:0:0:0:0:0:1"), 25565), "Unknown");
-                    playerSpawn.playerActor.AddComponent<NetSyncComponent>();
+                    stage.CreateActor(0).AddComponent<ClientConnectionComponent>();
 
                 }
 
@@ -64,18 +63,19 @@ namespace MonoNet.Testing.NetTest
         {
             base.LoadContent();
 
+
+            ComponentFactory factory = new ComponentFactory(Content);
+
             graphics.PreferredBackBufferWidth = 1920;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = 1080;   // set this value to the desired height of your window
             graphics.ApplyChanges();
 
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
-            TextureRegion[] gunRegions = TextureRegion.CreateAllFromSheet(Content.Load<Texture2D>("Test/guns"), 32, 15);
-            TextureRegion playerRegion = new TextureRegion(Content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
 
-            HitboxLoader hitboxLoader = new HitboxLoader(stage, orangeRegion);
-            BoxSpawn boxSpawn = new BoxSpawn(playerRegion, stage);
-            playerSpawn = new PlayerSpawn(playerRegion, stage);
-            GunSpawn gunSpawn = new GunSpawn(gunRegions, stage);
+            HitboxLoader hitboxLoader = new HitboxLoader(stage);
+            BoxSpawn boxSpawn = new BoxSpawn(factory.playerTex, stage);
+            playerSpawns = new PlayerSpawnLocations();
+            //GunSpawn gunSpawn = new GunSpawn(factory.gunRegions, stage);
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 
@@ -84,11 +84,11 @@ namespace MonoNet.Testing.NetTest
             tiledBase.Set(Content);
             tiledBase.OnCollisionHitboxLoaded += hitboxLoader.OnCollisionHitboxLoaded;
             tiledBase.OnObjectLoaded += boxSpawn.OnObjectLoaded;
-            tiledBase.OnObjectLoaded += playerSpawn.OnObjectLoaded;
-            tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
+            tiledBase.OnObjectLoaded += playerSpawns.OnObjectLoaded;
+            //tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
-            TiledMapComponent[] components = tiledBase.AddMap(stage, "Test/hitboxTest", true, true);
-            
+            TiledMapComponent[] components = tiledBase.AddMap(stage, "maps/level1", true, true);
+
         }
 
     }

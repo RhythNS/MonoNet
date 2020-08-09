@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace MonoNet.Screen
 {
@@ -33,9 +34,9 @@ namespace MonoNet.Screen
             currentScreen = screen;
         }
 
-        public void Draw(GameTime gameTime)
+        public void Draw(SpriteBatch batch)
         {
-            currentScreen.Draw(gameTime);
+            currentScreen.Draw(batch);
         }
 
         public void Initialize()

@@ -1,5 +1,9 @@
 ﻿using MonoNet.ECS;
+using MonoNet.Network.Commands;
+using MonoNet.Util;
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace MonoNet.Network
 {
@@ -19,8 +23,8 @@ namespace MonoNet.Network
             get => id;
             set
             {
-                NetManager.OnIDChanged(this, value);
                 id = value;
+                NetManager.Instance.SetNetSyncComponent(this, id);
             }
         }
 
@@ -28,12 +32,19 @@ namespace MonoNet.Network
         {
             // Listen to added components to find out if they are ISyncable
             Actor.OnComponentAdded += OnComponentAdded;
-
-            NetManager.OnNetComponentCreated(this);
-
             // Look for already added components which have ISyncable implemented
             if (Actor.GetAllComponents(out ISyncable[] allComponents))
                 syncables.AddRange(allComponents);
+
+            if (NetManager.Instance.IsServer == true)
+            {
+                if (NetManager.Instance.TryGetNextAvailableID(out byte gottenId) == false)
+                {
+                    Log.Error("Could not get id for NetSynccomponent! CRITICAL ERROR!");
+                    return;
+                }
+                Id = gottenId;
+            }
         }
 
         /// <summary>
@@ -57,6 +68,139 @@ namespace MonoNet.Network
         {
             for (int i = 0; i < syncables.Count; i++)
                 syncables[i].GetSync(data);
+        }
+
+        /// <summary>
+        /// Trigger an event on the server that should be executed by the server. NEEDS TO BE REGISTERED ON THE SERVER!
+        /// </summary>
+        /// <param name="eventName">The name of the event to trigger.</param>
+        /// <param name="args">The arguments the event expects.</param>
+        public static void TriggerServerEvent(string eventName, bool isPriorityMessage, params object[] args)
+        {
+            if (NetManager.Instance.IsServer) return;
+
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            ((NetManagerReciever)NetManager.Instance).AddRPC(data, isPriorityMessage);
+        }
+
+        /// <summary>
+        /// Trigger an event on a specified connected client that should be executed by that client. NEEDS TO BE REGISTERED ON THE CLIENT!
+        /// </summary>
+        /// <param name="player">The player to sent the RPC to.</param>
+        /// <param name="eventName">The name of the event to trigger.</param>
+        /// <param name="args">The arguments the event expects.</param>
+        public static void TriggerClientEvent(ConnectedClient player, string eventName, params object[] args)
+        {
+            if (!NetManager.Instance.IsServer) return;
+
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            player.AddRPC(data);
+        }
+
+        /// <summary>
+        /// Trigger an event on all connected clients that should be executed by those clients. NEEDS TO BE REGISTERED ON THE CLIENT!
+        /// </summary>
+        /// <param name="eventName">The name of the event to trigger.</param>
+        /// <param name="args">The arguments the event expects.</param>
+        public static void TriggerClientEvent(string eventName, params object[] args)
+        {
+            if (!NetManager.Instance.IsServer) return;
+
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            for (int i = 0; i < NetManager.Instance.ConnectedAdresses.Count; i++)
+                NetManager.Instance.ConnectedAdresses[i].AddRPC(data);
+        }
+
+        /// <summary>
+        /// Trigger an event on all connected clients except the given one that should be executed by those clients. NEEDS TO BE REGISTERED ON THE CLIENT!
+        /// </summary>
+        /// <param name="player">The player that ignores this rpc.</param>
+        /// <param name="eventName">The name of the event to trigger.</param>
+        /// <param name="args">The arguments the event expects.</param>
+        public static void TriggerClientEventOnAllExceptGiven(ConnectedClient player, string eventName, params object[] args)
+        {
+            if (!NetManager.Instance.IsServer) return;
+
+            List<byte> data = EventDataToByteArray(eventName, args);
+
+            for (int i = 0; i < NetManager.Instance.ConnectedAdresses.Count; i++)
+                if (NetManager.Instance.ConnectedAdresses[i] != player)
+                    NetManager.Instance.ConnectedAdresses[i].AddRPC(data);
+        }
+
+        /// <summary>
+        /// Encodes event data into a Byte Array.
+        /// </summary>
+        /// <param name="eventName">The name of the event.</param>
+        /// <param name="args">The arguments for the event.</param>
+        /// <returns>A byte array containing all data.</returns>
+        private static List<byte> EventDataToByteArray(string eventName, params object[] args)
+        {
+            List<byte> data = new List<byte>();
+
+            NetUtils.AddStringToList(eventName, data);
+
+            // add all parameters into the byte array
+            foreach (object arg in args)
+            {
+                if (NetUtils.TryAddValueToList(arg, data) == false)
+                {
+                    // Error: Could not convert data to byte array
+                    Log.Error("Could not contert data to byte array!");
+                }
+            }
+
+            return data;
+        }
+
+        /// <summary>
+        /// Executes an event from receiving a byte array.
+        /// </summary>
+        /// <param name="data">The byte array for the event.</param>
+        /// <param name="pointer">Where the next byte should be read from the array.</param>
+        /// <param name="shouldExecute">If set to false the method is only parsed and the pointer is advanced.
+        /// If set to true, then the parsed method will also be executed.</param>
+        /// <param name="connectedClient">The client who made the request.</param>
+        /// <param name="onlyExecuteEvent">If set then the event only is executed when the event name is equal to this.</param>
+        public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer, bool shouldExecute, ConnectedClient connectedClient = null, string onlyExecuteEvent = null)
+        {
+            string eventName = NetUtils.GetNextString(data, ref pointer);
+
+            if (onlyExecuteEvent != null && onlyExecuteEvent.Equals(eventName, StringComparison.OrdinalIgnoreCase) == false)
+                return false;
+
+            // get method info from any registered callback
+            MethodInfo method = EventHandlerDictionary.Instance[eventName].callbacks[0].GetMethodInfo();
+
+            // create array with parameters from byte array
+            ParameterInfo[] paras = method.GetParameters();
+            object[] args = new object[paras.Length];
+
+            for (int i = 0; i < paras.Length; i++)
+            {
+                if (connectedClient != null && paras[i].Name.Equals("playerId", StringComparison.OrdinalIgnoreCase))
+                {
+                    args[i] = connectedClient.id;
+                }
+                else if (NetUtils.TryGetNextValue(data, ref pointer, paras[i].ParameterType, out object parsed) == true)
+                {
+                    args[i] = parsed;
+                }
+                else
+                {
+                    // Error: Could not convert from byte array to a specified type
+                    Log.Error("Could not parse event. The whole package should be discarded!");
+                    return false;
+                }
+            }
+
+            // execute event with its arguments
+            if (shouldExecute == true)
+                EventHandlerDictionary.Instance[eventName].Invoke(args);
+            return true;
         }
     }
 }

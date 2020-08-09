@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.Network
 {
@@ -13,6 +9,7 @@ namespace MonoNet.Network
     {
         public readonly static byte MAX_PLAYERS = 8;
         public readonly static int MAX_NAME_LENGTH = 15;
+        public readonly static int MAX_PREF_STRING_LENGTH = 6;
 
         public static readonly float SERVER_SEND_RATE_PER_SECOND = 1 / 30f;
         public static readonly float CLIENT_SEND_RATE_PER_SECOND = 1 / 60f;

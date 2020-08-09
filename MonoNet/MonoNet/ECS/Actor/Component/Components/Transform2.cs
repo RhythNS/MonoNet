@@ -1,7 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.Network;
 using MonoNet.Util;
-using System;
 using System.Collections.Generic;
 
 namespace MonoNet.ECS.Components
@@ -34,7 +33,7 @@ namespace MonoNet.ECS.Components
                 // Set the local position so the acctual position does not change.
                 WorldPosition = oldPosition;
 
-                // lastly assign the parent to the new value
+                // Assign the parent to the new value
                 parent = value;
             }
         }

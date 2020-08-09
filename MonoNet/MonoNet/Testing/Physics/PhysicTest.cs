@@ -4,7 +4,6 @@ using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
 
 namespace MonoNet.Testing.Physics
 {

@@ -3,12 +3,12 @@ using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
-using MonoNet.Testing.Infrastructure;
 using MonoNet.Tiled;
 using System;
 using System.Collections.Generic;
 using TiledSharp;
 using MonoNet.Player;
+using MonoNet.PickUps;
 
 namespace MonoNet.Testing.World
 {
@@ -36,11 +36,12 @@ namespace MonoNet.Testing.World
             Rigidbody body = actor.AddComponent<Rigidbody>();
 
             TextureRegion textureRegion = regions[random.Next(regions.Length - 1)]; // last one is empty
-
             body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: 2, isStatic: false, isSquare: true, isTrigger: false);
-            actor.AddComponent<PlayerManager>();
+
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
+
+            DefaultRifle pistol = actor.AddComponent<DefaultRifle>();
         }
     }
 }

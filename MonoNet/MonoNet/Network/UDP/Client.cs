@@ -14,7 +14,9 @@ namespace MonoNet.Network.UDP
         private IPEndPoint endPoint;
 
         private bool exitRequested;
+        private bool connected = false;
         private string name;
+        public readonly byte[] welcomeMessage = Encoding.ASCII.GetBytes("Hello!");
 
         public Client(IPEndPoint endPoint, string name)
         {
@@ -37,6 +39,7 @@ namespace MonoNet.Network.UDP
         /// </summary>
         public void Stop()
         {
+            connected = false;
             exitRequested = true;
             listenThread.Interrupt();
             connection.Close();
@@ -51,14 +54,13 @@ namespace MonoNet.Network.UDP
 
             connection.Connect(endPoint);
 
-            // Send a ping to the server
-            Send(Encoding.ASCII.GetBytes("Hello?" + name));
-
             // Wait to see if we get something back. If we do not get anything back
             // then we can assume that the ip adress was wrong or the server is not running
-            bool connected = false;
             for (int i = 0; i < 10; i++) // total of 5 seconds = 500ms * 10
             {
+                // Send a ping to the server
+                Send(Encoding.ASCII.GetBytes("Hello?" + name));
+             
                 // if no data is available sleep for 1 second
                 if (connection.Available == 0)
                 {
@@ -67,7 +69,7 @@ namespace MonoNet.Network.UDP
                 }
 
                 // We recieved something. Check to see if it was Hello!. If so then we are connected.
-                connected = Recieve(out byte[] message) && Encoding.ASCII.GetString(message).Equals("Hello!");
+                connected = Recieve(out byte[] message, true) && Encoding.ASCII.GetString(message).Equals("Hello!");
                 break;
             }
 
@@ -84,10 +86,14 @@ namespace MonoNet.Network.UDP
         /// </summary>
         /// <param name="buffer">The message as out parameter.</param>
         /// <returns>True if the message was read and false if some error occured.</returns>
-        public bool Recieve(out byte[] buffer)
+        public bool Recieve(out byte[] buffer, bool overrideNotConnected = false)
         {
-            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
             buffer = null;
+
+            if (connected == false && overrideNotConnected == false)
+                return false;
+
+            IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);
 
             try
             {
@@ -114,6 +120,18 @@ namespace MonoNet.Network.UDP
         public void Send(byte[] data)
         {
             connection.Send(data, data.Length);
+        }
+
+        public bool IsWelcomeMessage(byte[] data)
+        {
+            if (data.Length < welcomeMessage.Length)
+                return false;
+
+            for (int i = 0; i < welcomeMessage.Length; i++)
+                if (data[i] != welcomeMessage[i])
+                    return false;
+
+            return true;
         }
 
     }

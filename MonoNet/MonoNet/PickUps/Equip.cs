@@ -1,30 +1,21 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using MonoNet.ECS;
+﻿using MonoNet.ECS;
 using MonoNet.PickUps;
-using MonoNet.Util;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace MonoNet.GameSystems.PickUps
 {
-    public class Equip : Component, IDisposable
+    public class Equip : Component
     {
         public Actor equipHolder;
-
+        
         public Weapon ActiveWeapon { get; private set; }
-        private Weapon knife;
 
         private List<PickUp> powerUps;
 
         protected override void OnInitialize()
         {
-            knife = Knife.Instance;
-
+            equipHolder = Actor;
             powerUps = new List<PickUp>();
         }
 
@@ -34,9 +25,8 @@ namespace MonoNet.GameSystems.PickUps
         /// <param name="newWeapon">picked up weapon</param>
         public void PickupWeapon(Weapon newWeapon)
         {
-            if (ActiveWeapon != newWeapon)
+            if (ActiveWeapon == null)
             {
-                DropWeapon();
                 newWeapon.OnEquip(equipHolder);
                 ActiveWeapon = newWeapon;
             }
@@ -47,10 +37,10 @@ namespace MonoNet.GameSystems.PickUps
         /// </summary>
         public void DropWeapon()
         {
-            if (ActiveWeapon != knife)
+            if (ActiveWeapon != null)
             {
                 ActiveWeapon.OnDeEquip();
-                ActiveWeapon = knife;
+                ActiveWeapon = null;
             }
         }
 
@@ -64,12 +54,8 @@ namespace MonoNet.GameSystems.PickUps
             {
                 newPowerUp.OnEquip(equipHolder);
                 powerUps.Add(newPowerUp);
+                // TODO: Delete powerup
             }
-        }
-
-        public void Dispose()
-        {
-            throw new NotImplementedException();
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MonoNet.GameSystems;
+using MonoNet.Network.Commands;
 using MonoNet.Network.UDP;
 using MonoNet.Util;
 using System.Collections.Generic;
@@ -15,14 +16,29 @@ namespace MonoNet.Network
 
         public override bool IsServer => false;
 
+        private Client client;
+
+        private readonly List<byte[]> toSendCommands = new List<byte[]>();
+        private byte autoIncrementRPCSend = 255;
+        private readonly List<byte> recievedCommands = new List<byte>();
+        private readonly CommandPackageManager commandPackageManager = new CommandPackageManager();
+
         private List<byte> tempData = new List<byte>();
         private byte lastRecievedPackage = 0;
-        private Client client;
 
         public NetManagerReciever(IPEndPoint ip, string name) : base()
         {
             client = new Client(ip, name);
             client.StartListen();
+        }
+
+        public void AddRPC(List<byte> rpc, bool isPriorityMessage)
+        {
+            rpc.Insert(0, ++autoIncrementRPCSend);
+            if (isPriorityMessage == true)
+                toSendCommands.Insert(0, rpc.ToArray());
+            else
+                toSendCommands.Add(rpc.ToArray());
         }
 
         /// <summary>
@@ -35,6 +51,9 @@ namespace MonoNet.Network
             bool isNewer = false;
             while (client.Recieve(out byte[] newData) == true)
             {
+                if (client.IsWelcomeMessage(newData))
+                    continue;
+
                 if (IsNewerPackage(lastRecievedPackage, newData[0]) == true)
                 {
                     lastRecievedPackage = newData[0];
@@ -48,6 +67,13 @@ namespace MonoNet.Network
 
             // Iterate through the package. The first byte is the package number which we already processed.
             int pointer = 1;
+
+            if (RecieveRPC(data, ref pointer, recievedCommands, toSendCommands, commandPackageManager) == false)
+            {
+                Log.Error("Discarding package...");
+                return;
+            }
+
             while (pointer < data.Length)
             {
                 byte address = data[pointer]; // The first byte is the id of the NetSyncComponent.
@@ -75,11 +101,16 @@ namespace MonoNet.Network
 
             tempData.Clear();
             tempData.Add(lastRecievedPackage); // Save the number of the last recieved package first.
+
+            // Handle rpcs
+            AppendRPCSend(tempData, recievedCommands, toSendCommands);
+
             // Get the byte[] of each component.
             for (int i = 0; i < netSyncComponents.Length; i++)
             {
                 if (netSyncComponents[i] != null && netSyncComponents[i].playerControlled)
                 {
+                    tempData.Add((byte)i);
                     netSyncComponents[i].GetSync(tempData);
                 }
             }

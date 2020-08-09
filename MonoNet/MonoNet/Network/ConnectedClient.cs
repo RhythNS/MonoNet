@@ -15,15 +15,22 @@ namespace MonoNet.Network
 
         public byte[] lastRecievedData;
         public byte lastRecievedPackage;
+        public byte lastHandledPackage = 255;
+
+        public CommandPackageManager commandPackageManager = new CommandPackageManager();
 
         public TimeSpan lastHeardFrom;
         public bool requestResync = false;
         public string name;
         public byte id;
 
-
         public List<NetSyncComponent> controlledComponents = new List<NetSyncComponent>();
-        public List<Command> toSendCommands = new List<Command>();
+        public List<byte[]> toSendCommands = new List<byte[]>();
+        private byte autoIncrementRPCSend = 255;
+        public List<byte> recievedCommands = new List<byte>();
+
+        public bool hasChangedLevel = false;
+        public bool waiting = false;
 
         public ConnectedClient(IPEndPoint ip, string name, byte id)
         {
@@ -38,6 +45,12 @@ namespace MonoNet.Network
         {
             this.name = name;
             this.id = id;
+        }
+
+        public void AddRPC(List<byte> rpc)
+        {
+            rpc.Insert(0, ++autoIncrementRPCSend);
+            toSendCommands.Add(rpc.ToArray());
         }
 
         public override string ToString() => name + " " + id;

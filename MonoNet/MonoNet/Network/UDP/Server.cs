@@ -15,6 +15,7 @@ namespace MonoNet.Network.UDP
         private UdpClient connection;
         private Thread listenThread;
         private int port;
+        private readonly byte[] welcomeMessage = Encoding.ASCII.GetBytes("Hello?");
 
         private bool exitRequested;
 
@@ -56,6 +57,19 @@ namespace MonoNet.Network.UDP
         {
             Log.Info("Now listing");
 
+            // ------------------------------------------------------------------------------------------------------------
+            // Taken from https://stackoverflow.com/questions/10332630/connection-reset-on-receiving-packet-in-udp-server
+            // ------------------------------------------------------------------------------------------------------------
+            // This ignores connection resets as errors. If this is not set and a client crashes then this throws exception
+            // on the server. This is why the code beneath is there. I am not sure if could have just catched the error and
+            // ignored it, but I feel like this is the most efficient way of doing it. Eventhough I don't really know why
+            // the socket needs to be configured like that.
+            const int SIO_UDP_CONNRESET = -1744830452;
+            byte[] inValue = new byte[] { 0 };
+            byte[] outValue = new byte[] { 0 };
+            connection.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+            // ------------------------------------------------------------------------------------------------------------
+
             // Start listing for messages
             connection.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
 
@@ -74,12 +88,12 @@ namespace MonoNet.Network.UDP
                     // Interrupts are okay. So if that did not occure print the error message
                     if (se.SocketErrorCode != SocketError.Interrupted)
                         Console.WriteLine(se.ToString());
-                    break;
+                    continue;
                 }
                 catch (Exception ex) // catch any other exception that might occur
                 {
                     Console.WriteLine(ex.ToString());
-                    break;
+                    continue;
                 }
 
                 if (buffer == null || buffer.Length == 0)
@@ -89,14 +103,19 @@ namespace MonoNet.Network.UDP
                 ConnectedClient connectedClient = null;
                 for (int i = 0; i < connectedAdresses.Count; i++)
                 {
-                    if (connectedAdresses[i].ip == endPoint)
+                    if (connectedAdresses[i].ip.Equals(endPoint))
                         connectedClient = connectedAdresses[i];
                 }
+
+                bool isWelcomeMessage = IsWelcomeMessage(buffer);
+
+                if (isWelcomeMessage == true && connectedClient != null)
+                    continue;
 
                 if (connectedClient == null)
                 {
                     string response = Encoding.ASCII.GetString(buffer);
-                    if (response.StartsWith("Hello?") == false || response.Length < 6 || connectedAdresses.Count >= NetConstants.MAX_PLAYERS)
+                    if (response.Length < 6 || connectedAdresses.Count >= NetConstants.MAX_PLAYERS)
                         continue;
 
                     string name = response.Substring(6, response.Length - NetConstants.MAX_NAME_LENGTH - 6 > 0
@@ -106,11 +125,29 @@ namespace MonoNet.Network.UDP
 
                     connectedAdresses.Add(connectedClient = new ConnectedClient(endPoint, name, id));
                     Send(connectedClient, Encoding.ASCII.GetBytes("Hello!"));
+                    NetManager.Instance.InvokePlayerConnected(connectedClient);
                     continue;
                 }
 
                 OnMessageRecieved.Invoke(connectedClient, buffer);
             }
+        }
+
+        /// <summary>
+        /// Checks if a message is a welcome message.
+        /// </summary>
+        /// <param name="data">The recieved package as byte array.</param>
+        /// <returns>Wheter it is a welcome message or not.</returns>
+        private bool IsWelcomeMessage(byte[] data)
+        {
+            if (data.Length < welcomeMessage.Length)
+                return false;
+
+            for (int i = 0; i < welcomeMessage.Length; i++)
+                if (data[i] != welcomeMessage[i])
+                    return false;
+
+            return true;
         }
 
         /// <summary>
