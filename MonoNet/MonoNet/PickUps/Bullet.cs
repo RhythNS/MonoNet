@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32.SafeHandles;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;

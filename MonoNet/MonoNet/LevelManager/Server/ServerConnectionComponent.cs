@@ -1,8 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
-using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Network;
 using MonoNet.Network.Commands;
@@ -27,6 +25,8 @@ namespace MonoNet.LevelManager
 
             NetManager.Instance.OnPlayerConnected += OnPlayerConnected;
             NetManager.Instance.OnPlayerDisconnected += OnPlayerDisconnected;
+
+            GameManager.Instance.OnGameEnd += OnGameEnd;
         }
 
         public void Set(PlayerSpawnLocations spawnLocations, string name, Stage stage)
@@ -165,6 +165,7 @@ namespace MonoNet.LevelManager
             {
                 NetManager.Instance.ConnectedAdresses[i].hasChangedLevel = false;
                 NetManager.Instance.ConnectedAdresses[i].waiting = false;
+                NetManager.Instance.ConnectedAdresses[i].controlledComponents.Clear();
             }
             NetManager.Instance.Reset();
 

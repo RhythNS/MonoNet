@@ -21,6 +21,7 @@ namespace MonoNet.PickUps
         private float shootTimer;
 
         private Transform2 weaponTrans;
+        private Vector2 size;
 
         private Transform2 holderTrans;
         public PlayerManager holder;
@@ -54,8 +55,16 @@ namespace MonoNet.PickUps
                     drawComponent.mirror = false;
                     weaponTrans.LocalPosition = new Vector2(holder.DrawComponent.region.sourceRectangle.Width * 0.7f, 0);
                 }
-
             }
+
+            if (NetManager.Instance.IsServer == false)
+                return;
+
+            Vector2 screenDims = GameManager.screenDimensions;
+            Vector2 pos = weaponTrans.WorldPosition;
+
+            if (pos.X + size.X < 0 || pos.X > screenDims.X || pos.Y + size.Y > screenDims.Y || pos.Y < 0)
+                ServerConnectionComponent.Instance.DestroySyncable(Actor.GetComponent<NetSyncComponent>().Id);
         }
         /// <summary>
         /// Activates the main function of the weapon
@@ -77,6 +86,9 @@ namespace MonoNet.PickUps
         /// <param name="holder">Actor of the one who picks up the weapon </param>
         public void OnEquip(Actor holder)
         {
+            Rectangle rec = Actor.GetComponent<DrawTextureRegionComponent>().region.sourceRectangle;
+            size = new Vector2(rec.Width, rec.Height);
+
             shootTimer = -1;
             isEquiped = true;
 

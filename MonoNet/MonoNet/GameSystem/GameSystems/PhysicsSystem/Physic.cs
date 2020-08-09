@@ -83,29 +83,22 @@ namespace MonoNet.GameSystems.PhysicsSystem
 
         public void DeRegister(Rigidbody rigidbody)
         {
-            if (!rigidbodiesSquare.Contains(rigidbody) && !rigidbodiesCircle.Contains(rigidbody))
+            if (rigidbody.isSquare)
             {
-                Log.Warn("Rigidbodies does not contain this rigidbody");
-            }
-            else
-            {
-                if (rigidbody.isSquare)
+                if (rigidbody.isStatic)
                 {
-                    if (rigidbody.isStatic)
-                    {
-                        overlapManager.Remove(rigidbody);
-                    }
-                    else
-                    {
-                        rigidbodiesSquare.Remove(rigidbody);
-                        transformsSquare.Remove(rigidbody.Actor.GetComponent<Transform2>());
-                    }
+                    overlapManager.Remove(rigidbody);
                 }
                 else
                 {
-                    rigidbodiesCircle.Remove(rigidbody);
-                    transformsCicle.Remove(rigidbody.Actor.GetComponent<Transform2>());
+                    rigidbodiesSquare.Remove(rigidbody);
+                    transformsSquare.Remove(rigidbody.Actor.GetComponent<Transform2>());
                 }
+            }
+            else
+            {
+                rigidbodiesCircle.Remove(rigidbody);
+                transformsCicle.Remove(rigidbody.Actor.GetComponent<Transform2>());
             }
         }
 

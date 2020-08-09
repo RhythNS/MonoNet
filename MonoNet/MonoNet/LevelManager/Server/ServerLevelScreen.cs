@@ -1,6 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.Network;
-using MonoNet.Testing.World;
 
 namespace MonoNet.LevelManager
 {
@@ -55,6 +54,7 @@ namespace MonoNet.LevelManager
         protected override void LoadLevel(byte levelNumber)
         {
             GunSpawnLocations.Instance.ClearLocations();
+            playerSpawns.ClearLocations();
             base.LoadLevel(levelNumber);
         }
 

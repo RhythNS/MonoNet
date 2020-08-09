@@ -4,6 +4,7 @@ using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.GameSystems.PickUps;
 using MonoNet.Graphics;
+using MonoNet.Interfaces;
 using MonoNet.LevelManager;
 using MonoNet.Network;
 using MonoNet.PickUps;
@@ -14,11 +15,12 @@ namespace MonoNet.Player
 {
     public delegate void OnDeath();
 
-    public class PlayerManager : Component, ISyncable, IDisposable
+    public class PlayerManager : Component, ISyncable, IDisposable, Interfaces.IUpdateable
     {
         public event OnDeath OnDeath;
         public string name = "Unknown";
 
+        public Transform2 Transform { get; private set; }
         public PlayerInput PlayerInput { get; private set; }
         public Rigidbody Rigidbody { get; private set; }
         public Equip Equip { get; private set; }
@@ -39,6 +41,7 @@ namespace MonoNet.Player
 
         public LookingAt lookingAt;
         private PlayerKeys binding;
+        private Vector2 size;
 
         protected override void OnInitialize()
         {
@@ -46,6 +49,9 @@ namespace MonoNet.Player
             PlayerInput = Actor.AddComponent<PlayerInput>();
             Rigidbody = Actor.GetComponent<Rigidbody>();
             DrawComponent = Actor.GetComponent<DrawTextureRegionComponent>();
+            Transform = Actor.GetComponent<Transform2>();
+            Rectangle rec = DrawComponent.region.sourceRectangle;
+            size = new Vector2(rec.Width, rec.Height);
             GameManager.RegisterPlayer(this);
         }
 
@@ -121,6 +127,18 @@ namespace MonoNet.Player
         public void Dispose()
         {
             GameManager.DeRegisterPlayer(this);
+        }
+
+        public void Update()
+        {
+            if (NetManager.Instance.IsServer == false)
+                return;
+
+            Vector2 screenDims = GameManager.screenDimensions;
+            Vector2 pos = Transform.WorldPosition;
+
+            if (pos.X + size.X < 0 || pos.X > screenDims.X || pos.Y + size.Y > screenDims.Y || pos.Y < 0)
+                ServerConnectionComponent.Instance.DestroySyncable(Actor.GetComponent<NetSyncComponent>().Id);
         }
     }
 }

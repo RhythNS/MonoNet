@@ -13,8 +13,11 @@ namespace MonoNet.LevelManager
             GameManager.Instance.OnGameEnd += OnGameEnd;
         }
 
+        private bool canRestart = false;
+
         private void OnGameEnd(PlayerManager winningPlayer)
         {
+            canRestart = true;
             if (winningPlayer != null)
                 LevelUI.DisplayString("Player " + winningPlayer.name + " won!\nPress F6 to restart game!");
             else
@@ -23,9 +26,10 @@ namespace MonoNet.LevelManager
 
         public void Update()
         {
-            if (Input.IsKeyDownThisFrame(Microsoft.Xna.Framework.Input.Keys.F6))
+            if (canRestart == true && Input.IsKeyDownThisFrame(Microsoft.Xna.Framework.Input.Keys.F6))
             {
-                LevelUI.DisplayString("Nobody wins!\nPress F6 to restart game!");
+                canRestart = false;
+                LevelUI.DisplayString();
                 ServerConnectionComponent.Instance.ChangeLevel(GameManager.GetRandomLevelNumber());
             }
         }
