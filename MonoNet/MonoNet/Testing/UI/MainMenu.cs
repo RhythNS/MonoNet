@@ -13,6 +13,7 @@ using Myra.Graphics2D.UI;
 using MonoNet.GameSystems;
 using Microsoft.Xna.Framework.Graphics;
 using MonoNet.Network.MasterServerConnection;
+using System.Net;
 
 namespace MonoNet.Testing.UI
 {
@@ -25,6 +26,7 @@ namespace MonoNet.Testing.UI
 
         private Window serverBrowser;
         private Window serverCreation;
+        private Window directConnect;
 
         private Dialog dialogQuitGame;
 
@@ -66,6 +68,7 @@ namespace MonoNet.Testing.UI
             CreateMainMenu();
             CreateServerBrowser();
             CreateServerCreation();
+            CreateDirectConnectWindow();
 
             // add mainMenu
             desktop.Root = mainMenu;
@@ -161,6 +164,15 @@ namespace MonoNet.Testing.UI
                 serverCreation.ShowModal(desktop);
             };
             horizontalStackPanel.Widgets.Add(buttonCreate);
+
+            // create a button for creating a server
+            TextButton buttonDirectConnect = new TextButton {
+                Text = "Direct Connect"
+            };
+            buttonDirectConnect.Click += (s, a) => {
+                directConnect.ShowModal(desktop);
+            };
+            horizontalStackPanel.Widgets.Add(buttonDirectConnect);
 
             // create a button for refreshing the server list
             TextButton buttonRefresh = new TextButton {
@@ -293,6 +305,103 @@ namespace MonoNet.Testing.UI
             serverCreation.Content = panel;
         }
 
+        private void CreateDirectConnectWindow() {
+            directConnect = new Window {
+                Title = "Direct Connect",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+
+            Panel panel = new Panel {
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Background = new SolidBrush(new Color(0f, 0f, 0f, 0.5f))
+            };
+
+            VerticalStackPanel verticalStackPanel = new VerticalStackPanel {
+                Spacing = 8
+            };
+
+            Grid serverSettings = new Grid {
+                RowSpacing = 8,
+                ColumnSpacing = 8,
+                ShowGridLines = true,
+                Padding = new Thickness(4)
+            };
+            serverSettings.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+            serverSettings.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
+
+            serverSettings.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            Label ipAddressLabel = new Label {
+                Text = "IP Address:",
+                TextAlign = TextAlign.Center,
+                GridColumn = 0,
+                GridRow = 0
+            };
+            serverSettings.Widgets.Add(ipAddressLabel);
+            TextBox ipAddressInput = new TextBox {
+                Text = "127.0.0.1",
+                Width = 50,
+                GridColumn = 1,
+                GridRow = 0
+            };
+            serverSettings.Widgets.Add(ipAddressInput);
+
+            serverSettings.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            Label portLabel = new Label {
+                Text = "Port:",
+                TextAlign = TextAlign.Center,
+                GridColumn = 0,
+                GridRow = 1
+            };
+            serverSettings.Widgets.Add(portLabel);
+            TextBox portTextBox = new TextBox {
+                Text = "1337",
+                GridColumn = 1,
+                GridRow = 1
+            };
+            serverSettings.Widgets.Add(portTextBox);
+
+            verticalStackPanel.Widgets.Add(serverSettings);
+
+            HorizontalStackPanel horizontalStackPanel = new HorizontalStackPanel {
+                Spacing = 8
+            };
+            TextButton buttonConnect = new TextButton {
+                Text = "Create Server",
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+            buttonConnect.Click += (s, a) => {
+                // start server here
+                IPAddress ip;
+                if (IPAddress.TryParse(ipAddressInput.Text, out ip)) {
+                    int port = Convert.ToInt32(portTextBox.Text);
+                    if (port > 0 && port < 65536) {
+
+                    } else {
+                        // is kaputt
+                    }
+                } else {
+                    // is kaputt
+                }
+            };
+            horizontalStackPanel.Widgets.Add(buttonConnect);
+            TextButton buttonCancel = new TextButton {
+                Text = "Cancel",
+                HorizontalAlignment = HorizontalAlignment.Right
+            };
+            buttonCancel.Click += (s, a) => {
+                directConnect.Close();
+            };
+            horizontalStackPanel.Widgets.Add(buttonCancel);
+
+            verticalStackPanel.Widgets.Add(horizontalStackPanel);
+
+            panel.Widgets.Add(verticalStackPanel);
+
+            directConnect.Content = panel;
+        }
+
         private void ListServers(List<Server> servers) {
             while (serverList.Widgets.Count > 3) {
                 serverList.Widgets.RemoveAt(serverList.Widgets.Count - 1);
@@ -304,10 +413,13 @@ namespace MonoNet.Testing.UI
             for (int i = 0; i < servers.Count; i++) {
                 serverList.RowsProportions.Add(new Proportion(ProportionType.Auto));
 
-                Label name = new Label {
+                TextButton name = new TextButton {
                     Text = servers[i].Name,
                     GridColumn = 0,
                     GridRow = i + 1
+                };
+                name.Click += (s, a) => {
+                    // connect here
                 };
                 serverList.Widgets.Add(name);
 
