@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Network.Commands;
+using MonoNet.Network.MasterServerConnection;
 using MonoNet.Screen;
 using MonoNet.Testing.StartingScreens;
 using MonoNet.Testing.UI;
@@ -26,6 +27,10 @@ namespace MonoNet
 
         public MonoNet()
         {
+            // connect to the master server
+            MasterServerConnector masterServerConnector = new MasterServerConnector();
+            masterServerConnector.Start();
+
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             

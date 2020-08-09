@@ -167,6 +167,7 @@ namespace MonoNet.Network
         /// <param name="onlyExecuteEvent">If set then the event only is executed when the event name is equal to this.</param>
         public static bool ExecuteEventFromByteArray(byte[] data, ref int pointer, bool shouldExecute, ConnectedClient connectedClient = null, string onlyExecuteEvent = null)
         {
+            // get event name from byte array
             string eventName = NetUtils.GetNextString(data, ref pointer);
 
             if (onlyExecuteEvent != null && onlyExecuteEvent.Equals(eventName, StringComparison.OrdinalIgnoreCase) == false)
