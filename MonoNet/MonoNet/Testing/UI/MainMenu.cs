@@ -421,7 +421,8 @@ namespace MonoNet.Testing.UI
                 if (IPAddress.TryParse(ipAddressInput.Text, out ip)) {
                     int port = Convert.ToInt32(portTextBox.Text);
                     if (port > 0 && port < 65536) {
-
+                        IPEndPoint endPoint = new IPEndPoint(ip, port);
+                        game.ScreenManager.SetScreen(new ClientLevelScreen(game, endPoint, nameTextBox.Text));
                     } else {
                         // is kaputt
                     }
