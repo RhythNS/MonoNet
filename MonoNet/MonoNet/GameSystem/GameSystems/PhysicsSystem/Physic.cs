@@ -4,6 +4,7 @@ using MonoNet.Util;
 using MonoNet.Util.Datatypes;
 using MonoNet.Util.Overlap;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonoNet.GameSystems.PhysicsSystem
 {
@@ -32,7 +33,7 @@ namespace MonoNet.GameSystems.PhysicsSystem
             transformsCicle = new List<Transform2>();
             triggerableHelper = new TriggerableHelper();
 
-            overlapManager = new RecursiveOverlapManager<Rigidbody>(new Box2D(float.MaxValue / 2, float.MaxValue / 2, float.MaxValue, float.MaxValue), 0);
+            overlapManager = new RecursiveOverlapManager<Rigidbody>(new Box2D(-100, -100, 1000, 840), 3);
             tempListOverlaps = new List<Rigidbody>(20);
         }
 
@@ -189,6 +190,9 @@ namespace MonoNet.GameSystems.PhysicsSystem
             // Check if collisions between the layers are allowed
             if (collisionRules.TryGetValue(new MultiKey<int>(movingBody.collisionLayer, checkingBody.collisionLayer), out bool value)
                 && value == false)
+                return;
+
+            if (movingBody.IgnoreBodies != null && movingBody.IgnoreBodies.Contains(checkingBody))
                 return;
 
             // Both are either triggers or non triggers. Continue with normal collision detection.

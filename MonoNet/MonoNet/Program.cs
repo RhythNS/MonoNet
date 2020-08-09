@@ -16,7 +16,7 @@ namespace MonoNet
         [STAThread]
         static void Main()
         {
-            using (var game = new NetTestGame())
+            using (var game = new MonoNet())
                 game.Run();
 
             Environment.Exit(0);

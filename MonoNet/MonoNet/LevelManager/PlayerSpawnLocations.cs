@@ -9,6 +9,7 @@ namespace MonoNet.LevelManager
     public class PlayerSpawnLocations
     {
         public List<Vector2> SpawnLocations { get; private set; } = new List<Vector2>();
+        private int at;
 
         public void OnObjectLoaded(List<TiledMapComponent> allMapComponents, TmxObject loadedObject)
         {
@@ -20,6 +21,13 @@ namespace MonoNet.LevelManager
 
         public void ClearLocations() => SpawnLocations.Clear();
 
-        public Vector2 GetRandomLocation() => SpawnLocations[GameManager.Random.Next(SpawnLocations.Count)];
+        public void Randomize() => at = GameManager.Random.Next(SpawnLocations.Count);
+
+        public Vector2 GetRandomLocation()
+        {
+            if (++at >= SpawnLocations.Count)
+                at = 0;
+            return SpawnLocations[at];
+        }
     }
 }

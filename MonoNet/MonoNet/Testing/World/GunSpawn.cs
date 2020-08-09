@@ -41,7 +41,7 @@ namespace MonoNet.Testing.World
             DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
             drawTexture.region = textureRegion;
 
-            Pistol pistol = actor.AddComponent<Pistol>();
+            DefaultRifle pistol = actor.AddComponent<DefaultRifle>();
         }
     }
 }

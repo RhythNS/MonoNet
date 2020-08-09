@@ -27,17 +27,18 @@ namespace MonoNet.LevelManager
 
             if (playerNotReady <= 0)
             {
-                LevelScreen.Instance.UI.DisplayString("All players ready!\nPress F5 to start the game!");
+                LevelUI.DisplayString("All players (" + (net.ConnectedAdresses.Count + 1) + ") ready!\nPress F5 to start the game!");
 
                 if (Input.IsKeyDownThisFrame(Microsoft.Xna.Framework.Input.Keys.F5))
                 {
+                    LevelUI.DisplayString("");
                     ServerConnectionComponent.Instance.StartGame();
                     Actor.Stage.DeleteActor(Actor);
                 }
             }
             else
             {
-                LevelScreen.Instance.UI.DisplayString("Still waiting on " + playerNotReady + " players!");
+                LevelUI.DisplayString("Still waiting on " + playerNotReady + " players!");
             }
         }
     }

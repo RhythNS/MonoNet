@@ -1,4 +1,5 @@
-﻿using MonoNet.Network;
+﻿using Microsoft.Xna.Framework;
+using MonoNet.Network;
 using System.Net;
 
 namespace MonoNet.LevelManager
@@ -21,20 +22,36 @@ namespace MonoNet.LevelManager
         {
             base.Initialize();
 
+            reciever = new NetManagerReciever(ip, playerName);
+
             clientConnection = stage.CreateActor(0).AddComponent<ClientConnectionComponent>();
             clientConnection.Set(this);
         }
 
-        public override void LoadContent()
+        public override void Update(GameTime gameTime)
         {
-            reciever = new NetManagerReciever(ip, playerName);
+            reciever.Recieve();
+            reciever.Send();
+
+            base.Update(gameTime);
         }
 
-        public override void LoadLevel(byte levelNumber)
+        protected override void LoadLevel(byte levelNumber)
         {
             base.LoadLevel(levelNumber);
+
+            LevelUI.DisplayString("");
+
             clientConnection.LevelLoaded();
-            UI.DisplayString("Level loaded\nWaiting for host to start!");
+            LevelUI.DisplayString("Level loaded\nWaiting for host to start!");
+        }
+
+        public void GameEnd(bool draw, string name)
+        {
+            if (draw == false)
+                LevelUI.DisplayString("Player " + name + " won!\nWaiting for game to restart!");
+            else
+                LevelUI.DisplayString("Nobody wins!\nWaiting for game to restart");
         }
     }
 }

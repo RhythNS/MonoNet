@@ -24,6 +24,8 @@ namespace MonoNet.LevelManager
         protected TiledBase tiledBase;
         protected HitboxLoader hitboxLoader;
 
+        private byte? loadLevelRequest = null;
+
         public LevelScreen(MonoNet monoNet)
         {
             Instance = this;
@@ -39,6 +41,7 @@ namespace MonoNet.LevelManager
             Actor serviceActor = stage.CreateActor(0);
 
             gameManager = serviceActor.AddComponent<GameManager>();
+            GameManager.screenDimensions = new Vector2(monoNet.GraphicsDevice.Viewport.Width, monoNet.GraphicsDevice.Viewport.Height);
 
             Physic physic = Physic.Instance;
             physic.collisionRules.Add(new MultiKey<int>(GameManager.physicsPlayerLayer, GameManager.physicsWeaponLayer), false);
@@ -61,6 +64,9 @@ namespace MonoNet.LevelManager
 
         public virtual void Update(GameTime gameTime)
         {
+            if (loadLevelRequest != null)
+                LoadLevel(loadLevelRequest.Value);
+
             stage.Update();
         }
 
@@ -70,13 +76,23 @@ namespace MonoNet.LevelManager
 
             batch.Begin(transformMatrix: camera.GetViewMatrix());
             stage.Draw(batch);
+            batch.End();
+
+            batch.Begin();
             UI.Draw(batch);
             batch.End();
         }
 
-        public virtual void LoadLevel(byte levelNumber)
+        public void RequestLevelChange(byte levelNumber)
         {
+            loadLevelRequest = levelNumber;
+
             stage.DeleteAllActors(true);
+        }
+
+        protected virtual void LoadLevel(byte levelNumber)
+        {
+            loadLevelRequest = null;
 
             TiledMapComponent[] components = tiledBase.AddMap(stage, GameManager.LevelIDForLocation[levelNumber], true, true);
         }

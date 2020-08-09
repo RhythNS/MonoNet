@@ -5,9 +5,11 @@ using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Network.Commands;
 using MonoNet.Screen;
+using MonoNet.Testing.StartingScreens;
 using MonoNet.Testing.UI;
 using MonoNet.Util;
 using Myra;
+using System.Diagnostics;
 
 namespace MonoNet
 {
@@ -20,15 +22,16 @@ namespace MonoNet
         SpriteBatch spriteBatch;
 
         private GameSystemManager manager;
-        private ScreenManager screenManager;
+        public ScreenManager ScreenManager { get; private set; }
 
         public MonoNet()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-
+            
             // start in MainMenu
-            screenManager = new ScreenManager(new MainMenu(this));
+            // ScreenManager = new ScreenManager(new MainMenu(this)); 
+            ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
 
             IsMouseVisible = true;
         }
@@ -49,7 +52,7 @@ namespace MonoNet
             manager = new GameSystemManager();
             manager.Add(new Time(), new Input(), new Physic());
 
-            screenManager.Initialize();
+            ScreenManager.Initialize();
         }
 
         /// <summary>
@@ -59,11 +62,15 @@ namespace MonoNet
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 640;
+            graphics.ApplyChanges();
 
             // needs to be set for Myra
             MyraEnvironment.Game = this;
 
-            screenManager.LoadContent();
+            ScreenManager.LoadContent();
         }
 
         /// <summary>
@@ -72,7 +79,7 @@ namespace MonoNet
         /// </summary>
         protected override void UnloadContent()
         {
-            screenManager.UnloadContent();
+            ScreenManager.UnloadContent();
         }
 
         /// <summary>
@@ -85,7 +92,7 @@ namespace MonoNet
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            screenManager.Update(gameTime);
+            ScreenManager.Update(gameTime);
 
             base.Update(gameTime);
 
@@ -98,7 +105,7 @@ namespace MonoNet
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            screenManager.Draw(spriteBatch);
+            ScreenManager.Draw(spriteBatch);
         }
     }
 }

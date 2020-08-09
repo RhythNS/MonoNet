@@ -26,6 +26,8 @@ namespace MonoNet.GameSystems.PhysicsSystem
         public Vector2 velocity = Vector2.Zero;
         private Vector2 prevPos = Vector2.Zero;
 
+        public Rigidbody[] IgnoreBodies = null;
+
         public int collisionLayer;
 
         public float height;

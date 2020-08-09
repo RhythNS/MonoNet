@@ -172,23 +172,7 @@ namespace MonoNet.ECS
             // If there is a delete Request, then delete all actors.
             if (deleteRequest.HasValue == true)
             {
-                LinkedListNode<Actor> startingActor = layerNodes[deleteRequest.Value]; // Get the layerNode actor as a stop point
-                LinkedListNode<Actor> currentActor = layerNodes[deleteRequest.Value].Next; // The currentActor to be deleted
-                while (startingActor != currentActor && currentActor.Value.Layer != 0)
-                {
-                    if (currentActor.Value == layerNodes[currentActor.Value.Layer].Value)
-                    {
-                        currentActor = currentActor.Next;
-                        continue;
-                    }
-
-                    Actor toDelete = currentActor.Value;
-                    currentActor = currentActor.Next;
-                    actors.Remove(currentActor.Previous);
-
-                    toDelete.Dispose();
-                    actorPool.Free(toDelete);
-                }
+                InnerDeleteRequest();
             }
 
             // Go through all actors that should be added.
@@ -199,6 +183,29 @@ namespace MonoNet.ECS
 
                 toAddActors.Clear();
             }
+        }
+
+        private void InnerDeleteRequest()
+        {
+            LinkedListNode<Actor> startingActor = layerNodes[deleteRequest.Value]; // Get the layerNode actor as a stop point
+            LinkedListNode<Actor> currentActor = layerNodes[deleteRequest.Value].Next; // The currentActor to be deleted
+            while (currentActor != null && startingActor != currentActor && currentActor.Value.Layer != 0)
+            {
+                if (currentActor.Value == layerNodes[currentActor.Value.Layer].Value)
+                {
+                    currentActor = currentActor.Next;
+                    continue;
+                }
+
+                Actor toDelete = currentActor.Value;
+                currentActor = currentActor.Next;
+                actors.Remove(currentActor.Previous);
+
+                toDelete.Dispose();
+                actorPool.Free(toDelete);
+            }
+
+            deleteRequest = null;
         }
 
         private void RemoveActorFromList(Actor toRemove)

@@ -31,6 +31,16 @@
 /processor:TiledProcessor
 /build:maps/level1.tmx
 
+#begin maps/level2.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:maps/level2.tmx
+
+#begin maps/level3.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:maps/level3.tmx
+
 #begin maps/plattformer.tsx
 /copy:maps/plattformer.tsx
 

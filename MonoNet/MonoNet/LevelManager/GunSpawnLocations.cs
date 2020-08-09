@@ -8,6 +8,13 @@ namespace MonoNet.LevelManager
 {
     class GunSpawnLocations
     {
+        public static GunSpawnLocations Instance { get; private set; }
+
+        public GunSpawnLocations()
+        {
+            Instance = this;
+        }
+
         public List<Vector2> GunLocations { get; private set; } = new List<Vector2>();
 
         public void OnObjectLoaded(List<TiledMapComponent> allMapComponents, TmxObject loadedObject)

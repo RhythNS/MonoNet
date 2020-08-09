@@ -1,16 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
-using MonoNet.Screen;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Myra;
+using MonoNet.GameSystems;
+using MonoNet.Screen;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
-using MonoNet.GameSystems;
 
 namespace MonoNet.Testing.UI
 {
@@ -19,7 +14,7 @@ namespace MonoNet.Testing.UI
         private Desktop desktop;
         private Panel healthBar;
 
-        public void Draw(GameTime gameTime) {
+        public void Draw(SpriteBatch gameTime) {
             desktop.Render();
         }
 

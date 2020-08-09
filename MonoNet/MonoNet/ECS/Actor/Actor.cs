@@ -71,6 +71,29 @@ namespace MonoNet.ECS
         }
 
         /// <summary>
+        /// Adds a component to the actor.
+        /// </summary>
+        /// <param name="type">The type of the added component. Must have a parameterless constructor!</param>
+        public Component AddComponent(Type type)
+        {
+            Component component = (Component)Activator.CreateInstance(type);
+            components.Add(component);
+            component.Initialize(this);
+
+            // Check if the component implements any of these interfaces, if so then add them to their specific list
+            if (component is IUpdateable updateable)
+                updateables.Add(updateable);
+            if (component is IDrawable drawable)
+                drawables.Add(drawable);
+            if (component is IDisposable disposable)
+                disposables.Add(disposable);
+
+            OnComponentAdded?.Invoke(component);
+            Stage.OnComponentAdded(component);
+            return component;
+        }
+
+        /// <summary>
         /// Gets the first component of given type.
         /// </summary>
         /// <typeparam name="T">The type of component to look for.</typeparam>

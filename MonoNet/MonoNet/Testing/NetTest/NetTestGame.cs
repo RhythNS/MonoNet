@@ -7,11 +7,9 @@ using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.LevelManager;
 using MonoNet.Network;
-using MonoNet.PickUps;
 using MonoNet.Testing.World;
 using MonoNet.Tiled;
 using MonoNet.Util.Datatypes;
-using System.Collections.Generic;
 using System.Net;
 
 namespace MonoNet.Testing.NetTest
@@ -44,7 +42,7 @@ namespace MonoNet.Testing.NetTest
                 if (Input.KeyDown(Keys.F1))
                 {
                     sender = new NetManagerSender(25565);
-                    stage.CreateActor(0).AddComponent<ServerConnectionComponent>().Set(playerSpawns);
+                    stage.CreateActor(0).AddComponent<ServerConnectionComponent>().Set(playerSpawns, "Unknown", stage);
 
                 }
                 else if (Input.KeyDown(Keys.F2))
@@ -65,6 +63,7 @@ namespace MonoNet.Testing.NetTest
         {
             base.LoadContent();
 
+
             ComponentFactory factory = new ComponentFactory(Content);
 
             graphics.PreferredBackBufferWidth = 1920;  // set this value to the desired width of your window
@@ -76,7 +75,7 @@ namespace MonoNet.Testing.NetTest
             HitboxLoader hitboxLoader = new HitboxLoader(stage);
             BoxSpawn boxSpawn = new BoxSpawn(factory.playerTex, stage);
             playerSpawns = new PlayerSpawnLocations();
-            GunSpawn gunSpawn = new GunSpawn(factory.gunRegions, stage);
+            //GunSpawn gunSpawn = new GunSpawn(factory.gunRegions, stage);
 
             Physic.Instance.collisionRules.Add(new MultiKey<int>(1, 2), false);
 
@@ -86,7 +85,7 @@ namespace MonoNet.Testing.NetTest
             tiledBase.OnCollisionHitboxLoaded += hitboxLoader.OnCollisionHitboxLoaded;
             tiledBase.OnObjectLoaded += boxSpawn.OnObjectLoaded;
             tiledBase.OnObjectLoaded += playerSpawns.OnObjectLoaded;
-            tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
+            //tiledBase.OnObjectLoaded += gunSpawn.OnObjectLoaded;
 
             TiledMapComponent[] components = tiledBase.AddMap(stage, "maps/level1", true, true);
 

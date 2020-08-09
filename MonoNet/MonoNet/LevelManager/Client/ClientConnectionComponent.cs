@@ -6,6 +6,7 @@ using MonoNet.Network;
 using MonoNet.Network.Commands;
 using MonoNet.PickUps;
 using MonoNet.Player;
+using Myra.Graphics2D.UI.ColorPicker;
 using System;
 
 namespace MonoNet.LevelManager
@@ -38,6 +39,12 @@ namespace MonoNet.LevelManager
             ComponentFactory.CreateNetPlayer(netId, name);
         }
 
+        [EventHandler("CW")]
+        public void CreateWeapon(byte netId, byte weaponId)
+        {
+            ComponentFactory.CreateWeapon(netId, weaponId);
+        }
+
         [EventHandler("CB")]
         public void CreateBullet(byte id)
         {
@@ -57,6 +64,8 @@ namespace MonoNet.LevelManager
             nsc.Actor.AddComponent<PlayerInput>();
             nsc.Actor.GetComponent<Transform2>().WorldPosition = location;
             nsc.Actor.GetComponent<Rigidbody>().velocity = new Vector2(0);
+
+            LevelUI.DisplayString("");
         }
 
         [EventHandler("PW")]
@@ -89,13 +98,19 @@ namespace MonoNet.LevelManager
         [EventHandler("CL")]
         public void ChangeLevel(byte levelNumber)
         {
-            clientLevelScreen.LoadLevel(levelNumber);
+            Instance.clientLevelScreen.RequestLevelChange(levelNumber);
         }
 
         public void LevelLoaded()
         {
             NetSyncComponent.TriggerServerEvent("LL", true);
             NetManager.Instance.Reset();
+        }
+
+        [EventHandler("WR")]
+        public void WaitForRestart()
+        {
+            LevelUI.DisplayString("Game in progress.\nWaiting until the round ends!");
         }
 
         [EventHandler("PT")]
@@ -106,17 +121,22 @@ namespace MonoNet.LevelManager
             if (childNumber == parentNumber)
             {
                 child.Parent = null;
+                if (child.Actor.TryGetComponent(out Weapon weapon))
+                    weapon.holder.Equip.DropWeapon();
                 return;
             }
 
             Transform2 parent = NetManager.Instance.GetNetSyncComponent(parentNumber).Actor.GetComponent<Transform2>();
+
+            if (child.Actor.TryGetComponent(out Weapon pickedWeapon) && parent.Actor.TryGetComponent(out PlayerManager player))
+                player.PickUp(pickedWeapon);
             child.Parent = parent;
         }
 
         [EventHandler("GE")]
-        public void GameEnd()
+        public void GameEnd(bool draw, string name)
         {
-
+            Instance.clientLevelScreen.GameEnd(draw, name);
         }
     }
 }

@@ -7,11 +7,15 @@ namespace MonoNet.LevelManager
 {
     public class LevelUI : IDrawable
     {
+        public static LevelUI Instance { get; private set; }
+
         private Desktop desktop;
         private Label label;
 
         public LevelUI()
         {
+            Instance = this;
+
             desktop = new Desktop();
             label = new Label {
                 HorizontalAlignment = HorizontalAlignment.Center,
@@ -22,9 +26,9 @@ namespace MonoNet.LevelManager
             desktop.Widgets.Add(label);
         }
 
-        public void DisplayString(string toDisplay = "")
+        public static void DisplayString(string toDisplay = "")
         {
-            label.Text = toDisplay;
+            Instance.label.Text = toDisplay;
         }
 
         public void Draw(SpriteBatch spriteBatch)

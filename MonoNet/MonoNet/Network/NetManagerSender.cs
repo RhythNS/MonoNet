@@ -87,6 +87,9 @@ namespace MonoNet.Network
                     return;
                 }
 
+                if (ConnectedAdresses[i].waiting == true)
+                    continue;
+
                 while (pointerAt < data.Length)
                 {
                     byte address = data[pointerAt];
@@ -139,11 +142,14 @@ namespace MonoNet.Network
             // Handle rpcs
             AppendRPCSend(tempList, connectedClient.recievedCommands, connectedClient.toSendCommands);
 
-            // Either send them an entire gamestate or a delta game state depending on wheter they want a complete resync.
-            if (connectedClient.requestResync == false)
-                netStates[currentState].GetDif(connectedClient, netStates[connectedClient.lastRecievedPackage], tempList);
-            else
-                netStates[currentState].GetDif(connectedClient, zeroState, tempList);
+            if (connectedClient.waiting == false)
+            {
+                // Either send them an entire gamestate or a delta game state depending on wheter they want a complete resync.
+                if (connectedClient.requestResync == false)
+                    netStates[currentState].GetDif(connectedClient, netStates[connectedClient.lastRecievedPackage], tempList);
+                else
+                    netStates[currentState].GetDif(connectedClient, zeroState, tempList);
+            }
 
             // Send the prepared package.
             server.Send(connectedClient, tempList.ToArray());

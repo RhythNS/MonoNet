@@ -55,7 +55,8 @@ namespace MonoNet.Player
             if (Health <= 0)
             {
                 Dead = true;
-                Actor.Stage.DeleteActor(Actor);
+
+                ServerConnectionComponent.Instance.DestroySyncable(Actor.GetComponent<NetSyncComponent>().Id);
             }
         }
 
@@ -92,7 +93,7 @@ namespace MonoNet.Player
             for (int i = 0; i < overlapingBodies.Length; i++)
             {
                 if (overlapingBodies[i].Actor.TryGetComponent(out Pickable tryPick) == true &&
-                    (specificPickup == null || specificPickup == pickable))
+                    (specificPickup == null || specificPickup == tryPick))
                 {
                     pickable = tryPick;
                     break;

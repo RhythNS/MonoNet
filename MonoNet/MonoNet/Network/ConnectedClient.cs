@@ -17,7 +17,7 @@ namespace MonoNet.Network
         public byte lastRecievedPackage;
         public byte lastHandledPackage = 255;
 
-        public CommandPackageManager commandPackageManager;
+        public CommandPackageManager commandPackageManager = new CommandPackageManager();
 
         public TimeSpan lastHeardFrom;
         public bool requestResync = false;
@@ -30,6 +30,7 @@ namespace MonoNet.Network
         public List<byte> recievedCommands = new List<byte>();
 
         public bool hasChangedLevel = false;
+        public bool waiting = false;
 
         public ConnectedClient(IPEndPoint ip, string name, byte id)
         {

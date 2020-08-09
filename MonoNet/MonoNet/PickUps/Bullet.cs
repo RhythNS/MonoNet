@@ -1,7 +1,11 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Microsoft.Win32.SafeHandles;
+using Microsoft.Xna.Framework;
 using MonoNet.ECS;
 using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
+using MonoNet.Graphics;
+using MonoNet.LevelManager;
+using MonoNet.Network;
 using MonoNet.Player;
 
 namespace MonoNet.PickUps
@@ -10,6 +14,7 @@ namespace MonoNet.PickUps
     {
         private Transform2 transform;
         public PlayerManager shooter;
+        private Vector2 size;
 
         protected override void OnInitialize()
         {
@@ -22,16 +27,20 @@ namespace MonoNet.PickUps
             Vector2 direction = shooter.GetLookingVector();
             direction.Normalize();
 
-            Actor.GetComponent<Rigidbody>().velocity += direction * velocity;
-            Actor.AddComponent<Bullet>().shooter = shooter;
+            Rigidbody body = Actor.GetComponent<Rigidbody>();
+            body.velocity += direction * velocity;
+            Rigidbody[] ignore = new Rigidbody[1];
+            ignore[0] = shooter.Actor.GetComponent<Rigidbody>();
+            body.IgnoreBodies = ignore;
+            Actor.GetComponent<Bullet>().shooter = shooter;
+            Rectangle rec = Actor.GetComponent<DrawTextureRegionComponent>().region.sourceRectangle;
+            size = new Vector2(rec.Width, rec.Height);
         }
 
         public void Update()
         {
-            if (OfScreen())
-            {
-                Actor.Stage.DeleteActor(Actor);
-            }
+            if (IsOutOfBounds())
+                ServerConnectionComponent.Instance.DestroySyncable(Actor.GetComponent<NetSyncComponent>().Id);
         }
 
         private void OnCollision(Rigidbody other)
@@ -43,22 +52,15 @@ namespace MonoNet.PickUps
 
                 player.TakeDamage();
             }
-            Actor.Stage.DeleteActor(Actor);
+            ServerConnectionComponent.Instance.DestroySyncable(Actor.GetComponent<NetSyncComponent>().Id);
         }
 
-        private bool OfScreen()
+        private bool IsOutOfBounds()
         {
-            return false;
-            bool ofScreen = false;
-            float dist;
+            Vector2 screenDims = GameManager.screenDimensions;
+            Vector2 pos = transform.WorldPosition;
 
-            dist = transform.WorldPosition.X * transform.WorldPosition.X + transform.WorldPosition.Y * transform.WorldPosition.Y;
-
-            if (dist > 50000)
-            {
-                ofScreen = true;
-            }
-            return ofScreen;
+            return pos.X + size.X < 0 || pos.X > screenDims.X || pos.Y + size.Y > screenDims.Y || pos.Y < 0;
         }
     }
 }

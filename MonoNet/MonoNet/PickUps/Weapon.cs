@@ -12,6 +12,8 @@ namespace MonoNet.PickUps
 {
     public abstract class Weapon : Pickable, Interfaces.IUpdateable
     {
+        public abstract int XIndexInTilesheet { get; }
+        public abstract int YIndexInTilesheet { get; }
         public abstract float BulletVelocity { get; }
         public abstract float DelayAfterShoot { get; }
         public bool CanShoot => shootTimer <= 0;
@@ -21,7 +23,7 @@ namespace MonoNet.PickUps
         private Transform2 weaponTrans;
 
         private Transform2 holderTrans;
-        protected PlayerManager holder;
+        public PlayerManager holder;
 
         public bool isEquiped;
         private Rigidbody body;
@@ -82,11 +84,13 @@ namespace MonoNet.PickUps
             holderTrans = holder.GetComponent<Transform2>();
 
             if (NetManager.Instance.IsServer == true)
+            {
                 ServerConnectionComponent.Instance.ParentTransform(weaponTrans, holderTrans);
+                Physic.Instance.DeRegister(body);
+            }
             else
                 weaponTrans.Parent = holderTrans;
 
-            Physic.Instance.DeRegister(body);
 
             // change graphic to player holding the weapon
         }
@@ -98,6 +102,9 @@ namespace MonoNet.PickUps
         {
             isEquiped = false;
             holder = null;
+
+            if (NetManager.Instance.IsServer == false)
+                return;
 
             Vector2 curWeaponPos = weaponTrans.WorldPosition;
             ServerConnectionComponent.Instance.ParentTransform(weaponTrans, null);
