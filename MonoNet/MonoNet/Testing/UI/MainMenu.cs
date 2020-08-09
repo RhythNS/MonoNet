@@ -2,16 +2,9 @@
 using MonoNet.Screen;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework.Input;
-using Myra;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
-using MonoNet.GameSystems;
-using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Graphics;
 using MonoNet.Network.MasterServerConnection;
 using System.Net;
@@ -22,17 +15,42 @@ namespace MonoNet.Testing.UI
 {
     class MainMenu : IScreen
     {
+        /// <summary>
+        /// Holds a reference to the game instance
+        /// </summary>
         private MonoNet game;
+
+        /// <summary>
+        /// Contains the current Desktop for Myra
+        /// </summary>
         private Desktop desktop;
 
+        /// <summary>
+        /// Holds the current content of desktop
+        /// </summary>
         private Panel mainMenu;
 
+        /// <summary>
+        /// Holds the server browser window
+        /// </summary>
         private Window serverBrowser;
+        /// <summary>
+        /// Holds the server creation window
+        /// </summary>
         private Window serverCreation;
+        /// <summary>
+        /// Holds the direct connect window
+        /// </summary>
         private Window directConnect;
 
+        /// <summary>
+        /// Holds a reference to the name text box
+        /// </summary>
         private TextBox nameTextBox;
 
+        /// <summary>
+        /// Holds the quit game dialog window
+        /// </summary>
         private Dialog dialogQuitGame;
 
         private Grid serverList = new Grid();
@@ -94,18 +112,33 @@ namespace MonoNet.Testing.UI
             grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
             grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
             grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
+            grid.RowsProportions.Add(new Proportion(ProportionType.Auto));
 
-            nameTextBox = new TextBox {
-                Text = "",
-                HintText = "Playername",
+            Label nameLabel = new Label {
+                Text = "Insert Name:",
                 Width = 256,
-                Height = 64,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Right,
+                Height = 16,
+                TextAlign = TextAlign.Center,
                 GridColumn = 0,
                 GridRow = 0
             };
+            grid.Widgets.Add(nameLabel);
+
+            nameTextBox = new TextBox {
+                Text = Environment.UserName,
+                Width = 224,
+                Height = 20,
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                GridColumn = 0,
+                GridRow = 1
+            };
             nameTextBox.TextChangedByUser += (s, a) => {
+                if (nameTextBox.Text.Length >= 3)
+                    nameTextBox.TextColor = Color.White;
+                else
+                    nameTextBox.TextColor = Color.Red;
+
                 if (nameTextBox.Text.Length > NetConstants.MAX_NAME_LENGTH) {
                     nameTextBox.Text = nameTextBox.Text.Substring(0, NetConstants.MAX_NAME_LENGTH);
                     nameTextBox.CursorPosition = NetConstants.MAX_NAME_LENGTH - 1;
@@ -118,13 +151,19 @@ namespace MonoNet.Testing.UI
                 Text = "Start Game",
                 Width = 256,
                 Height = 64,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Right,
                 GridColumn = 0,
-                GridRow = 1
+                GridRow = 2
             };
             startGameBtn.Click += (s, a) => {
-                serverBrowser.ShowModal(desktop);
+                if (nameTextBox.Text.Length >= 3) {
+                    serverBrowser.ShowModal(desktop);
+                } else {
+                    Window window = new Window {
+                        Title = "Name needs at least 3 characters!"
+                    };
+
+                    window.ShowModal(desktop);
+                }
             };
             grid.Widgets.Add(startGameBtn);
 
@@ -133,10 +172,8 @@ namespace MonoNet.Testing.UI
                 Text = "Quit Game",
                 Width = 256,
                 Height = 64,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Right,
                 GridColumn = 0,
-                GridRow = 2
+                GridRow = 3
             };
             quitGameBtn.Click += (s, a) => {
                 dialogQuitGame.ShowModal(desktop);
@@ -250,8 +287,6 @@ namespace MonoNet.Testing.UI
             };
 
             Panel panel = new Panel {
-                Width = game.Window.ClientBounds.Width,
-                Height = game.Window.ClientBounds.Height,
                 Background = new SolidBrush(new Color(0f, 0f, 0f, 0.5f))
             };
 
@@ -265,6 +300,7 @@ namespace MonoNet.Testing.UI
                 ShowGridLines = true,
                 Padding = new Thickness(4)
             };
+            serverSettings.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
             serverSettings.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
             serverSettings.ColumnsProportions.Add(new Proportion(ProportionType.Auto));
 
@@ -282,7 +318,20 @@ namespace MonoNet.Testing.UI
                 GridColumn = 1,
                 GridRow = 0
             };
+            maxPlayersInput.TextChangedByUser += (s, a) => {
+                if (int.TryParse(maxPlayersInput.Text, out int players) && players >= 2 && players <= 8)
+                    maxPlayersInput.TextColor = Color.White;
+                else
+                    maxPlayersInput.TextColor = Color.Red;
+            };
             serverSettings.Widgets.Add(maxPlayersInput);
+            Label maxPlayersHintLabel = new Label {
+                Text = "Must be in between 2 and 8.",
+                TextAlign = TextAlign.Center,
+                GridColumn = 2,
+                GridRow = 0
+            };
+            serverSettings.Widgets.Add(maxPlayersHintLabel);
 
             serverSettings.RowsProportions.Add(new Proportion(ProportionType.Auto));
             Label portLabel = new Label {
@@ -294,18 +343,24 @@ namespace MonoNet.Testing.UI
             serverSettings.Widgets.Add(portLabel);
             TextBox portTextBox = new TextBox {
                 Text = "1337",
-                TextColor = Color.Green,
+                TextColor = Color.White,
                 GridColumn = 1,
                 GridRow = 1
             };
             portTextBox.TextChangedByUser += (s, a) => {
-                if (int.TryParse(portTextBox.Text, out int port) && port > 200 && port < 65536) {
-                    portTextBox.TextColor = Color.Green;
-                } else {
+                if (int.TryParse(portTextBox.Text, out int port) && port > 200 && port < 65536)
+                    portTextBox.TextColor = Color.White;
+                else
                     portTextBox.TextColor = Color.Red;
-                }
             };
             serverSettings.Widgets.Add(portTextBox);
+            Label portHintLabel = new Label {
+                Text = "Must be in between 201 and 65535.",
+                TextAlign = TextAlign.Center,
+                GridColumn = 2,
+                GridRow = 1
+            };
+            serverSettings.Widgets.Add(portHintLabel);
 
             verticalStackPanel.Widgets.Add(serverSettings);
 
@@ -318,7 +373,7 @@ namespace MonoNet.Testing.UI
             };
             buttonCreate.Click += (s, a) => {
                 // start server here
-                if (portTextBox.TextColor == Color.Green) {
+                if (portTextBox.TextColor == Color.White && maxPlayersInput.TextColor == Color.White) {
                     int port = int.Parse(portTextBox.Text);
 
                     game.ScreenManager.SetScreen(new ServerLevelScreen(game, nameTextBox.Text, port));
@@ -326,7 +381,7 @@ namespace MonoNet.Testing.UI
                     MasterServerConnector.Instance.StartListingServer(port, nameTextBox.Text, int.Parse(maxPlayersInput.Text));
                 } else {
                     Window window = new Window {
-                        Title = "Port needs to be 201-65535!"
+                        Title = "Something isn't correct in the settings!"
                     };
 
                     window.ShowModal(desktop);
@@ -351,14 +406,10 @@ namespace MonoNet.Testing.UI
 
         private void CreateDirectConnectWindow() {
             directConnect = new Window {
-                Title = "Direct Connect",
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
+                Title = "Direct Connect"
             };
 
             Panel panel = new Panel {
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
                 Background = new SolidBrush(new Color(0f, 0f, 0f, 0.5f))
             };
 
@@ -385,9 +436,15 @@ namespace MonoNet.Testing.UI
             serverSettings.Widgets.Add(ipAddressLabel);
             TextBox ipAddressInput = new TextBox {
                 Text = "127.0.0.1",
-                Width = 50,
+                Width = 192,
                 GridColumn = 1,
                 GridRow = 0
+            };
+            ipAddressInput.TextChanged += (s, a) => {
+                if (IPAddress.TryParse(ipAddressInput.Text, out IPAddress ip))
+                    ipAddressInput.TextColor = Color.White;
+                else
+                    ipAddressInput.TextColor = Color.Red;
             };
             serverSettings.Widgets.Add(ipAddressInput);
 
@@ -404,6 +461,12 @@ namespace MonoNet.Testing.UI
                 GridColumn = 1,
                 GridRow = 1
             };
+            portTextBox.TextChanged += (s, a) => {
+                if (int.TryParse(portTextBox.Text, out int port) && port > 200 && port < 65536)
+                    portTextBox.TextColor = Color.White;
+                else
+                    portTextBox.TextColor = Color.Red;
+            };
             serverSettings.Widgets.Add(portTextBox);
 
             verticalStackPanel.Widgets.Add(serverSettings);
@@ -412,22 +475,14 @@ namespace MonoNet.Testing.UI
                 Spacing = 8
             };
             TextButton buttonConnect = new TextButton {
-                Text = "Create Server",
+                Text = "Connect",
                 HorizontalAlignment = HorizontalAlignment.Right
             };
             buttonConnect.Click += (s, a) => {
-                // start server here
-                IPAddress ip;
-                if (IPAddress.TryParse(ipAddressInput.Text, out ip)) {
-                    int port = Convert.ToInt32(portTextBox.Text);
-                    if (port > 0 && port < 65536) {
-                        IPEndPoint endPoint = new IPEndPoint(ip, port);
-                        game.ScreenManager.SetScreen(new ClientLevelScreen(game, endPoint, nameTextBox.Text));
-                    } else {
-                        // is kaputt
-                    }
-                } else {
-                    // is kaputt
+                // connect to server here
+                if (IPAddress.TryParse(ipAddressInput.Text, out IPAddress ip) && int.TryParse(portTextBox.Text, out int port) && port > 200 && port < 65536) {
+                    IPEndPoint endPoint = new IPEndPoint(ip, port);
+                    game.ScreenManager.SetScreen(new ClientLevelScreen(game, endPoint, nameTextBox.Text));
                 }
             };
             horizontalStackPanel.Widgets.Add(buttonConnect);
@@ -465,7 +520,6 @@ namespace MonoNet.Testing.UI
                 };
                 IPEndPoint endPoint = servers[i].endPoint;
                 name.Click += (s, a) => {
-                    // connect here PLAYERNAME
                     game.ScreenManager.SetScreen(new ClientLevelScreen(game, endPoint, nameTextBox.Text));
                 };
                 serverList.Widgets.Add(name);

@@ -24,9 +24,9 @@ namespace MonoNet.Network.MasterServerConnection
         private static bool isServer = false;
 
         // IPAddress of Master Server
-        private static string masterServerIpAddress = "176.57.171.145"; // REPLACE THIS
+        private static string masterServerIpAddress = NetConstants.MASTER_SERVER_IP;
         // Port of the Master Server
-        private static int masterServerPort = 1337; // REPLACE THIS
+        private static int masterServerPort = 1337;
 
         // tcpClient for connecting to the master server
         private TcpClient client;
