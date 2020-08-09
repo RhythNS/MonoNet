@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoNet.LevelManager.Client;
 using MonoNet.Network;
 using System.Net;
 
@@ -21,6 +22,8 @@ namespace MonoNet.LevelManager
         public override void Initialize()
         {
             base.Initialize();
+
+            LevelUI.DisplayString("Connecting...");
 
             reciever = new NetManagerReciever(ip, playerName);
 
@@ -52,6 +55,19 @@ namespace MonoNet.LevelManager
                 LevelUI.DisplayString("Player " + name + " won!\nWaiting for game to restart!");
             else
                 LevelUI.DisplayString("Nobody wins!\nWaiting for game to restart");
+        }
+
+        public void OnDisconnect(string message)
+        {
+            stage.CreateActor(0).AddComponent<ClientOnDisconnectComponent>().message = message;
+        }
+
+        protected override void OnGameQuit()
+        {
+            NetSyncComponent.TriggerServerEvent("D", false);
+            reciever.Recieve();
+            reciever.Send(true);
+            reciever.Stop();
         }
     }
 }

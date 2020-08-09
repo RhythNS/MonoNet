@@ -31,6 +31,7 @@ namespace MonoNet.Network
 
         public bool hasChangedLevel = false;
         public bool waiting = false;
+        public bool hasExited = false;
 
         public ConnectedClient(IPEndPoint ip, string name, byte id)
         {

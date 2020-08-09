@@ -91,7 +91,7 @@ namespace MonoNet.Network
         /// <summary>
         /// Sends information about every component which the user controlls.
         /// </summary>
-        public void Send()
+        public void Send(bool forceIncrement = false)
         {
             // Check if we sent a package not too long ago.
             timer -= Time.Delta;
@@ -100,7 +100,7 @@ namespace MonoNet.Network
             timer = NetConstants.CLIENT_SEND_RATE_PER_SECOND;
 
             tempData.Clear();
-            tempData.Add(lastRecievedPackage); // Save the number of the last recieved package first.
+            tempData.Add(forceIncrement ? (byte)(lastRecievedPackage + 1) : lastRecievedPackage); // Save the number of the last recieved package first.
 
             // Handle rpcs
             AppendRPCSend(tempData, recievedCommands, toSendCommands);
@@ -117,6 +117,11 @@ namespace MonoNet.Network
 
             // Send the package to the server.
             client.Send(tempData.ToArray());
+        }
+
+        public void Stop()
+        {
+            client.Stop();
         }
 
     }

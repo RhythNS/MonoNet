@@ -75,6 +75,9 @@ namespace MonoNet.Network
             int numberOfAckRpcs = data[pointerAt++];
             for (int j = 0; j < numberOfAckRpcs; j++)
             {
+                if (IsServer == true && connectedClient.hasExited == true)
+                    return false;
+
                 byte handledRpc = data[pointerAt++];
                 for (int k = 0; k < toSendCommands.Count; k++)
                 {

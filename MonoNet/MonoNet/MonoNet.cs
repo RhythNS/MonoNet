@@ -6,11 +6,9 @@ using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Network.Commands;
 using MonoNet.Network.MasterServerConnection;
 using MonoNet.Screen;
-using MonoNet.Testing.StartingScreens;
 using MonoNet.Testing.UI;
 using MonoNet.Util;
 using Myra;
-using System.Diagnostics;
 
 namespace MonoNet
 {
@@ -36,7 +34,7 @@ namespace MonoNet
             
             // start in MainMenu
             ScreenManager = new ScreenManager(new MainMenu(this)); 
-            //ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
+            // ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
 
             IsMouseVisible = true;
         }
@@ -94,8 +92,8 @@ namespace MonoNet
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
+            //if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            //    Exit();
 
             ScreenManager.Update(gameTime);
 

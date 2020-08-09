@@ -1,9 +1,12 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using MonoNet.ECS;
+using MonoNet.GameSystems;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Graphics;
 using MonoNet.Screen;
+using MonoNet.Testing.UI;
 using MonoNet.Tiled;
 using MonoNet.Util.Datatypes;
 using MonoNet.Util.Pools;
@@ -57,13 +60,20 @@ namespace MonoNet.LevelManager
             UI = new LevelUI();
         }
 
-        public virtual void LoadContent()
-        {
+        protected abstract void OnGameQuit();
 
-        }
+        public virtual void LoadContent() { }
 
         public virtual void Update(GameTime gameTime)
         {
+            if (Input.IsKeyDownThisFrame(Keys.Escape))
+            {
+                monoNet.ScreenManager.SetScreen(new MainMenu(monoNet));
+                Physic.Instance.collisionRules.Clear();
+                OnGameQuit();
+                return;
+            }
+
             if (loadLevelRequest != null)
                 LoadLevel(loadLevelRequest.Value);
 
@@ -100,6 +110,7 @@ namespace MonoNet.LevelManager
         public virtual void UnloadContent()
         {
             ComponentFactory.Instance.UnloadAll();
+            stage.Dispose();
         }
     }
 }

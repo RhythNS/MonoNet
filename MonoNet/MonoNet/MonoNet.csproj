@@ -72,6 +72,7 @@
     <Compile Include="Graphics\Camera.cs" />
     <Compile Include="Graphics\TextureRegion.cs" />
     <Compile Include="LevelManager\Client\ClientLevelScreen.cs" />
+    <Compile Include="LevelManager\Client\ClientOnDisconnectComponent.cs" />
     <Compile Include="LevelManager\ComponentFactory.cs" />
     <Compile Include="LevelManager\GameManager.cs" />
     <Compile Include="LevelManager\GunSpawnLocations.cs" />

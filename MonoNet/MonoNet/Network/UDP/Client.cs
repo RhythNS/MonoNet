@@ -1,4 +1,5 @@
-﻿using MonoNet.Util;
+﻿using MonoNet.LevelManager;
+using MonoNet.Util;
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -76,7 +77,8 @@ namespace MonoNet.Network.UDP
             // if connected is false then something went wrong
             if (connected == false)
             {
-                Console.WriteLine("Connection could not be established!");
+                Console.WriteLine("Connection could not be established!"); 
+                ((ClientLevelScreen)LevelScreen.Instance).OnDisconnect("Could not connect to server!\nPress escape to go back to the main menu!");
                 return;
             }
         }

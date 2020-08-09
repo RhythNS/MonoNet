@@ -4,6 +4,7 @@ using MonoNet.ECS.Components;
 using MonoNet.GameSystems.PhysicsSystem;
 using MonoNet.Network;
 using MonoNet.Network.Commands;
+using MonoNet.Network.MasterServerConnection;
 using MonoNet.PickUps;
 using MonoNet.Player;
 using MonoNet.Util;
@@ -18,6 +19,8 @@ namespace MonoNet.LevelManager
         private PlayerSpawnLocations spawnLocations;
         private Stage stage;
         private string name;
+
+        private int playersConnected = 1;
 
         protected override void OnInitialize()
         {
@@ -38,6 +41,9 @@ namespace MonoNet.LevelManager
 
         public void OnPlayerConnected(ConnectedClient client)
         {
+            playersConnected++;
+            MasterServerConnector.Instance.UpdatePlayerCount(playersConnected);
+
             Log.Info("Player connected!");
             if (GameManager.Instance.RoundStarted == true)
             {
@@ -60,8 +66,22 @@ namespace MonoNet.LevelManager
             client.controlledComponents.Add(nsc);
         }
 
+        [EventHandler("D")]
+        public void Disconnect(byte playerId)
+        {
+            NetManager.Instance.GetClient(playerId).hasExited = true;
+        }
+
+        public void Shutdown()
+        {
+            NetSyncComponent.TriggerClientEvent("SS");
+        }
+
         public void OnPlayerDisconnected(ConnectedClient client)
         {
+            playersConnected--;
+            MasterServerConnector.Instance.UpdatePlayerCount(playersConnected);
+
             Log.Info("Player disconnected!");
             for (int i = 0; i < client.controlledComponents.Count; i++)
                 DestroySyncable(client.controlledComponents[i].Id);
@@ -214,6 +234,10 @@ namespace MonoNet.LevelManager
         public void DestroySyncable(byte netId)
         {
             NetSyncComponent nsc = NetManager.Instance.GetNetSyncComponent(netId);
+
+            if (nsc == null)
+                return;
+
             nsc.Actor.Stage.DeleteActor(nsc.Actor);
             NetManager.Instance.SetNetSyncComponent(null, netId);
 

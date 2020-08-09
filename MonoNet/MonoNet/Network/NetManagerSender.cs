@@ -111,6 +111,23 @@ namespace MonoNet.Network
                     netSyncComponents[address].Sync(data, ref pointerAt);
                 }
             }
+
+            for (int i = ConnectedAdresses.Count - 1; i >= 0; i--)
+            {
+                if (ConnectedAdresses[i].hasExited == true)
+                {
+                    InvokePlayerDisconnected(ConnectedAdresses[i]);
+                    ConnectedAdresses.RemoveAt(i);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Stops the server
+        /// </summary>
+        public void Stop()
+        {
+            server.Stop();
         }
 
         /// <summary>

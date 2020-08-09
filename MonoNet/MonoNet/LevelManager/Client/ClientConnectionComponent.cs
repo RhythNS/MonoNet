@@ -82,6 +82,12 @@ namespace MonoNet.LevelManager
             NetSyncComponent.TriggerServerEvent("RW", false, pickable.Actor.GetComponent<NetSyncComponent>().Id);
         }
 
+        [EventHandler("SS")]
+        public void ServerShutdown()
+        {
+            ((ClientLevelScreen)LevelScreen.Instance).OnDisconnect("Server shutdown!\nPress escape to go back to the main menu!");
+        }
+
         public void RequestWeaponDrop()
         {
             NetSyncComponent.TriggerServerEvent("RD", false);

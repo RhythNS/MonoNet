@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using MonoNet.Network;
+using MonoNet.Network.MasterServerConnection;
 
 namespace MonoNet.LevelManager
 {
@@ -58,5 +59,15 @@ namespace MonoNet.LevelManager
             base.LoadLevel(levelNumber);
         }
 
+        protected override void OnGameQuit()
+        {
+            serverConnection.Shutdown();
+
+            sender.UpdateCurrentState();
+            sender.SendToAll();
+            sender.Stop();
+
+            MasterServerConnector.Instance.StopListingServer();
+        }
     }
 }
