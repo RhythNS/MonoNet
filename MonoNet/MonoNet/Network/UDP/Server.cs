@@ -71,7 +71,7 @@ namespace MonoNet.Network.UDP
             // ------------------------------------------------------------------------------------------------------------
 
             // Start listing for messages
-            connection.Client.Bind(new IPEndPoint(IPAddress.IPv6Any, port));
+            connection.Client.Bind(new IPEndPoint(IPAddress.Any, port));
 
             while (exitRequested == false)
             {

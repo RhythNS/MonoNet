@@ -30,7 +30,7 @@ namespace MonoNet.Testing.StartingScreens
             }
             else if (Input.KeyDown(Keys.F2))
             {
-                monoNet.ScreenManager.SetScreen(new ClientLevelScreen(monoNet, new IPEndPoint(IPAddress.Parse("0:0:0:0:0:0:0:1"), 25565), "Unknown"));
+                monoNet.ScreenManager.SetScreen(new ClientLevelScreen(monoNet, new IPEndPoint(IPAddress.Parse("127.0.0.1"), 25565), "Unknown"));
             }
         }
     }

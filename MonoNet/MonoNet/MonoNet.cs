@@ -35,8 +35,8 @@ namespace MonoNet
             Content.RootDirectory = "Content";
             
             // start in MainMenu
-            ScreenManager = new ScreenManager(new MainMenu(this)); 
-            //ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
+            //ScreenManager = new ScreenManager(new MainMenu(this)); 
+            ScreenManager = new ScreenManager(new DebugGameStartScreen(this)); // TODO: Replace this with mainmenu
 
             IsMouseVisible = true;
         }

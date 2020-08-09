@@ -319,9 +319,11 @@ namespace MonoNet.Testing.UI
             buttonCreate.Click += (s, a) => {
                 // start server here
                 if (portTextBox.TextColor == Color.Green) {
-                    game.ScreenManager.SetScreen(new ServerLevelScreen(game, nameTextBox.Text, int.Parse(portTextBox.Text)));
+                    int port = int.Parse(portTextBox.Text);
 
-                    MasterServerConnector.Instance.StartListingServer(nameTextBox.Text, int.Parse(maxPlayersInput.Text));
+                    game.ScreenManager.SetScreen(new ServerLevelScreen(game, nameTextBox.Text, port));
+
+                    MasterServerConnector.Instance.StartListingServer(port, nameTextBox.Text, int.Parse(maxPlayersInput.Text));
                 } else {
                     Window window = new Window {
                         Title = "Port needs to be 201-65535!"

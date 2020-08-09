@@ -78,7 +78,7 @@ namespace MonoNet.Network.MasterServerConnection
         /// </summary>
         /// <param name="serverName">The name of the server.</param>
         /// <param name="maxPlayers">The maximum amount of players in the server.</param>
-        public void StartListingServer(string serverName, int maxPlayers) {
+        public void StartListingServer(int port, string serverName, int maxPlayers) {
             if (isServer) {
                 WriteToLog("Server is already started");
                 return;
@@ -91,6 +91,7 @@ namespace MonoNet.Network.MasterServerConnection
                 // send a message containing server name length, name and max player count
                 List<byte> byteList = new List<byte>();
                 byteList.Add((byte)PacketType.ListServer);
+                byteList.AddRange(BitConverter.GetBytes(port));
                 byteList.AddRange(BitConverter.GetBytes(serverName.Length));
                 byteList.AddRange(Encoding.ASCII.GetBytes(serverName));
                 byteList.AddRange(BitConverter.GetBytes(maxPlayers));

@@ -13,6 +13,11 @@ namespace MononetMasterServer
         public TcpClient Client { get; private set; }
 
         /// <summary>
+        /// The port of the server
+        /// </summary>
+        public int Port { get; set; }
+
+        /// <summary>
         /// Name of the server.
         /// </summary>
         public string Name { get; set; }

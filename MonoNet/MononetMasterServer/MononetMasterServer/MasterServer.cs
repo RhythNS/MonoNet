@@ -158,10 +158,12 @@ namespace MononetMasterServer
 
                             servers.Add(server.Client, server);
 
-                            int nameLength = BitConverter.ToInt32(message.SubArray(1, 4), 0);
-                            string serverName = Encoding.ASCII.GetString(message.SubArray(5, nameLength));
-                            int maxPlayers = BitConverter.ToInt32(message.SubArray(5 + nameLength, 4), 0);
+                            int port = BitConverter.ToInt32(message.SubArray(1, 4), 0);
+                            int nameLength = BitConverter.ToInt32(message.SubArray(5, 4), 0);
+                            string serverName = Encoding.ASCII.GetString(message.SubArray(9, nameLength));
+                            int maxPlayers = BitConverter.ToInt32(message.SubArray(9 + nameLength, 4), 0);
 
+                            server.Port = port;
                             server.Name = serverName;
                             server.MaxPlayers = maxPlayers;
 
@@ -202,7 +204,7 @@ namespace MononetMasterServer
                                 data.AddRange(Encoding.ASCII.GetBytes(ip.ToCharArray(), 0, ip.Length));
 
                                 // add port
-                                data.AddRange(BitConverter.GetBytes(((IPEndPoint)sv.Key.Client.RemoteEndPoint).Port));
+                                data.AddRange(BitConverter.GetBytes(sv.Value.Port));
 
                                 // add current players
                                 data.AddRange(BitConverter.GetBytes(sv.Value.PlayerCount));
