@@ -33,6 +33,11 @@ namespace MonoNet.Network.MasterServerConnection
         private NetworkStream stream;
 
         /// <summary>
+        /// Is the master server reachable?
+        /// </summary>
+        public bool IsReachable { get; private set; } = false;
+
+        /// <summary>
         /// Thread for listening to the master server
         /// </summary>
         private Thread listenThread;
@@ -55,19 +60,26 @@ namespace MonoNet.Network.MasterServerConnection
         public void Start() {
             // get the ip;
             if (IPAddress.TryParse(masterServerIpAddress, out IPAddress ip)) {
-                // create new endpoint to server
-                IPEndPoint remoteEndPoint = new IPEndPoint(ip, masterServerPort);
-                // connect client to server endpoint
-                client = new TcpClient();
-                client.Connect(remoteEndPoint);
+                try {
+                    // create new endpoint to server
+                    IPEndPoint remoteEndPoint = new IPEndPoint(ip, masterServerPort);
+                    // connect client to server endpoint
+                    client = new TcpClient();
+                    client.Connect(remoteEndPoint);
 
-                // start thread to listen to the server
-                listenThread = new Thread(ListenForMasterServer);
-                listenThread.Start();
+                    IsReachable = true;
 
-                // start a thread to keep the connection alive
-                keepAliveThread = new Thread(KeepAlive);
-                keepAliveThread.Start();
+                    // start thread to listen to the server
+                    listenThread = new Thread(ListenForMasterServer);
+                    listenThread.Start();
+
+                    // start a thread to keep the connection alive
+                    keepAliveThread = new Thread(KeepAlive);
+                    keepAliveThread.Start();
+                } catch (SocketException) {
+                    // server could not be reached
+                    IsReachable = false;
+                }
             } else {
                 WriteToLog("[ERROR] MasterServer IP Address could not be parsed!");
             }
@@ -79,6 +91,11 @@ namespace MonoNet.Network.MasterServerConnection
         /// <param name="serverName">The name of the server.</param>
         /// <param name="maxPlayers">The maximum amount of players in the server.</param>
         public void StartListingServer(int port, string serverName, int maxPlayers) {
+            if (!IsReachable) {
+                WriteToLog("Master Server is not reachable...");
+                return;
+            }
+
             if (isServer) {
                 WriteToLog("Server is already started");
                 return;
@@ -114,6 +131,11 @@ namespace MonoNet.Network.MasterServerConnection
         /// Stops listing the server on the master server list.
         /// </summary>
         public void StopListingServer() {
+            if (!IsReachable) {
+                WriteToLog("Master Server is not reachable...");
+                return;
+            }
+
             if (!isServer) {
                 WriteToLog("Server is already stopped");
                 return;
@@ -144,6 +166,11 @@ namespace MonoNet.Network.MasterServerConnection
         /// </summary>
         /// <param name="count">The new player count.</param>
         public void UpdatePlayerCount(int count) {
+            if (!IsReachable) {
+                WriteToLog("Master Server is not reachable...");
+                return;
+            }
+
             // if this is no server return
             if (!isServer) return;
 
@@ -167,6 +194,11 @@ namespace MonoNet.Network.MasterServerConnection
         /// Requests the server list from the master server
         /// </summary>
         public void RequestServerList() {
+            if (!IsReachable) {
+                WriteToLog("Master Server is not reachable...");
+                return;
+            }
+
             if (isServer) return;
 
             try {
@@ -192,6 +224,11 @@ namespace MonoNet.Network.MasterServerConnection
             while (true) {
                 // wait 10s
                 Thread.Sleep(10000);
+
+                if (!IsReachable) {
+                    WriteToLog("Master Server is not reachable...");
+                    continue;
+                }
 
                 try {
                     // get stream from and to server

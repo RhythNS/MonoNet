@@ -9,6 +9,7 @@ using MonoNet.Screen;
 using MonoNet.Testing.UI;
 using MonoNet.Util;
 using Myra;
+using System.Threading;
 
 namespace MonoNet
 {
@@ -23,11 +24,17 @@ namespace MonoNet
         private GameSystemManager manager;
         public ScreenManager ScreenManager { get; private set; }
 
-        public MonoNet()
-        {
-            // connect to the master server
-            MasterServerConnector masterServerConnector = new MasterServerConnector();
+        MasterServerConnector masterServerConnector = new MasterServerConnector();
+
+        private void ConnectToMasterServer() {
             masterServerConnector.Start();
+        }
+
+        public MonoNet() {
+            //MasterServerConnector masterServerConnector = new MasterServerConnector();
+            //masterServerConnector.Start();
+            Thread msConnect = new Thread(ConnectToMasterServer);
+            msConnect.Start();
 
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";

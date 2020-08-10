@@ -1,11 +1,14 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using MonoNet.Interfaces;
+using Myra.Graphics2D;
+using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
 using System;
 
 namespace MonoNet.LevelManager
 {
-    public class LevelUI : IDrawable
+    public class LevelUI : Interfaces.IDrawable
     {
         public static LevelUI Instance { get; private set; }
 
@@ -20,7 +23,10 @@ namespace MonoNet.LevelManager
             label = new Label {
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
-                TextAlign = TextAlign.Center
+                TextAlign = TextAlign.Center,
+                TextColor = Color.White,
+                Padding = new Thickness(8),
+                Background = new SolidBrush(new Color(30, 30, 30, 150))
             };
 
             desktop.Widgets.Add(label);
