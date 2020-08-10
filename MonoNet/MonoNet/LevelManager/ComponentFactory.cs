@@ -12,6 +12,9 @@ using MonoNet.Util.Datatypes;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Puts components on actors.
+    /// </summary>
     public class ComponentFactory
     {
         public static ComponentFactory Instance { get; private set; }
@@ -46,6 +49,12 @@ namespace MonoNet.LevelManager
             content.Unload();
         }
 
+        /// <summary>
+        /// Creates a player without the PlayerInput.
+        /// </summary>
+        /// <param name="netId">The id of the NetSyncComponent to which the Player should be added to.</param>
+        /// <param name="name">The name of the player.</param>
+        /// <returns>A reference to the PlayerManager.</returns>
         public static PlayerManager CreateNetPlayer(byte netId, string name)
         {
             Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
@@ -69,6 +78,11 @@ namespace MonoNet.LevelManager
             return player;
         }
 
+        /// <summary>
+        /// Creates all components for a bullet without the Bullet component.
+        /// </summary>
+        /// <param name="netId">The id of the NetSyncComponent to which the Bullet should be added to.</param>
+        /// <returns>A reference to the Actor.</returns>
         public static Actor CreatePreparedBullet(byte netId)
         {
             Actor bullet = NetManager.Instance.GetNetSyncComponent(netId).Actor;
@@ -85,6 +99,12 @@ namespace MonoNet.LevelManager
             return bullet;
         }
 
+        /// <summary>
+        /// Creates all components for a weapon.
+        /// </summary>
+        /// <param name="netId">The id of the NetSyncComponent to which the weapon should be added to.</param>
+        /// <param name="weaponId">The id of the weapon that should be created.</param>
+        /// <returns>A reference to the weapon.</returns>
         public static Weapon CreateWeapon(byte netId, byte weaponId)
         {
             Actor weaponActor = NetManager.Instance.GetNetSyncComponent(netId).Actor;

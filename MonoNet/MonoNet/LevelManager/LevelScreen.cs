@@ -13,6 +13,9 @@ using MonoNet.Util.Pools;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Abstract Screen of the main game screen.
+    /// </summary>
     public abstract class LevelScreen : IScreen
     {
         public static LevelScreen Instance { get; private set; }
@@ -27,6 +30,9 @@ namespace MonoNet.LevelManager
         protected TiledBase tiledBase;
         protected HitboxLoader hitboxLoader;
 
+        /// <summary>
+        /// If this is not null, then the screen tries to load this level.
+        /// </summary>
         private byte? loadLevelRequest = null;
 
         public LevelScreen(MonoNet monoNet)
@@ -60,6 +66,9 @@ namespace MonoNet.LevelManager
             UI = new LevelUI();
         }
 
+        /// <summary>
+        /// Called when the screen is about to change back to the main menu.
+        /// </summary>
         protected abstract void OnGameQuit();
 
         public virtual void LoadContent() { }
@@ -93,6 +102,10 @@ namespace MonoNet.LevelManager
             batch.End();
         }
 
+        /// <summary>
+        /// Should be used when a level change should occur.
+        /// </summary>
+        /// <param name="levelNumber">The level to be loaded</param>
         public void RequestLevelChange(byte levelNumber)
         {
             loadLevelRequest = levelNumber;
@@ -100,6 +113,10 @@ namespace MonoNet.LevelManager
             stage.DeleteAllActors(true);
         }
 
+        /// <summary>
+        /// Loads a level based on the level number as an id.
+        /// </summary>
+        /// <param name="levelNumber">The level to be loaded.</param>
         protected virtual void LoadLevel(byte levelNumber)
         {
             loadLevelRequest = null;

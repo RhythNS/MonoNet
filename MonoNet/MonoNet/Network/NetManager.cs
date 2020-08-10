@@ -36,6 +36,9 @@ namespace MonoNet.Network
 
         public void SetNetSyncComponent(NetSyncComponent netSyncComponent, byte id) => netSyncComponents[id] = netSyncComponent;
 
+        /// <summary>
+        /// Resets all NetSyncComponents and ConnectedAdresses. Should be called after a level is reset.
+        /// </summary>
         public void Reset()
         {
             for (int i = 0; i < netSyncComponents.Length; i++)
@@ -45,6 +48,11 @@ namespace MonoNet.Network
                 ConnectedAdresses[i].controlledComponents.Clear();
         }
 
+        /// <summary>
+        /// Gets a client based on a given id.
+        /// </summary>
+        /// <param name="id">The id of the client.</param>
+        /// <returns>The client. If not found, this returns null.</returns>
         public ConnectedClient GetClient(byte id)
         {
             for (int i = 0; i < ConnectedAdresses.Count; i++)
@@ -55,6 +63,11 @@ namespace MonoNet.Network
             return null;
         }
 
+        /// <summary>
+        /// Gets an id for a newly connected Client.
+        /// </summary>
+        /// <param name="id">The new id.</param>
+        /// <returns>Wheter it found one or not.</returns>
         public bool TryGetNextAvailableID(out byte id)
         {
             for (int i = 0; i < netSyncComponents.Length; i++)
@@ -69,6 +82,16 @@ namespace MonoNet.Network
             return false;
         }
 
+        /// <summary>
+        /// Manages the execution and sending of rpcs..
+        /// </summary>
+        /// <param name="data">The package as byte[].</param>
+        /// <param name="pointerAt">The next byte that needs to be read.</param>
+        /// <param name="recievedCommands">The id of the executed rpc is added to this list.</param>
+        /// <param name="toSendCommands">Each rpc that the other side needs to execute is saved into this list.</param>
+        /// <param name="commandPackageManager">The package manager for knowing which rpcs to execute and which to ignore.</param>
+        /// <param name="connectedClient">The connected client, if this is called server side.</param>
+        /// <returns>Wheter the package should continue to be read from.</returns>
         protected bool RecieveRPC(byte[] data, ref int pointerAt, List<byte> recievedCommands, List<byte[]> toSendCommands, CommandPackageManager commandPackageManager, ConnectedClient connectedClient = null)
         {
             // First get all rpcs which we do not need to send again
@@ -109,6 +132,12 @@ namespace MonoNet.Network
             return true;
         }
 
+        /// <summary>
+        /// Adds rpcs to a package that can be send to the server or client.
+        /// </summary>
+        /// <param name="packageList">The package as byte list.</param>
+        /// <param name="recievedCommands">Which rpcs need to be acknowledged.</param>
+        /// <param name="toSendCommands">Which rpcs need to be sent.</param>
         protected void AppendRPCSend(List<byte> packageList, List<byte> recievedCommands, List<byte[]> toSendCommands)
         {
             // Send which rpc command we have recieved and already managed

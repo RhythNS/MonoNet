@@ -8,6 +8,9 @@ using TiledSharp;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Loads Hitboxes to tiled maps.
+    /// </summary>
     public class HitboxLoader
     {
         private Stage stage;

@@ -35,6 +35,11 @@ namespace MonoNet.Network
             client.StartListen();
         }
 
+        /// <summary>
+        /// Adds an rpc to the list to send to the server.
+        /// </summary>
+        /// <param name="rpc">The rpc to be sent.</param>
+        /// <param name="isPriorityMessage">Wheter to send this rpc first, if it is important.</param>
         public void AddRPC(List<byte> rpc, bool isPriorityMessage)
         {
             rpc.Insert(0, ++autoIncrementRPCSend);
@@ -124,10 +129,12 @@ namespace MonoNet.Network
             client.Send(tempData.ToArray());
         }
 
+        /// <summary>
+        /// Stops the socket and connection thread.
+        /// </summary>
         public void Stop()
         {
             client.Stop();
         }
-
     }
 }

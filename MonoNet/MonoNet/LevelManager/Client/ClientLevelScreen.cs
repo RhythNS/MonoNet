@@ -6,6 +6,9 @@ using System.Net;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Client implentation of the main game screen.
+    /// </summary>
     public class ClientLevelScreen : LevelScreen
     {
         private IPEndPoint ip;
@@ -68,6 +71,10 @@ namespace MonoNet.LevelManager
                 LevelUI.DisplayString("Nobody wins!\nWaiting for game to restart");
         }
 
+        /// <summary>
+        /// Called when the client disconnects for whatever reason.
+        /// </summary>
+        /// <param name="message">The reason why the client disconnected.</param>
         public void OnDisconnect(string message)
         {
             stage.CreateActor(0).AddComponent<ClientOnDisconnectComponent>().message = message;

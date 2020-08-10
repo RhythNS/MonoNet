@@ -10,6 +10,9 @@ namespace MonoNet.LevelManager
 {
     public delegate void GameEnd(PlayerManager winningPlayer);
 
+    /// <summary>
+    /// Holds important variables for the game.
+    /// </summary>
     public class GameManager : Component, Interfaces.IUpdateable
     {
         public static GameManager Instance { get; private set; }

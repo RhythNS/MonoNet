@@ -5,6 +5,9 @@ using MonoNet.Network;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Component for starting a game when every player is ready.
+    /// </summary>
     class HostGameStartComponent : Component, IUpdateable
     {
         private NetManager net;

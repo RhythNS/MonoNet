@@ -4,6 +4,9 @@ using MonoNet.Network.MasterServerConnection;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Server side implentation of the levelscreen.
+    /// </summary>
     public class ServerLevelScreen : LevelScreen
     {
         private GunSpawnLocations gunSpawns;

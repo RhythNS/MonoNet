@@ -6,6 +6,9 @@ using System;
 
 namespace MonoNet.LevelManager
 {
+    /// <summary>
+    /// Component for restarting a round when a round is finished.
+    /// </summary>
     class HostGameEndComponent : Component, IUpdateable, IDisposable
     {
         protected override void OnInitialize()
