@@ -24,7 +24,8 @@ namespace MonoNet.Player
         public PlayerInput PlayerInput { get; private set; }
         public Rigidbody Rigidbody { get; private set; }
         public Equip Equip { get; private set; }
-        public DrawTextureRegionComponent DrawComponent { get; private set; }
+        public AnimatedTextureRegionComponent AnimatedComponent { get; private set; }
+        public Vector2 Size { get; private set; }
 
         public float XSpeed { get; private set; } = 150;
         public float XMaxSpeed { get; private set; } = 350;
@@ -41,17 +42,16 @@ namespace MonoNet.Player
 
         public LookingAt lookingAt;
         private PlayerKeys binding;
-        private Vector2 size;
 
         protected override void OnInitialize()
         {
             Equip = Actor.AddComponent<Equip>();
             PlayerInput = Actor.AddComponent<PlayerInput>();
             Rigidbody = Actor.GetComponent<Rigidbody>();
-            DrawComponent = Actor.GetComponent<DrawTextureRegionComponent>();
+            AnimatedComponent = Actor.GetComponent<AnimatedTextureRegionComponent>();
             Transform = Actor.GetComponent<Transform2>();
-            Rectangle rec = DrawComponent.region.sourceRectangle;
-            size = new Vector2(rec.Width, rec.Height);
+            Rectangle rec = AnimatedComponent.animations[0].GetKeyframe(0).sourceRectangle;
+            Size = new Vector2(20, 20);
             GameManager.RegisterPlayer(this);
         }
 
@@ -131,13 +131,16 @@ namespace MonoNet.Player
 
         public void Update()
         {
+            AnimatedComponent.selectedAnimation = Rigidbody.velocity.Length() < 0.1f ? 0 : 1;
+            AnimatedComponent.mirrored = lookingAt != LookingAt.Right;
+
             if (NetManager.Instance.IsServer == false)
                 return;
 
             Vector2 screenDims = GameManager.screenDimensions;
             Vector2 pos = Transform.WorldPosition;
 
-            if (pos.X + size.X < 0 || pos.X > screenDims.X || pos.Y + size.Y > screenDims.Y || pos.Y < 0)
+            if (pos.X + Size.X < 0 || pos.X > screenDims.X || pos.Y + Size.Y > screenDims.Y || pos.Y < 0)
                 ServerConnectionComponent.Instance.DestroySyncable(Actor.GetComponent<NetSyncComponent>().Id);
         }
     }

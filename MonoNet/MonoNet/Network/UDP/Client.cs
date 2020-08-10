@@ -15,7 +15,7 @@ namespace MonoNet.Network.UDP
         private IPEndPoint endPoint;
 
         private bool exitRequested;
-        private bool connected = false;
+        public bool Connected { get; private set; }
         private string name;
         public readonly byte[] welcomeMessage = Encoding.ASCII.GetBytes("Hello!");
 
@@ -40,7 +40,7 @@ namespace MonoNet.Network.UDP
         /// </summary>
         public void Stop()
         {
-            connected = false;
+            Connected = false;
             exitRequested = true;
             listenThread.Interrupt();
             connection.Close();
@@ -53,6 +53,18 @@ namespace MonoNet.Network.UDP
         {
             Console.WriteLine("Connecting");
 
+            // ------------------------------------------------------------------------------------------------------------
+            // Taken from https://stackoverflow.com/questions/10332630/connection-reset-on-receiving-packet-in-udp-server
+            // ------------------------------------------------------------------------------------------------------------
+            // This ignores connection resets as errors. If this is not set and a client crashes then this throws exception
+            // on the server. This is why the code beneath is there. I am not sure if could have just catched the error and
+            // ignored it, but I feel like this is the most efficient way of doing it. Eventhough I don't really know why
+            // the socket needs to be configured like that.
+            const int SIO_UDP_CONNRESET = -1744830452;
+            byte[] inValue = new byte[] { 0 };
+            byte[] outValue = new byte[] { 0 };
+            connection.Client.IOControl(SIO_UDP_CONNRESET, inValue, outValue);
+            // ------------------------------------------------------------------------------------------------------------
             connection.Connect(endPoint);
 
             // Wait to see if we get something back. If we do not get anything back
@@ -61,7 +73,7 @@ namespace MonoNet.Network.UDP
             {
                 // Send a ping to the server
                 Send(Encoding.ASCII.GetBytes("Hello?" + name));
-             
+
                 // if no data is available sleep for 1 second
                 if (connection.Available == 0)
                 {
@@ -70,14 +82,14 @@ namespace MonoNet.Network.UDP
                 }
 
                 // We recieved something. Check to see if it was Hello!. If so then we are connected.
-                connected = Recieve(out byte[] message, true) && Encoding.ASCII.GetString(message).Equals("Hello!");
+                Connected = Recieve(out byte[] message, true) && Encoding.ASCII.GetString(message).Equals("Hello!");
                 break;
             }
 
             // if connected is false then something went wrong
-            if (connected == false)
+            if (Connected == false)
             {
-                Console.WriteLine("Connection could not be established!"); 
+                Console.WriteLine("Connection could not be established!");
                 ((ClientLevelScreen)LevelScreen.Instance).OnDisconnect("Could not connect to server!\nPress escape to go back to the main menu!");
                 return;
             }
@@ -92,7 +104,7 @@ namespace MonoNet.Network.UDP
         {
             buffer = null;
 
-            if (connected == false && overrideNotConnected == false)
+            if (Connected == false && overrideNotConnected == false)
                 return false;
 
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, 0);

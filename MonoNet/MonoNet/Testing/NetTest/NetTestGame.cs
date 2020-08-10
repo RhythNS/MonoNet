@@ -73,7 +73,7 @@ namespace MonoNet.Testing.NetTest
             TextureRegion orangeRegion = new TextureRegion(Content.Load<Texture2D>("Test/orangeSquare"), 0, 0, 32, 32);
 
             HitboxLoader hitboxLoader = new HitboxLoader(stage);
-            BoxSpawn boxSpawn = new BoxSpawn(factory.playerTex, stage);
+            BoxSpawn boxSpawn = new BoxSpawn(factory.playerWalk[0], stage);
             playerSpawns = new PlayerSpawnLocations();
             //GunSpawn gunSpawn = new GunSpawn(factory.gunRegions, stage);
 

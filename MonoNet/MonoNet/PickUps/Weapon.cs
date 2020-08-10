@@ -48,12 +48,12 @@ namespace MonoNet.PickUps
                 if (holder.lookingAt == PlayerManager.LookingAt.Left)
                 {
                     drawComponent.mirror = true;
-                    weaponTrans.LocalPosition = new Vector2(-drawComponent.region.sourceRectangle.Width + holder.DrawComponent.region.sourceRectangle.Width * 0.3f, 0);
+                    weaponTrans.LocalPosition = new Vector2(-drawComponent.region.sourceRectangle.Width + holder.Size.X * 0.3f, 0);
                 }
                 else
                 {
                     drawComponent.mirror = false;
-                    weaponTrans.LocalPosition = new Vector2(holder.DrawComponent.region.sourceRectangle.Width * 0.7f, 0);
+                    weaponTrans.LocalPosition = new Vector2(holder.Size.X * 0.7f, 0);
                 }
             }
 

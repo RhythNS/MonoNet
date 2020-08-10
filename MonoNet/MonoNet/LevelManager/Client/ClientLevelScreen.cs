@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using MonoNet.GameSystems;
 using MonoNet.LevelManager.Client;
 using MonoNet.Network;
 using System.Net;
@@ -34,7 +35,17 @@ namespace MonoNet.LevelManager
         public override void Update(GameTime gameTime)
         {
             reciever.Recieve();
-            reciever.Send();
+
+            if (reciever.Connected == true)
+            {
+                reciever.Send();
+                if (Time.TotalGameTime.Subtract(reciever.lastHeardFrom).CompareTo(NetConstants.TIMEOUT_TIME) > 0)
+                {
+                    OnDisconnect("Connection to server lost!\nPress escape to return to the main menu!");
+                    reciever.Stop();
+                }
+            }
+
 
             base.Update(gameTime);
         }
@@ -65,9 +76,12 @@ namespace MonoNet.LevelManager
         protected override void OnGameQuit()
         {
             NetSyncComponent.TriggerServerEvent("D", false);
-            reciever.Recieve();
-            reciever.Send(true);
-            reciever.Stop();
+            if (reciever.Connected == true)
+            {
+                reciever.Recieve();
+                reciever.Send(true);
+                reciever.Stop();
+            }
         }
     }
 }

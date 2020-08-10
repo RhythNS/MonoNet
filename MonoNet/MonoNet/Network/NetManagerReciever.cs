@@ -2,6 +2,7 @@
 using MonoNet.Network.Commands;
 using MonoNet.Network.UDP;
 using MonoNet.Util;
+using System;
 using System.Collections.Generic;
 using System.Net;
 
@@ -13,8 +14,10 @@ namespace MonoNet.Network
     public class NetManagerReciever : NetManager
     {
         private float timer = 0;
+        public TimeSpan lastHeardFrom;
 
         public override bool IsServer => false;
+        public bool Connected => client.Connected;
 
         private Client client;
 
@@ -64,6 +67,8 @@ namespace MonoNet.Network
 
             if (data == null || isNewer == false)
                 return;
+
+            lastHeardFrom = Time.TotalGameTime;
 
             // Iterate through the package. The first byte is the package number which we already processed.
             int pointer = 1;

@@ -14,6 +14,143 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin assets/bullet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/bullet.png
+
+#begin assets/catIdle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/catIdle.png
+
+#begin assets/catWalk.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/catWalk.png
+
+#begin assets/DatMapWithObjectLayer.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:assets/DatMapWithObjectLayer.tmx
+
+#begin assets/FinalWorld.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:assets/FinalWorld.tmx
+
+#begin assets/generic_platformer_tiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/generic_platformer_tiles.png
+
+#begin assets/guns.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/guns.png
+
+#begin assets/hitboxTest.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:assets/hitboxTest.tmx
+
+#begin assets/orangeSquare.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/orangeSquare.png
+
+#begin assets/plattformer.tsx
+/copy:assets/plattformer.tsx
+
+#begin assets/spritesheet.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/spritesheet.png
+
+#begin assets/testingLayers.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/testingLayers.png
+
+#begin assets/testPlattform.tmx
+/importer:TiledImporter
+/processor:TiledProcessor
+/build:assets/testPlattform.tmx
+
+#begin assets/Tiles.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:assets/Tiles.png
+
+#begin assets/tileset.tsx
+/copy:assets/tileset.tsx
+
+#begin assets/Unbenannt.tsx
+/copy:assets/Unbenannt.tsx
+
 #begin maps/generic_platformer_tiles.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -43,105 +180,4 @@
 
 #begin maps/plattformer.tsx
 /copy:maps/plattformer.tsx
-
-#begin Test/DatMapWithObjectLayer.tmx
-/importer:TiledImporter
-/processor:TiledProcessor
-/build:Test/DatMapWithObjectLayer.tmx
-
-#begin Test/FinalWorld.tmx
-/importer:TiledImporter
-/processor:TiledProcessor
-/build:Test/FinalWorld.tmx
-
-#begin Test/generic_platformer_tiles.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Test/generic_platformer_tiles.png
-
-#begin Test/guns.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Test/guns.png
-
-#begin Test/hitboxTest.tmx
-/importer:TiledImporter
-/processor:TiledProcessor
-/build:Test/hitboxTest.tmx
-
-#begin Test/orangeSquare.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Test/orangeSquare.png
-
-#begin Test/plattformer.tsx
-/copy:Test/plattformer.tsx
-
-#begin Test/spritesheet.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Test/spritesheet.png
-
-#begin Test/testingLayers.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Test/testingLayers.png
-
-#begin Test/testPlattform.tmx
-/importer:TiledImporter
-/processor:TiledProcessor
-/build:Test/testPlattform.tmx
-
-#begin Test/Tiles.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Test/Tiles.png
-
-#begin Test/tileset.tsx
-/copy:Test/tileset.tsx
-
-#begin Test/Unbenannt.tsx
-/copy:Test/Unbenannt.tsx
 

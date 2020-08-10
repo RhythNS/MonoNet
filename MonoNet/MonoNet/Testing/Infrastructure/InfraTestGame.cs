@@ -65,15 +65,15 @@ namespace MonoNet.Testing.ECS
 
             Actor loopActor = stage.CreateActor(0);
             loopActor.AddComponent<Transform2>().LocalPosition = new Vector2(width * 0.25f, height * 0.5f);
-            loopActor.AddComponent<AnimatedTextureRegionComponent>().animation = loop;
+            loopActor.AddComponent<AnimatedTextureRegionComponent>().Set(loop);
 
             Actor revLoopActor = stage.CreateActor(0);
             revLoopActor.AddComponent<Transform2>().LocalPosition = new Vector2(width * 0.5f, height * 0.5f);
-            revLoopActor.AddComponent<AnimatedTextureRegionComponent>().animation = revLopp;
+            revLoopActor.AddComponent<AnimatedTextureRegionComponent>().Set(revLopp);
 
             Actor pingPongActor = stage.CreateActor(0);
             pingPongActor.AddComponent<Transform2>().LocalPosition = new Vector2(width * 0.75f, height * 0.5f);
-            pingPongActor.AddComponent<AnimatedTextureRegionComponent>().animation = pingPong;
+            pingPongActor.AddComponent<AnimatedTextureRegionComponent>().Set(pingPong);
 
             Texture2D testingLayers = Content.Load<Texture2D>("Test/testingLayers");
             TextureRegion[] layerRegions = TextureRegion.CreateAllFromSheet(testingLayers, 20, 20);

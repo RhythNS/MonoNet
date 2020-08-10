@@ -18,7 +18,7 @@ namespace MonoNet.LevelManager
 
         private ContentManager content;
 
-        public TextureRegion playerTex;
+        public TextureRegion[] playerWalk, playerIdle;
         public TextureRegion bulletTex;
         public Fast2DArray<TextureRegion> gunRegions;
 
@@ -31,13 +31,14 @@ namespace MonoNet.LevelManager
 
         private void LoadAll()
         {
-            TextureRegion[] loadedRegions = TextureRegion.CreateAllFromSheet(content.Load<Texture2D>("Test/guns"), 32, 15);
+            TextureRegion[] loadedRegions = TextureRegion.CreateAllFromSheet(content.Load<Texture2D>("Assets/guns"), 32, 15);
             gunRegions = new Fast2DArray<TextureRegion>(3, 6);
             for (int i = 0; i < loadedRegions.Length; i++)
                 gunRegions.Set(loadedRegions[i], i % 3, i / 6);
 
-            playerTex = new TextureRegion(content.Load<Texture2D>("Test/testingLayers"), 0, 0, 20, 20);
-            bulletTex = new TextureRegion(content.Load<Texture2D>("Test/testingLayers"), 0, 0, 10, 10);
+            playerWalk = TextureRegion.CreateAllFromSheet(content.Load<Texture2D>("Assets/catWalk"), 18, 30);
+            playerIdle = TextureRegion.CreateAllFromSheet(content.Load<Texture2D>("Assets/catIdle"), 18, 30);
+            bulletTex = new TextureRegion(content.Load<Texture2D>("Assets/bullet"), 0, 0, 10, 10);
         }
 
         public void UnloadAll()
@@ -48,19 +49,22 @@ namespace MonoNet.LevelManager
         public static PlayerManager CreateNetPlayer(byte netId, string name)
         {
             Actor actor = NetManager.Instance.GetNetSyncComponent(netId).Actor;
-            TextureRegion textureRegion = Instance.playerTex;
+            Animation<TextureRegion> idleAni = new Animation<TextureRegion>(Instance.playerIdle, 0.1f, Animation<TextureRegion>.PlaybackMode.PingPongLoop);
+            Animation<TextureRegion> walkAni = new Animation<TextureRegion>(Instance.playerWalk, 0.1f, Animation<TextureRegion>.PlaybackMode.PingPongLoop);
+            
+            Transform2 transform =  actor.AddComponent<Transform2>();
+            transform.LocalScale = new Vector2(1, 0.6666f);
 
-            actor.AddComponent<Transform2>();
             Rigidbody body = actor.AddComponent<Rigidbody>();
 
-            DrawTextureRegionComponent drawTexture = actor.AddComponent<DrawTextureRegionComponent>();
-            drawTexture.region = textureRegion;
-
+            AnimatedTextureRegionComponent animatedTextureRegionComponent = actor.AddComponent<AnimatedTextureRegionComponent>();
+            animatedTextureRegionComponent.Set(idleAni, walkAni);
+            
             PlayerManager player = actor.AddComponent<PlayerManager>();
             player.name = name;
             actor.RemoveComponent<PlayerInput>();
 
-            body.Set(width: textureRegion.sourceRectangle.Width, height: textureRegion.sourceRectangle.Height, collisionLayer: GameManager.physicsPlayerLayer, isStatic: false, isSquare: true, isTrigger: false);
+            body.Set(width: 20, height: 20, collisionLayer: GameManager.physicsPlayerLayer, isStatic: false, isSquare: true, isTrigger: false);
 
             return player;
         }

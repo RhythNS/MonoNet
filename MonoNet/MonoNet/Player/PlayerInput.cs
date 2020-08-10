@@ -164,14 +164,15 @@ namespace MonoNet.Player
             {
                 player.lookingAt = PlayerManager.LookingAt.Right;
             }
-            else if (Input.KeyDown(binding.lookUp))
-            {
-                player.lookingAt = PlayerManager.LookingAt.Up;
-            }
+            //else if (Input.KeyDown(binding.lookUp))
+            //{
+            //    player.lookingAt = PlayerManager.LookingAt.Up;
+            //}
             else if (Input.KeyDown(binding.lookLeft))
             {
                 player.lookingAt = PlayerManager.LookingAt.Left;
             }
+            
         }
         private void Shoot()
         {

@@ -1,10 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using MonoNet.Interfaces;
 using Myra.Graphics2D;
 using Myra.Graphics2D.Brushes;
 using Myra.Graphics2D.UI;
-using System;
 
 namespace MonoNet.LevelManager
 {
@@ -35,6 +33,7 @@ namespace MonoNet.LevelManager
         public static void DisplayString(string toDisplay = "")
         {
             Instance.label.Text = toDisplay;
+            Instance.label.Visible = toDisplay.Length != 0;
         }
 
         public void Draw(SpriteBatch spriteBatch)
